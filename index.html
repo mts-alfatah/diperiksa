@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DIPERIKSA</title>
+    <link rel="icon" type="image/x-icon" href="mts.ico">
+    <meta name="theme-color" content="#2c5364">
+    <link rel="manifest" href="site.webmanifest">
+    <meta name="description" content="Digital Pencatatan Riwayat Kedisiplinan Siswa Al Fatah">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+
+<body>
+    <div class="background-shapes">
+        <div class="shape shape-1"></div>
+        <div class="shape shape-2"></div>
+        <div class="shape shape-3"></div>
+    </div>
+
+    <div class="login-container">
+        <div class="login-header">
+            <div class="logo-placeholder">
+                <img src="logo.png" alt="Logo MTs Al Fatah" class="logo-img">
+            </div>
+            <h1>DIPERIKSA</h1>
+            <p>Digital Pencatatan Riwayat Kedisiplinan Siswa Al Fatah</p>
+        </div>
+
+        <div class="login-tabs">
+            <button class="tab-btn active" data-target="siswa-form" id="tab-siswa">
+                <i class="fa-solid fa-user-graduate"></i> Siswa
+            </button>
+            <button class="tab-btn" data-target="guru-form" id="tab-guru">
+                <i class="fa-solid fa-chalkboard-user"></i> Guru BK
+            </button>
+        </div>
+
+        <div class="form-wrapper">
+            <!-- Form Login Siswa -->
+            <form id="siswa-form" class="login-form active" onsubmit="handleLogin(event, 'siswa')">
+                <div class="input-group">
+                    <label for="nisn">NISN</label>
+                    <div class="input-wrapper">
+                        <i class="fa-solid fa-id-card"></i>
+                        <input type="text" id="nisn" placeholder="Masukkan NISN" required autocomplete="off">
+                    </div>
+                </div>
+                <button type="submit" class="submit-btn guru-btn">
+                    Masuk <i class="fa-solid fa-arrow-right"></i>
+                </button>
+            </form>
+
+            <!-- Form Login Guru BK -->
+            <form id="guru-form" class="login-form" onsubmit="handleLogin(event, 'guru')">
+                <div class="input-group">
+                    <label for="password-guru">Password</label>
+                    <div class="input-wrapper">
+                        <i class="fa-solid fa-lock"></i>
+                        <input type="password" id="password-guru" placeholder="Masukkan Password Guru BK" required>
+                        <i class="fa-solid fa-eye-slash toggle-password"></i>
+                    </div>
+                    <div class="forgot-password">
+                        <a href="#" onclick="alert('Fitur lupa password dapat diakses melalui Admin Sekolah.')">Lupa
+                            Password?</a>
+                    </div>
+                </div>
+                <button type="submit" class="submit-btn guru-btn">
+                    Masuk <i class="fa-solid fa-arrow-right"></i>
+                </button>
+            </form>
+        </div>
+
+        <div class="rules-section" style="display: flex; flex-direction: column; gap: 10px;">
+            <a href="tata-tertib.html" class="rules-btn" style="justify-content: center;">
+                <i class="fa-solid fa-book-open"></i> Tata Tertib MTs Al Fatah
+            </a>
+            <a href="point-prestasi.html" class="rules-btn" style="justify-content: center;">
+                <i class="fa-solid fa-star"></i> Poin Prestasi MTs Al Fatah
+            </a>
+            <a href="point-pelanggaran.html" class="rules-btn" style="justify-content: center;">
+                <i class="fa-solid fa-triangle-exclamation"></i> Poin Pelanggaran MTs Al Fatah
+            </a>
+        </div>
+
+        <div class="login-footer">
+            <p>&copy; 2026 MTs Al Fatah Talun. All rights reserved.</p>
+        </div>
+    </div>
+
+    <!-- PWA Install Prompt Banner -->
+    <div id="install-container" class="install-container hidden">
+        <div class="install-content">
+            <div class="install-info">
+                <img src="logo.png" alt="App Icon" class="install-icon">
+                <div class="install-text">
+                    <strong>Aplikasi DIPERIKSA</strong>
+                    <span>Install aplikasi untuk akses lebih cepat</span>
+                </div>
+            </div>
+            <div class="install-actions">
+                <button id="install-btn" class="install-btn">Install</button>
+                <button id="close-install-btn" class="close-install-btn"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Notification Toast -->
+    <div id="toast" class="toast">
+        <i class="fa-solid fa-circle-exclamation toast-icon"></i>
+        <span id="toast-message">Pesan notifikasi</span>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+
+</html>
