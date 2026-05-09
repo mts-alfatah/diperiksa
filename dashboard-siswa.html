@@ -1,0 +1,752 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Siswa - DIPERIKSA</title>
+    <link rel="icon" type="image/x-icon" href="mts.ico">
+    <meta name="description" content="Dashboard Siswa Digital Pencatatan Riwayat Kedisiplinan">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --bg-color: #f4f7f6;
+            --primary-color: #2c5364;
+            --accent-color: #00b4db;
+            --danger-color: #ff4b4b;
+            --text-main: #333;
+            --text-muted: #666;
+            --card-bg: #ffffff;
+            --border-radius: 16px;
+            --shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+            --transition: all 0.3s ease;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Outfit', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow-x: hidden;
+        }
+
+        /* Navbar */
+        .navbar {
+            background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+            color: white;
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .nav-brand {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 700;
+            font-size: 20px;
+        }
+
+        .logout-btn {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 8px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            text-decoration: none;
+            font-size: 14px;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .logout-btn:hover {
+            background: rgba(255, 75, 75, 0.2);
+            border-color: rgba(255, 75, 75, 0.5);
+            color: #ffbaba;
+        }
+
+        /* Main Content */
+        .container {
+            flex: 1;
+            max-width: 1000px;
+            width: 100%;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+
+        .dashboard-header {
+            margin-bottom: 30px;
+        }
+
+        .dashboard-header h1 {
+            font-size: 28px;
+            color: var(--primary-color);
+            margin-bottom: 5px;
+        }
+
+        .dashboard-header p {
+            color: var(--text-muted);
+        }
+
+        /* Loading State */
+        .loader-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 50px 0;
+            color: var(--accent-color);
+        }
+
+        .loader-container i {
+            font-size: 40px;
+            margin-bottom: 15px;
+        }
+
+        /* Profile Card */
+        .profile-card {
+            background: var(--card-bg);
+            border-radius: var(--border-radius);
+            padding: 30px;
+            box-shadow: var(--shadow);
+            margin-bottom: 30px;
+            display: flex;
+            align-items: center;
+            gap: 25px;
+            border-left: 5px solid var(--accent-color);
+            display: none;
+            /* Hidden until loaded */
+        }
+
+        .profile-icon {
+            width: 80px;
+            height: 80px;
+            background: rgba(0, 180, 219, 0.1);
+            color: var(--accent-color);
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 35px;
+        }
+
+        .profile-info h2 {
+            font-size: 24px;
+            margin-bottom: 10px;
+            color: var(--primary-color);
+        }
+
+        .info-grid {
+            display: flex;
+            gap: 30px;
+        }
+
+        .info-item {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .info-label {
+            font-size: 12px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 3px;
+        }
+
+        .info-val {
+            font-size: 16px;
+            font-weight: 600;
+        }
+
+        /* Total Points Card */
+        .points-summary {
+            color: white;
+            border-radius: 12px;
+            padding: 15px 25px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            margin-left: auto;
+            transition: all 0.5s ease;
+        }
+
+        .points-summary.bg-green {
+            background: linear-gradient(135deg, #11998e, #38ef7d);
+            box-shadow: 0 5px 15px rgba(17, 153, 142, 0.3);
+        }
+
+        .points-summary.bg-yellow {
+            background: linear-gradient(135deg, #f2c94c, #f2994a);
+            box-shadow: 0 5px 15px rgba(242, 201, 76, 0.3);
+        }
+
+        .points-summary.bg-red {
+            background: linear-gradient(135deg, #ff4b4b, #ff7b7b);
+            box-shadow: 0 5px 15px rgba(255, 75, 75, 0.3);
+        }
+
+        .points-summary.bg-brown {
+            background: linear-gradient(135deg, #8D6E63, #5D4037);
+            box-shadow: 0 5px 15px rgba(93, 64, 55, 0.3);
+        }
+
+        .points-summary.bg-silver {
+            background: linear-gradient(135deg, #e0e0e0, #9e9e9e);
+            box-shadow: 0 5px 15px rgba(158, 158, 158, 0.3);
+            color: #333;
+        }
+
+        .points-summary.bg-gold {
+            background: linear-gradient(135deg, #FFD700, #FDB931);
+            box-shadow: 0 5px 15px rgba(255, 215, 0, 0.3);
+            color: #333;
+        }
+
+        .points-container {
+            display: flex;
+            gap: 15px;
+            margin-left: auto;
+        }
+
+        .points-summary .label {
+            font-size: 12px;
+            opacity: 0.9;
+        }
+
+        .points-summary .total {
+            font-size: 32px;
+            font-weight: 700;
+        }
+
+        /* Violations Table */
+        .violations-card {
+            background: var(--card-bg);
+            border-radius: var(--border-radius);
+            padding: 30px;
+            box-shadow: var(--shadow);
+            display: none;
+            /* Hidden until loaded */
+        }
+
+        .violations-card h3 {
+            font-size: 20px;
+            color: var(--primary-color);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .table-responsive {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th,
+        td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+
+        th {
+            background: #f8fafc;
+            color: var(--text-muted);
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        tr:last-child td {
+            border-bottom: none;
+        }
+
+        tr:hover td {
+            background: #f8fafc;
+        }
+
+        .point-badge {
+            background: rgba(16, 185, 129, 0.1);
+            color: #10b981;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 14px;
+            display: inline-block;
+        }
+
+        .point-badge.yellow {
+            background: rgba(245, 158, 11, 0.1);
+            color: #f59e0b;
+        }
+
+        .point-badge.red {
+            background: rgba(239, 68, 68, 0.1);
+            color: #ef4444;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: var(--text-muted);
+        }
+
+        .empty-state i {
+            font-size: 40px;
+            color: #ccc;
+            margin-bottom: 15px;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #eee;
+            padding-bottom: 10px;
+            flex-wrap: wrap;
+        }
+
+        .tab-btn {
+            background: none;
+            border: none;
+            padding: 10px 20px;
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--text-muted);
+            cursor: pointer;
+            border-radius: 8px;
+            transition: var(--transition);
+        }
+
+        .tab-btn:hover {
+            background: #f1f5f9;
+            color: var(--primary-color);
+        }
+
+        .tab-btn.active {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .container {
+                margin: 20px auto;
+                padding: 0 15px;
+            }
+
+            .profile-card {
+                flex-direction: column;
+                text-align: center;
+                gap: 15px;
+            }
+
+            .info-grid {
+                justify-content: center;
+                flex-wrap: wrap;
+            }
+
+            .points-container {
+                flex-direction: column;
+                margin: 10px auto 0;
+                width: 100%;
+            }
+
+            .points-summary {
+                margin: 0;
+                width: 100%;
+            }
+
+            th,
+            td {
+                padding: 8px 4px;
+                font-size: 12px;
+            }
+
+            th {
+                font-size: 11px;
+            }
+
+            .point-badge {
+                padding: 3px 6px;
+                font-size: 11px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <nav class="navbar">
+        <div class="nav-brand">
+            <img src="logo.png" alt="Logo MTs Al Fatah" style="height: 28px; width: auto; object-fit: contain;">
+            DIPERIKSA
+        </div>
+        <a href="index.html" class="logout-btn" onclick="sessionStorage.removeItem('siswaNISN')">
+            <i class="fa-solid fa-right-from-bracket"></i> Keluar
+        </a>
+    </nav>
+
+    <div class="container">
+        <div class="dashboard-header">
+            <h1>Dashboard Siswa</h1>
+            <p>Informasi Poin Prestasi dan Pelanggaran</p>
+        </div>
+
+        <div id="loader" class="loader-container">
+            <i class="fa-solid fa-circle-notch fa-spin"></i>
+            <p>Memuat data dari database...</p>
+        </div>
+
+        <div id="profile-card" class="profile-card">
+            <div class="profile-icon">
+                <i class="fa-solid fa-user-graduate"></i>
+            </div>
+            <div class="profile-info">
+                <h2 id="student-name">Nama Lengkap</h2>
+                <div class="info-grid">
+                    <div class="info-item">
+                        <span class="info-label">NISN</span>
+                        <span class="info-val" id="student-nisn">-</span>
+                    </div>
+                </div>
+            </div>
+            <div class="points-container">
+                <div class="points-summary" id="pelanggaran-summary">
+                    <span class="label">Poin Pelanggaran</span>
+                    <span class="total" id="total-points">0</span>
+                </div>
+                <div class="points-summary" id="prestasi-summary">
+                    <span class="label">Poin Prestasi</span>
+                    <span class="total" id="total-points-prestasi">0</span>
+                </div>
+            </div>
+        </div>
+
+        <div id="history-card" class="violations-card" style="display: none;">
+            <div class="tabs">
+                <button class="tab-btn active" onclick="switchHistoryTab('pelanggaran')"><i
+                        class="fa-solid fa-clipboard-list"></i> Riwayat Pelanggaran</button>
+                <button class="tab-btn" onclick="switchHistoryTab('prestasi')"><i class="fa-solid fa-star"></i> Riwayat
+                    Prestasi</button>
+            </div>
+
+            <!-- TAB PELANGGARAN -->
+            <div id="tab-pelanggaran" class="tab-content active">
+                <div class="table-responsive">
+                    <table id="violations-table">
+                        <thead>
+                            <tr>
+                                <th>No</th>
+                                <th>Tanggal</th>
+                                <th>Kategori</th>
+                                <th>Nama Pelanggaran</th>
+                                <th>Poin</th>
+                            </tr>
+                        </thead>
+                        <tbody id="violations-body">
+                            <!-- Data will be populated here -->
+                        </tbody>
+                    </table>
+                    <div id="empty-violations" class="empty-state" style="display: none;">
+                        <i class="fa-regular fa-face-smile-beam"></i>
+                        <p>Luar biasa! Anda tidak memiliki catatan pelanggaran.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB PRESTASI -->
+            <div id="tab-prestasi" class="tab-content">
+                <div class="table-responsive">
+                    <table id="prestasi-table">
+                        <thead>
+                            <tr>
+                                <th>No</th>
+                                <th>Tanggal</th>
+                                <th>Kategori</th>
+                                <th>Nama Prestasi</th>
+                                <th>Poin</th>
+                            </tr>
+                        </thead>
+                        <tbody id="prestasi-body">
+                            <!-- Data will be populated here -->
+                        </tbody>
+                    </table>
+                    <div id="empty-prestasi" class="empty-state" style="display: none;">
+                        <i class="fa-regular fa-star"></i>
+                        <p>Belum ada catatan prestasi. Teruslah berkarya!</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Cek apakah siswa sudah login
+            const loggedInNISN = sessionStorage.getItem('siswaNISN');
+            if (!loggedInNISN) {
+                alert('Anda belum login atau sesi telah berakhir!');
+                window.location.href = 'index.html';
+                return;
+            }
+
+            // Ganti dengan ID Spreadsheet Anda
+            const SPREADSHEET_ID = '1jFFuABePc7tGcc0rG7K8G0aV4lRIQJuVuV-FzDIAzf4';
+
+            // Konfigurasi Nama Sheet (Tab di bagian bawah Google Sheet)
+            // GANTI SESUAI DENGAN NAMA SHEET ANDA!
+            const SHEET_SISWA = 'Siswa';             // Sheet berisi: A(NISN), B(Nama)
+            const SHEET_PELANGGARAN = 'Pelanggaran'; // Sheet berisi: A(NISN), B(Tanggal), C(Kategori), D(Nama Pelanggaran), E(Poin)
+            const SHEET_PRESTASI = 'Prestasi';       // Sheet berisi: A(NISN), B(Tanggal), C(Kategori), D(Nama Prestasi), E(Poin)
+
+            fetchDashboardData(loggedInNISN, SPREADSHEET_ID, SHEET_SISWA, SHEET_PELANGGARAN, SHEET_PRESTASI);
+        });
+
+        async function fetchDashboardData(nisnTarget, spreadsheetId, sheetSiswa, sheetPelanggaran, sheetPrestasi) {
+            try {
+                // 1. Ambil Data Profil Siswa
+                const dataSiswa = await fetchJSONP(
+                    `https://docs.google.com/spreadsheets/d/${spreadsheetId}/gviz/tq?sheet=${encodeURIComponent(sheetSiswa)}&tq=SELECT%20A,B`
+                );
+
+                // 2. Ambil Data Riwayat Pelanggaran
+                const dataPelanggaran = await fetchJSONP(
+                    `https://docs.google.com/spreadsheets/d/${spreadsheetId}/gviz/tq?sheet=${encodeURIComponent(sheetPelanggaran)}&tq=SELECT%20A,B,C,D,E`
+                );
+
+                // 3. Ambil Data Riwayat Prestasi
+                let dataPrestasi = null;
+                try {
+                    dataPrestasi = await fetchJSONP(
+                        `https://docs.google.com/spreadsheets/d/${spreadsheetId}/gviz/tq?sheet=${encodeURIComponent(sheetPrestasi)}&tq=SELECT%20A,B,C,D,E`
+                    );
+                } catch (e) { console.warn("Sheet Prestasi mungkin belum dibuat."); }
+
+                processData(dataSiswa, dataPelanggaran, dataPrestasi, nisnTarget);
+
+            } catch (error) {
+                console.error(error);
+                document.getElementById('loader').innerHTML = `
+                    <i class="fa-solid fa-triangle-exclamation" style="color: var(--danger-color)"></i>
+                    <p style="color: var(--danger-color)">Gagal memuat data. Pastikan nama sheet benar dan berstatus Publik.</p>
+                `;
+            }
+        }
+
+        // Fungsi bantuan untuk melakukan fetch JSONP
+        function fetchJSONP(url) {
+            return new Promise((resolve, reject) => {
+                const callbackName = 'gvizDash_' + Math.round(100000 * Math.random());
+                window[callbackName] = function (json) {
+                    delete window[callbackName];
+                    document.body.removeChild(script);
+                    resolve(json);
+                };
+
+                const script = document.createElement('script');
+                // Tambahkan responseHandler ke URL
+                script.src = `${url}&tqx=out:json;responseHandler:${callbackName}`;
+                script.onerror = () => reject(new Error('Gagal mengambil data JSONP'));
+                document.body.appendChild(script);
+            });
+        }
+
+        function formatNISN(rawVal, formattedVal) {
+            let str = formattedVal ? String(formattedVal) : String(rawVal);
+            str = str.replace(/[,.]/g, '').trim();
+            if (str.length === 9) return "0" + str;
+            return str;
+        }
+
+        function processData(jsonSiswa, jsonPelanggaran, jsonPrestasi, targetNISN) {
+            let studentName = "Nama Tidak Ditemukan";
+            let totalPoints = 0;
+            let totalPointsPrestasi = 0;
+            let violationsHTML = "";
+            let violationCount = 0;
+
+            // --- PROSES DATA PROFIL SISWA ---
+            if (jsonSiswa && jsonSiswa.table && jsonSiswa.table.rows) {
+                const rowsSiswa = jsonSiswa.table.rows;
+                for (let i = 0; i < rowsSiswa.length; i++) {
+                    const row = rowsSiswa[i].c;
+                    if (row[0] && row[0].v != null) {
+                        const sheetNisn = formatNISN(row[0].v, row[0].f);
+                        if (sheetNisn === targetNISN) {
+                            if (row[1] && row[1].v) studentName = String(row[1].v);
+                            break; // Berhenti mencari jika sudah ketemu
+                        }
+                    }
+                }
+            }
+
+            // --- PROSES DATA PELANGGARAN ---
+            if (jsonPelanggaran && jsonPelanggaran.table && jsonPelanggaran.table.rows) {
+                const rowsPelanggaran = jsonPelanggaran.table.rows;
+                for (let i = 0; i < rowsPelanggaran.length; i++) {
+                    const row = rowsPelanggaran[i].c;
+                    if (row[0] && row[0].v != null) {
+                        const sheetNisn = formatNISN(row[0].v, row[0].f);
+
+                        if (sheetNisn === targetNISN) {
+                            // Asumsi struktur Sheet Pelanggaran: A(NISN), B(Tanggal), C(Kategori), D(Nama Pelanggaran), E(Poin)
+                            const tanggalStr = row[1] && row[1].f ? row[1].f : (row[1] && row[1].v ? String(row[1].v) : "-");
+                            const kategoriStr = row[2] && row[2].v ? String(row[2].v) : "-";
+                            const pelanggaranStr = row[3] && row[3].v ? String(row[3].v) : "-";
+                            const poinStr = row[4] && row[4].v ? String(row[4].v) : "0";
+
+                            const poin = parseInt(poinStr) || 0;
+
+                            if (kategoriStr !== "-" || pelanggaranStr !== "-") {
+                                violationCount++;
+                                totalPoints += poin;
+
+                                let badgeClass = 'point-badge';
+                                if (kategoriStr.toLowerCase().includes('sedang')) badgeClass = 'point-badge yellow';
+                                if (kategoriStr.toLowerCase().includes('berat')) badgeClass = 'point-badge red';
+
+                                violationsHTML += `
+                                    <tr>
+                                        <td>${violationCount}</td>
+                                        <td>${tanggalStr}</td>
+                                        <td><span style="font-size: 11px; font-weight: 600; text-transform: uppercase; color: var(--text-muted);">${kategoriStr}</span></td>
+                                        <td>${pelanggaranStr}</td>
+                                        <td><span class="${badgeClass}">+${poin}</span></td>
+                                    </tr>
+                                `;
+                            }
+                        }
+                    }
+                }
+            }
+
+            // --- PROSES DATA PRESTASI ---
+            let prestasiHTML = "";
+            let prestasiCount = 0;
+            if (jsonPrestasi && jsonPrestasi.table && jsonPrestasi.table.rows) {
+                const rowsPrestasi = jsonPrestasi.table.rows;
+                for (let i = 0; i < rowsPrestasi.length; i++) {
+                    const row = rowsPrestasi[i].c;
+                    if (row[0] && row[0].v != null) {
+                        const sheetNisn = formatNISN(row[0].v, row[0].f);
+                        if (sheetNisn === targetNISN) {
+                            const tanggalStr = row[1] && row[1].f ? row[1].f : (row[1] && row[1].v ? String(row[1].v) : "-");
+                            const kategoriStr = row[2] && row[2].v ? String(row[2].v) : "-";
+                            const prestasiStr = row[3] && row[3].v ? String(row[3].v) : "-";
+                            const poinStr = row[4] && row[4].v ? String(row[4].v) : "0";
+
+                            const poin = parseInt(poinStr) || 0;
+                            if (kategoriStr !== "-" || prestasiStr !== "-") {
+                                prestasiCount++;
+                                totalPointsPrestasi += poin;
+
+                                let badgeClass = 'point-badge'; // default green
+                                prestasiHTML += `
+                                    <tr>
+                                        <td>${prestasiCount}</td>
+                                        <td>${tanggalStr}</td>
+                                        <td><span style="font-size: 11px; font-weight: 600; text-transform: uppercase; color: var(--text-muted);">${kategoriStr}</span></td>
+                                        <td>${prestasiStr}</td>
+                                        <td><span class="${badgeClass}">+${poin}</span></td>
+                                    </tr>
+                                `;
+                            }
+                        }
+                    }
+                }
+            }
+
+            // --- UPDATE ANTARMUKA (UI) ---
+            document.getElementById('loader').style.display = 'none';
+            document.getElementById('profile-card').style.display = 'flex';
+            document.getElementById('history-card').style.display = 'block';
+
+            document.getElementById('student-nisn').textContent = targetNISN;
+            document.getElementById('student-name').textContent = studentName;
+            document.getElementById('total-points').textContent = totalPoints;
+            document.getElementById('total-points-prestasi').textContent = totalPointsPrestasi;
+
+            // Atur warna background total poin Pelanggaran
+            const pointsSummaryEl = document.getElementById('pelanggaran-summary');
+            pointsSummaryEl.classList.remove('bg-green', 'bg-yellow', 'bg-red');
+            if (totalPoints <= 50) {
+                pointsSummaryEl.classList.add('bg-green');
+            } else if (totalPoints <= 80) {
+                pointsSummaryEl.classList.add('bg-yellow');
+            } else {
+                pointsSummaryEl.classList.add('bg-red');
+            }
+
+            // Atur warna background total poin Prestasi
+            const prestasiSummaryEl = document.getElementById('prestasi-summary');
+            prestasiSummaryEl.classList.remove('bg-brown', 'bg-silver', 'bg-gold');
+            if (totalPointsPrestasi <= 30) {
+                prestasiSummaryEl.classList.add('bg-brown');
+            } else if (totalPointsPrestasi <= 79) {
+                prestasiSummaryEl.classList.add('bg-silver');
+            } else {
+                prestasiSummaryEl.classList.add('bg-gold');
+            }
+
+            if (violationCount > 0) {
+                document.getElementById('violations-body').innerHTML = violationsHTML;
+                document.getElementById('empty-violations').style.display = 'none';
+                document.getElementById('violations-table').style.display = 'table';
+            } else {
+                document.getElementById('violations-body').innerHTML = "";
+                document.getElementById('empty-violations').style.display = 'block';
+                document.getElementById('violations-table').style.display = 'none';
+            }
+
+            if (prestasiCount > 0) {
+                document.getElementById('prestasi-body').innerHTML = prestasiHTML;
+                document.getElementById('empty-prestasi').style.display = 'none';
+                document.getElementById('prestasi-table').style.display = 'table';
+            } else {
+                document.getElementById('prestasi-body').innerHTML = "";
+                document.getElementById('empty-prestasi').style.display = 'block';
+                document.getElementById('prestasi-table').style.display = 'none';
+            }
+        }
+
+        function switchHistoryTab(tabId) {
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            event.currentTarget.classList.add('active');
+
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+            document.getElementById('tab-' + tabId).classList.add('active');
+        }
+    </script>
+</body>
+
+</html>
