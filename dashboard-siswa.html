@@ -329,6 +329,21 @@
             margin-bottom: 15px;
         }
 
+        .debug-info {
+            position: fixed;
+            bottom: 10px;
+            right: 10px;
+            background: rgba(0,0,0,0.8);
+            color: white;
+            padding: 10px;
+            border-radius: 8px;
+            font-size: 12px;
+            max-width: 300px;
+            max-height: 200px;
+            overflow-y: auto;
+            z-index: 9999;
+        }
+
         .tabs {
             display: flex;
             gap: 10px;
@@ -522,10 +537,26 @@
         </div>
     </div>
 
+    <div id="debug-box" class="debug-info" style="display: none;"></div>
+
     <script>
+        function debugLog(message) {
+            console.log(message);
+            const debugBox = document.getElementById('debug-box');
+            if (debugBox) {
+                debugBox.style.display = 'block';
+                debugBox.innerHTML += message + '<br>';
+                debugBox.scrollTop = debugBox.scrollHeight;
+            }
+        }
+
         document.addEventListener('DOMContentLoaded', () => {
+            debugLog('DOM loaded, starting dashboard...');
+            
             // Cek apakah siswa sudah login
             const loggedInNISN = sessionStorage.getItem('siswaNISN');
+            debugLog('Logged in NISN: ' + loggedInNISN);
+            
             if (!loggedInNISN) {
                 alert('Anda belum login atau sesi telah berakhir!');
                 window.location.href = 'index.html';
@@ -534,6 +565,7 @@
 
             // Ganti dengan ID Spreadsheet Anda
             const SPREADSHEET_ID = '1jFFuABePc7tGcc0rG7K8G0aV4lRIQJuVuV-FzDIAzf4';
+            debugLog('Spreadsheet ID: ' + SPREADSHEET_ID);
 
             // Konfigurasi Nama Sheet (Tab di bagian bawah Google Sheet)
             // GANTI SESUAI DENGAN NAMA SHEET ANDA!
@@ -541,15 +573,19 @@
             const SHEET_PELANGGARAN = 'Pelanggaran'; // Sheet berisi: A(NISN), B(Tanggal), C(Kategori), D(Nama Pelanggaran), E(Poin)
             const SHEET_PRESTASI = 'Prestasi';       // Sheet berisi: A(NISN), B(Tanggal), C(Kategori), D(Nama Prestasi), E(Poin)
 
+            debugLog('Starting fetchDashboardData...');
             fetchDashboardData(loggedInNISN, SPREADSHEET_ID, SHEET_SISWA, SHEET_PELANGGARAN, SHEET_PRESTASI);
         });
 
         async function fetchDashboardData(nisnTarget, spreadsheetId, sheetSiswa, sheetPelanggaran, sheetPrestasi) {
+            debugLog('fetchDashboardData called with: ' + nisnTarget + ', ' + spreadsheetId);
             try {
                 // 1. Ambil Data Profil Siswa
+                debugLog('Fetching data siswa...');
                 const dataSiswa = await fetchJSONP(
                     `https://docs.google.com/spreadsheets/d/${spreadsheetId}/gviz/tq?sheet=${encodeURIComponent(sheetSiswa)}&tq=SELECT%20A,B,C`
                 );
+                debugLog('Data siswa fetched');
 
                 // 2. Ambil Data Riwayat Pelanggaran
                 const dataPelanggaran = await fetchJSONP(
@@ -567,9 +603,7 @@
                 processData(dataSiswa, dataPelanggaran, dataPrestasi, nisnTarget);
 
             } catch (error) {
-                console.error('Error detail:', error);
-                console.error('Error message:', error.message);
-                console.error('Error stack:', error.stack);
+                debugLog('Error: ' + error.message);
                 document.getElementById('loader').innerHTML = `
                     <i class="fa-solid fa-triangle-exclamation" style="color: var(--danger-color)"></i>
                     <p style="color: var(--danger-color)">Gagal memuat data. Pastikan nama sheet benar dan berstatus Publik.</p>
@@ -640,21 +674,26 @@
             // --- PROSES DATA PROFIL SISWA ---
             if (jsonSiswa && jsonSiswa.table && jsonSiswa.table.rows) {
                 const rowsSiswa = jsonSiswa.table.rows;
+                debugLog('Total rows siswa: ' + rowsSiswa.length);
+                debugLog('Target NISN: ' + targetNISN);
+                
                 for (let i = 0; i < rowsSiswa.length; i++) {
                     const row = rowsSiswa[i].c;
                     if (row[0] && row[0].v != null) {
                         const sheetNisn = formatNISN(row[0].v, row[0].f);
                         if (sheetNisn === targetNISN) {
+                            debugLog('Found matching NISN at row ' + i);
                             if (row[1] && row[1].v) studentName = String(row[1].v);
+                            debugLog('Nama: ' + studentName);
                             
-                            // Cek apakah ada URL foto di kolom C
-                            if (row[2] && row[2].v && String(row[2].v).trim() !== "") {
+                            if (row[2]) {
+                                debugLog('Row[2] exists, value: ' + row[2].v);
                                 studentPhoto = convertGoogleDriveUrl(String(row[2].v));
                             } else {
-                                // Jika kolom C kosong, generate URL otomatis dari folder
-                                studentPhoto = generatePhotoUrlFromFolder(targetNISN);
+                                debugLog('Row[2] does not exist - kolom C kosong');
                             }
                             
+                            debugLog('Foto URL dari sheet: ' + studentPhoto);
                             break; // Berhenti mencari jika sudah ketemu
                         }
                     }
@@ -750,20 +789,30 @@
             // Tampilkan foto siswa jika tersedia
             const profilePhoto = document.getElementById('profile-photo');
             const profileIconFallback = document.getElementById('profile-icon-fallback');
+            debugLog('StudentPhoto value: ' + studentPhoto);
+            debugLog('Condition check: ' + (studentPhoto && studentPhoto.trim() !== ""));
             
             if (studentPhoto && studentPhoto.trim() !== "") {
                 profilePhoto.src = studentPhoto;
                 profilePhoto.style.display = 'block';
                 profileIconFallback.style.display = 'none';
+                debugLog('Foto ditampilkan: ' + studentPhoto);
                 
                 // Error handling jika gambar gagal dimuat
                 profilePhoto.onerror = function() {
+                    debugLog('GAGAL memuat gambar: ' + studentPhoto);
                     profilePhoto.style.display = 'none';
                     profileIconFallback.style.display = 'block';
+                };
+                
+                // Success handling jika gambar berhasil dimuat
+                profilePhoto.onload = function() {
+                    debugLog('Gambar BERHASIL dimuat');
                 };
             } else {
                 profilePhoto.style.display = 'none';
                 profileIconFallback.style.display = 'block';
+                debugLog('Foto tidak tersedia, gunakan icon fallback');
             }
 
             // Atur warna background total poin Pelanggaran
