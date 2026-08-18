@@ -714,6 +714,7 @@
                             </tbody>
                         </table>
                     </div>
+                    <div id="pagination-aturan" class="pagination-container"></div>
                 </div>
             </div>
 
@@ -886,6 +887,7 @@
                             </tbody>
                         </table>
                     </div>
+                    <div id="pagination-aturan-prestasi" class="pagination-container"></div>
                 </div>
             </div>
         </div>
@@ -1287,6 +1289,8 @@
             setTimeout(() => {
                 setupPagination('admin-violations-table', 'pagination-pelanggaran');
                 setupPagination('admin-achievements-table', 'pagination-prestasi');
+                setupPagination('admin-rules-table', 'pagination-aturan');
+                setupPagination('admin-achievements-rules-table', 'pagination-aturan-prestasi');
             }, 100);
         }
 
@@ -1906,7 +1910,7 @@
             }
         }
 
-        function setupPagination(tableId, paginationContainerId, rowsPerPage = 10) {
+        function setupPagination(tableId, paginationContainerId, rowsPerPage = 5) {
             const table = document.getElementById(tableId);
             if (!table) return;
             const tbody = table.querySelector('tbody');
