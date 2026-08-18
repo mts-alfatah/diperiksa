@@ -11,6 +11,10 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- ExcelJS & FileSaver for Export Excel -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.3.0/exceljs.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
     <style>
         :root {
             --bg-color: #f0f4f8;
@@ -614,9 +618,9 @@
                                     onkeyup="searchTable()">
                             </div>
                             <button type="button" class="action-btn"
-                                onclick="exportTableToCSV('Data_Pelanggaran_Siswa.csv')"
+                                onclick="exportTableToExcel('Data_Pelanggaran_Siswa.xlsx', 'admin-violations-table', 'LAPORAN PELANGGARAN SISWA')"
                                 style="background-color: #10b981;">
-                                <i class="fa-solid fa-file-csv"></i> Export CSV
+                                <i class="fa-solid fa-file-excel"></i> Export Excel
                             </button>
                         </div>
                     </div>
@@ -787,9 +791,9 @@
                                     onkeyup="searchTablePrestasi()">
                             </div>
                             <button type="button" class="action-btn"
-                                onclick="exportTableToCSV('Data_Prestasi_Siswa.csv', 'admin-achievements-table')"
+                                onclick="exportTableToExcel('Data_Prestasi_Siswa.xlsx', 'admin-achievements-table', 'LAPORAN PRESTASI SISWA')"
                                 style="background-color: #10b981;">
-                                <i class="fa-solid fa-file-csv"></i> Export CSV
+                                <i class="fa-solid fa-file-excel"></i> Export Excel
                             </button>
                         </div>
                     </div>
@@ -948,7 +952,7 @@
                 element.classList.add('active');
             } else {
                 document.querySelectorAll('.menu-item').forEach(el => {
-                    if (el.getAttribute('onclick') && el.getAttribute('onclick').includes(tabId)) {
+                    if (el.getAttribute('onclick') && el.getAttribute('onclick').includes("'" + tabId + "'")) {
                         el.classList.add('active');
                     }
                 });
@@ -1450,43 +1454,81 @@
             setupPagination('admin-violations-table', 'pagination-pelanggaran');
         }
 
-        function exportTableToCSV(filename, tableId) {
-            const table = document.getElementById(tableId || "admin-violations-table");
-            const tr = table.getElementsByTagName("tr");
-            let csv = [];
-
-            for (let i = 0; i < tr.length; i++) {
-                // Lewati baris yang sedang disembunyikan oleh fitur pencarian
-                if (tr[i].getAttribute('data-search-hidden') === 'true') continue;
-
-                let row = [];
-                const cols = tr[i].querySelectorAll("td, th");
-
-                // Jika tabel masih loading/kosong, hentikan export
-                if (cols.length === 1 && cols[0].colSpan > 1) {
-                    alert("Tabel sedang memuat atau tidak ada data.");
-                    return;
-                }
-
-                for (let j = 0; j < cols.length; j++) {
-                    // Ambil teks asli dan buang karakter baris baru
-                    let data = cols[j].innerText.replace(/(\r\n|\n|\r)/gm, "").trim();
-                    // Escape tanda kutip ganda sesuai standar CSV
-                    data = data.replace(/"/g, '""');
-                    row.push('"' + data + '"');
-                }
-                csv.push(row.join(","));
+        async function exportTableToExcel(filename, tableId, title) {
+            if (typeof ExcelJS === 'undefined') {
+                alert("Library Excel belum dimuat sepenuhnya. Silakan tunggu sebentar atau muat ulang halaman.");
+                return;
             }
 
-            // Buat file CSV
-            const csvFile = new Blob([csv.join("\n")], { type: "text/csv;charset=utf-8;" });
-            const downloadLink = document.createElement("a");
-            downloadLink.download = filename;
-            downloadLink.href = window.URL.createObjectURL(csvFile);
-            downloadLink.style.display = "none";
-            document.body.appendChild(downloadLink);
-            downloadLink.click();
-            document.body.removeChild(downloadLink);
+            const table = document.getElementById(tableId);
+            const workbook = new ExcelJS.Workbook();
+            const worksheet = workbook.addWorksheet('Data Rekap');
+
+            worksheet.views = [{ showGridLines: false }];
+
+            // Title Row
+            const titleRow = worksheet.addRow([title.toUpperCase()]);
+            titleRow.font = { name: 'Arial', size: 16, bold: true, color: { argb: 'FFFFFFFF' } };
+            titleRow.getCell(1).fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF1F2937' } };
+            titleRow.getCell(1).alignment = { vertical: 'middle', horizontal: 'center' };
+            worksheet.mergeCells('A1:F1');
+            
+            // Empty row
+            worksheet.addRow([]);
+
+            // Headers
+            const headerRow = worksheet.addRow(['NISN', 'NAMA SISWA', 'TANGGAL', 'KATEGORI', 'KETERANGAN', 'POIN']);
+            headerRow.font = { bold: true, color: { argb: 'FFFFFFFF' } };
+            headerRow.alignment = { vertical: 'middle', horizontal: 'center' };
+            headerRow.eachCell(cell => {
+                cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF10B981' } };
+                cell.border = { top: { style: 'thin' }, left: { style: 'thin' }, bottom: { style: 'thin' }, right: { style: 'thin' } };
+            });
+
+            // Data
+            const tr = table.getElementsByTagName("tr");
+            for (let i = 1; i < tr.length; i++) { 
+                if (tr[i].getAttribute('data-search-hidden') === 'true') continue;
+                if (tr[i].getElementsByTagName('td').length < 6) continue;
+
+                const cols = tr[i].getElementsByTagName("td");
+                const nisn = cols[0].innerText.trim();
+                const nama = cols[1].innerText.trim();
+                const tanggal = cols[2].innerText.trim();
+                const kategori = cols[3].innerText.trim();
+                const keterangan = cols[4].innerText.trim();
+                const poin = cols[5].innerText.trim();
+
+                const dataRow = worksheet.addRow([nisn, nama, tanggal, kategori, keterangan, poin]);
+                
+                dataRow.eachCell((cell, colNumber) => {
+                    cell.border = { top: { style: 'thin', color: { argb: 'FFCCCCCC'} }, left: { style: 'thin', color: { argb: 'FFCCCCCC'} }, bottom: { style: 'thin', color: { argb: 'FFCCCCCC'} }, right: { style: 'thin', color: { argb: 'FFCCCCCC'} } };
+                    cell.alignment = { vertical: 'middle', horizontal: colNumber === 1 || colNumber === 3 || colNumber === 6 ? 'center' : 'left' };
+                });
+                
+                // Color Poin
+                const poinCell = dataRow.getCell(6);
+                if (poin.includes('+')) {
+                    poinCell.font = { color: { argb: 'FF10B981' }, bold: true };
+                } else if (poin.includes('-') || parseInt(poin) > 0) {
+                    poinCell.font = { color: { argb: 'FFEF4444' }, bold: true };
+                }
+            }
+
+            // Adjust Column Widths
+            worksheet.columns = [
+                { width: 15 }, // NISN
+                { width: 35 }, // Nama Siswa
+                { width: 15 }, // Tanggal
+                { width: 20 }, // Kategori
+                { width: 45 }, // Keterangan
+                { width: 10 }  // Poin
+            ];
+
+            // Generate and save
+            const buffer = await workbook.xlsx.writeBuffer();
+            const blob = new Blob([buffer], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" });
+            saveAs(blob, filename);
         }
 
         async function submitPrestasi(e) {
