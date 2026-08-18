@@ -1,0 +1,404 @@
+/**
+ * Google Apps Script Lengkap untuk DIPERIKSA
+ * Termasuk doPost dan auto-generate URL foto siswa
+ * 
+ * CARA PENGGUNAAN:
+ * 1. Copy SEMUA kode ini
+ * 2. Paste ke Apps Script di Google Sheets
+ * 3. Simpan dan Deploy
+ */
+
+// KONFIGURASI FOTO SISWA
+const FOLDER_ID = '16gs_h8dOKYhDzkuScIaruF1djltSKz5e';
+const SHEET_NAME = 'Siswa';
+
+// ============================================
+// FUNGSI UTAMA doPost
+// ============================================
+
+function doPost(e) {
+  try {
+    const action = e.parameter.action || "add_pelanggaran";
+    const ss = SpreadsheetApp.getActiveSpreadsheet();
+    
+    // 1. FORM DATA TATA TERTIB
+    if (action === "add_rule") {
+      const sheetTataTertib = ss.getSheetByName("TATA TERTIB");
+      const kategori = e.parameter.kategori || "";
+      const nama = e.parameter.nama || "";
+      const poin = e.parameter.poin || "0";
+      
+      const lastRow = sheetTataTertib.getLastRow();
+      let no = 1;
+      if (lastRow > 1) {
+        const lastNo = sheetTataTertib.getRange(lastRow, 1).getValue();
+        no = (Number(lastNo) || 0) + 1;
+      }
+      
+      if (nama !== "") {
+        sheetTataTertib.appendRow([no, kategori, nama, poin]);
+        return ContentService.createTextOutput(JSON.stringify({"result":"success"}))
+          .setMimeType(ContentService.MimeType.JSON);
+      } else {
+        throw new Error("Nama Pelanggaran kosong");
+      }
+    }
+    
+    // 2. FORM DATA PRESTASI (JENIS PRESTASI)
+    else if (action === "add_rule_prestasi") {
+      const sheetDataPrestasi = ss.getSheetByName("Data Prestasi");
+      const kategori = e.parameter.kategori || "";
+      const nama = e.parameter.nama || "";
+      const poin = e.parameter.poin || "0";
+      
+      const lastRow = sheetDataPrestasi.getLastRow();
+      let no = 1;
+      if (lastRow > 1) {
+        const lastNo = sheetDataPrestasi.getRange(lastRow, 1).getValue();
+        no = (Number(lastNo) || 0) + 1;
+      }
+      
+      if (nama !== "") {
+        sheetDataPrestasi.appendRow([no, kategori, nama, poin]);
+        return ContentService.createTextOutput(JSON.stringify({"result":"success"}))
+          .setMimeType(ContentService.MimeType.JSON);
+      } else {
+        throw new Error("Nama Prestasi kosong");
+      }
+    }
+
+    // 3. FORM CATAT PRESTASI SISWA
+    else if (action === "add_prestasi") {
+      const sheetPrestasi = ss.getSheetByName("Prestasi");
+      const nisn = e.parameter.nisn || "";
+      const namaSiswa = e.parameter.nama_siswa || "";
+      const tanggal = e.parameter.tanggal || "";
+      const kategori = e.parameter.kategori || "";
+      const prestasi = e.parameter.prestasi || ""; 
+      const poin = e.parameter.poin || "0";
+      
+      if (nisn !== "" && prestasi !== "") {
+        sheetPrestasi.appendRow([nisn, namaSiswa, tanggal, kategori, prestasi, poin]);
+        return ContentService.createTextOutput(JSON.stringify({"result":"success"}))
+          .setMimeType(ContentService.MimeType.JSON);
+      } else {
+        throw new Error("Data prestasi tidak lengkap");
+      }
+    }
+    
+    // 4. FORM PELANGGARAN SISWA
+    else if (action === "add_pelanggaran") {
+      const sheetPelanggaran = ss.getSheetByName("Pelanggaran");
+      const nisn = e.parameter.nisn || "";
+      const namaSiswa = e.parameter.nama_siswa || "";
+      const tanggal = e.parameter.tanggal || "";
+      const kategori = e.parameter.kategori || "";
+      const pelanggaran = e.parameter.pelanggaran || "";
+      const poin = e.parameter.poin || "0";
+      
+      if (nisn !== "" && pelanggaran !== "") {
+        sheetPelanggaran.appendRow([nisn, namaSiswa, tanggal, kategori, pelanggaran, poin]);
+        return ContentService.createTextOutput(JSON.stringify({"result":"success"}))
+          .setMimeType(ContentService.MimeType.JSON);
+      } else {
+        throw new Error("Data pelanggaran tidak lengkap");
+      }
+    }
+    
+    // 5. GENERATE PHOTO URLS (TAMBAHAN BARU)
+    else if (action === "generate_photo_urls") {
+      return generatePhotoUrlsAction();
+    }
+    
+    // 6. HAPUS PELANGGARAN SISWA
+    else if (action === "delete_pelanggaran") {
+      const sheet = ss.getSheetByName("Pelanggaran");
+      const nisn = e.parameter.nisn || "";
+      const tanggal = e.parameter.tanggal || "";
+      const pelanggaran = e.parameter.pelanggaran || "";
+      
+      const data = sheet.getDataRange().getValues();
+      let deleted = false;
+      
+      // Loop dari bawah ke atas agar index baris tidak bergeser jika dihapus
+      for (let i = data.length - 1; i > 0; i--) {
+        const row = data[i];
+        const rowNisn = String(row[0]).replace(/^'/, ""); // Bersihkan prefix ' jika ada
+        const inputNisn = String(nisn).replace(/^'/, "");
+        
+        if (rowNisn === inputNisn && String(row[4]) === pelanggaran) {
+            sheet.deleteRow(i + 1);
+            deleted = true;
+            break; // Hapus data pertama yang cocok lalu berhenti
+        }
+      }
+      
+      if (deleted) {
+        return ContentService.createTextOutput(JSON.stringify({"result":"success"})).setMimeType(ContentService.MimeType.JSON);
+      } else {
+        throw new Error("Data pelanggaran tidak ditemukan");
+      }
+    }
+
+    // 7. HAPUS PRESTASI SISWA
+    else if (action === "delete_prestasi") {
+      const sheet = ss.getSheetByName("Prestasi");
+      const nisn = e.parameter.nisn || "";
+      const tanggal = e.parameter.tanggal || "";
+      const prestasi = e.parameter.prestasi || "";
+      
+      const data = sheet.getDataRange().getValues();
+      let deleted = false;
+      
+      for (let i = data.length - 1; i > 0; i--) {
+        const row = data[i];
+        const rowNisn = String(row[0]).replace(/^'/, "");
+        const inputNisn = String(nisn).replace(/^'/, "");
+        
+        if (rowNisn === inputNisn && String(row[4]) === prestasi) {
+            sheet.deleteRow(i + 1);
+            deleted = true;
+            break;
+        }
+      }
+      
+      if (deleted) {
+        return ContentService.createTextOutput(JSON.stringify({"result":"success"})).setMimeType(ContentService.MimeType.JSON);
+      } else {
+        throw new Error("Data prestasi tidak ditemukan");
+      }
+    }
+    // 8. EDIT PELANGGARAN SISWA
+    else if (action === "edit_pelanggaran") {
+      const sheet = ss.getSheetByName("Pelanggaran");
+      const nisn = e.parameter.nisn || "";
+      const oldTanggal = e.parameter.old_tanggal || "";
+      const oldPelanggaran = e.parameter.old_pelanggaran || "";
+      
+      const newTanggal = e.parameter.new_tanggal || "";
+      const newKategori = e.parameter.new_kategori || "";
+      const newPelanggaran = e.parameter.new_pelanggaran || "";
+      const newPoin = e.parameter.new_poin || "0";
+      const namaSiswa = e.parameter.nama_siswa || "";
+      
+      const data = sheet.getDataRange().getValues();
+      let updated = false;
+      
+      for (let i = data.length - 1; i > 0; i--) {
+        const row = data[i];
+        const rowNisn = String(row[0]).replace(/^'/, "");
+        const inputNisn = String(nisn).replace(/^'/, "");
+        
+        if (rowNisn === inputNisn && String(row[4]) === oldPelanggaran) {
+            sheet.getRange(i + 1, 1, 1, 6).setValues([["'"+nisn, namaSiswa, newTanggal, newKategori, newPelanggaran, newPoin]]);
+            updated = true;
+            break;
+        }
+      }
+      
+      if (updated) {
+        return ContentService.createTextOutput(JSON.stringify({"result":"success"})).setMimeType(ContentService.MimeType.JSON);
+      } else {
+        throw new Error("Data pelanggaran tidak ditemukan");
+      }
+    }
+
+    // 9. EDIT PRESTASI SISWA
+    else if (action === "edit_prestasi") {
+      const sheet = ss.getSheetByName("Prestasi");
+      const nisn = e.parameter.nisn || "";
+      const oldTanggal = e.parameter.old_tanggal || "";
+      const oldPrestasi = e.parameter.old_prestasi || "";
+      
+      const newTanggal = e.parameter.new_tanggal || "";
+      const newKategori = e.parameter.new_kategori || "";
+      const newPrestasi = e.parameter.new_prestasi || "";
+      const newPoin = e.parameter.new_poin || "0";
+      const namaSiswa = e.parameter.nama_siswa || "";
+      
+      const data = sheet.getDataRange().getValues();
+      let updated = false;
+      
+      for (let i = data.length - 1; i > 0; i--) {
+        const row = data[i];
+        const rowNisn = String(row[0]).replace(/^'/, "");
+        const inputNisn = String(nisn).replace(/^'/, "");
+        
+        if (rowNisn === inputNisn && String(row[4]) === oldPrestasi) {
+            sheet.getRange(i + 1, 1, 1, 6).setValues([["'"+nisn, namaSiswa, newTanggal, newKategori, newPrestasi, newPoin]]);
+            updated = true;
+            break;
+        }
+      }
+      
+      if (updated) {
+        return ContentService.createTextOutput(JSON.stringify({"result":"success"})).setMimeType(ContentService.MimeType.JSON);
+      } else {
+        throw new Error("Data prestasi tidak ditemukan");
+      }
+    }
+    
+  } catch(error) {
+    return ContentService.createTextOutput(JSON.stringify({"result":"error", "error": error.message}))
+      .setMimeType(ContentService.MimeType.JSON);
+  }
+}
+
+// ============================================
+// FUNGSI AUTO-GENERATE URL FOTO SISWA
+// ============================================
+
+function generatePhotoUrls() {
+  const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(SHEET_NAME);
+  const folder = DriveApp.getFolderById(FOLDER_ID);
+  
+  // Ambil semua file dari folder
+  const files = folder.getFiles();
+  const fileMap = {};
+  
+  // Buat mapping nama file → file ID
+  while (files.hasNext()) {
+    const file = files.next();
+    const fileName = file.getName();
+    // Hapus ekstensi file untuk mendapatkan NISN
+    const nisn = fileName.replace(/\.[^/.]+$/, "");
+    fileMap[nisn] = file.getId();
+  }
+  
+  // Ambil data dari sheet
+  const data = sheet.getDataRange().getValues();
+  const updatedRows = [];
+  
+  // Skip header row (row 1)
+  for (let i = 1; i < data.length; i++) {
+    const row = data[i];
+    const nisn = String(row[0]); // Kolom A: NISN
+    const currentPhotoUrl = row[2]; // Kolom C: Foto URL
+    
+    // Cek apakah ada file yang cocok dengan NISN
+    if (fileMap[nisn]) {
+      const fileId = fileMap[nisn];
+      const newPhotoUrl = `https://drive.google.com/file/d/${fileId}/view?usp=sharing`;
+      
+      // Update kolom C jika kosong atau berbeda
+      if (!currentPhotoUrl || currentPhotoUrl !== newPhotoUrl) {
+        sheet.getRange(i + 1, 3).setValue(newPhotoUrl);
+        updatedRows.push({
+          nisn: nisn,
+          fileName: nisn + '.jpg',
+          fileId: fileId,
+          url: newPhotoUrl
+        });
+      }
+    }
+  }
+  
+  // Tampilkan hasil
+  if (updatedRows.length > 0) {
+    Logger.log(`Berhasil update ${updatedRows.length} foto siswa:`);
+    updatedRows.forEach(row => {
+      Logger.log(`NISN: ${row.nisn}, File: ${row.fileName}, URL: ${row.url}`);
+    });
+  } else {
+    Logger.log('Tidak ada foto yang diupdate. Semua sudah up-to-date atau tidak ada file yang cocok.');
+  }
+  
+  return updatedRows;
+}
+
+function generatePhotoUrlsAction() {
+  try {
+    const result = generatePhotoUrls();
+    return ContentService.createTextOutput(JSON.stringify({
+      "result": "success",
+      "updated": result.length,
+      "details": result
+    })).setMimeType(ContentService.MimeType.JSON);
+  } catch(error) {
+    return ContentService.createTextOutput(JSON.stringify({
+      "result": "error",
+      "error": error.message
+    })).setMimeType(ContentService.MimeType.JSON);
+  }
+}
+
+/**
+ * Fungsi untuk menampilkan daftar file yang tidak match dengan NISN
+ */
+function showUnmatchedFiles() {
+  const folder = DriveApp.getFolderById(FOLDER_ID);
+  const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(SHEET_NAME);
+  
+  // Ambil semua NISN dari sheet
+  const data = sheet.getDataRange().getValues();
+  const nisnSet = new Set();
+  for (let i = 1; i < data.length; i++) {
+    nisnSet.add(String(data[i][0]));
+  }
+  
+  // Scan folder
+  const files = folder.getFiles();
+  const unmatchedFiles = [];
+  
+  while (files.hasNext()) {
+    const file = files.next();
+    const fileName = file.getName();
+    const nisn = fileName.replace(/\.[^/.]+$/, "");
+    
+    if (!nisnSet.has(nisn)) {
+      unmatchedFiles.push({
+        fileName: fileName,
+        nisn: nisn
+      });
+    }
+  }
+  
+  Logger.log(`File yang tidak match dengan NISN di sheet (${unmatchedFiles.length}):`);
+  unmatchedFiles.forEach(file => {
+    Logger.log(`File: ${file.fileName}, NISN: ${file.nisn}`);
+  });
+  
+  return unmatchedFiles;
+}
+
+/**
+ * Fungsi untuk menampilkan NISN yang tidak memiliki foto
+ */
+function showMissingPhotos() {
+  const folder = DriveApp.getFolderById(FOLDER_ID);
+  const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(SHEET_NAME);
+  
+  // Ambil semua file dari folder
+  const files = folder.getFiles();
+  const fileNisnSet = new Set();
+  
+  while (files.hasNext()) {
+    const file = files.next();
+    const fileName = file.getName();
+    const nisn = fileName.replace(/\.[^/.]+$/, "");
+    fileNisnSet.add(nisn);
+  }
+  
+  // Scan sheet
+  const data = sheet.getDataRange().getValues();
+  const missingPhotos = [];
+  
+  for (let i = 1; i < data.length; i++) {
+    const nisn = String(data[i][0]);
+    const nama = data[i][1];
+    
+    if (!fileNisnSet.has(nisn)) {
+      missingPhotos.push({
+        nisn: nisn,
+        nama: nama
+      });
+    }
+  }
+  
+  Logger.log(`Siswa yang tidak memiliki foto (${missingPhotos.length}):`);
+  missingPhotos.forEach(student => {
+    Logger.log(`NISN: ${student.nisn}, Nama: ${student.nama}`);
+  });
+  
+  return missingPhotos;
+}
