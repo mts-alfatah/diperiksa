@@ -1,10 +1,12 @@
-const CACHE_NAME = 'bk-mts-v2';
+const CACHE_NAME = 'bk-mts-v3';
 const urlsToCache = [
   './',
   './index.html',
   './style.css',
   './script.js',
   './logo.png',
+  './logo-192.png',
+  './logo-512.png',
   './mts.ico',
   './site.webmanifest',
   './tata-tertib.html',
