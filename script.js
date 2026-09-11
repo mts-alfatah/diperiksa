@@ -8,30 +8,29 @@ document.addEventListener('DOMContentLoaded', () => {
     // Tab Switching Logic
     tabBtns.forEach(btn => {
         btn.addEventListener('click', () => {
-            // Remove active class from all tabs
-            tabBtns.forEach(b => b.classList.remove('active'));
-            // Add active class to clicked tab
-            btn.classList.add('active');
-
             const targetId = btn.getAttribute('data-target');
-            
-            // Handle form transitions
-            loginForms.forEach(form => {
-                if (form.id === targetId) {
-                    form.classList.remove('inactive-left');
-                    form.classList.add('active');
-                } else {
-                    form.classList.remove('active');
-                    // Add inactive-left class if it's switching from Siswa to Guru
-                    // We can just use a simple translation
-                    form.style.transform = targetId === 'guru-form' ? 'translateX(-20px)' : 'translateX(20px)';
-                    setTimeout(() => {
-                        if (!form.classList.contains('active')) {
-                            form.style.transform = '';
-                        }
-                    }, 400);
-                }
-            });
+
+            const updateDOM = () => {
+                // Update tabs
+                tabBtns.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+
+                // Update forms
+                loginForms.forEach(form => {
+                    if (form.id === targetId) {
+                        form.classList.add('active');
+                    } else {
+                        form.classList.remove('active');
+                    }
+                });
+            };
+
+            // Gunakan View Transitions API jika didukung browser
+            if (document.startViewTransition) {
+                document.startViewTransition(() => updateDOM());
+            } else {
+                updateDOM();
+            }
         });
     });
 
