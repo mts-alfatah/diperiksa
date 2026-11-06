@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DIPERIKSA</title>
+    <title>DIPERIKSA - Portal Siswa MTs Al Fatah</title>
     <link rel="icon" type="image/x-icon" href="mts.ico">
     <meta name="theme-color" content="#2c5364">
     <link rel="manifest" href="site.webmanifest">
@@ -21,112 +21,93 @@
         <div class="shape shape-1"></div>
         <div class="shape shape-2"></div>
         <div class="shape shape-3"></div>
-        <div class="grid-overlay"></div>
     </div>
 
-    <main class="split-layout">
-        <!-- Bagian Kiri: Branding -->
-        <section class="branding-section">
-            <div class="branding-content">
-                <div class="logo-placeholder">
-                    <img src="logo.png" alt="Logo MTs Al Fatah" class="logo-img">
-                </div>
-                <h1 class="brand-title">DIPERIKSA</h1>
-                <p class="brand-subtitle">Digital Pencatatan Riwayat Kedisiplinan Siswa Al Fatah</p>
-                <div class="brand-features">
-                    <div class="feature-item">
-                        <i class="fa-solid fa-bolt"></i>
-                        <span>Akses Cepat & Responsif</span>
-                    </div>
-                    <div class="feature-item">
-                        <i class="fa-solid fa-shield-halved"></i>
-                        <span>Keamanan Data Terjamin</span>
-                    </div>
-                    <div class="feature-item">
-                        <i class="fa-solid fa-chart-line"></i>
-                        <span>Pantau Kedisiplinan Real-time</span>
-                    </div>
-                </div>
+    <div class="login-container">
+        <div class="login-header">
+            <div class="logo-placeholder">
+                <img src="logo.png" alt="Logo MTs Al Fatah" class="logo-img">
             </div>
-        </section>
+            <h1>DIPERIKSA</h1>
+            <p>Digital Pencatatan Riwayat Kedisiplinan Siswa</p>
+        </div>
 
-        <!-- Bagian Kanan: Login -->
-        <section class="login-section">
-            <div class="login-container">
-                <div class="login-header mobile-only">
-                    <div class="logo-placeholder-mobile">
-                        <img src="logo.png" alt="Logo MTs Al Fatah" class="logo-img-mobile">
-                    </div>
-                    <h2>DIPERIKSA</h2>
-                </div>
-                
-                <div class="welcome-container">
-                    <h3 class="welcome-text">Selamat Datang 👋</h3>
-                    <p class="welcome-subtext">Silakan masuk ke akun Anda</p>
-                </div>
-
-                <div class="login-tabs">
-                    <button class="tab-btn active" data-target="siswa-form" id="tab-siswa">
-                        <i class="fa-solid fa-user-graduate"></i> Siswa
-                    </button>
-                    <button class="tab-btn" data-target="guru-form" id="tab-guru">
-                        <i class="fa-solid fa-chalkboard-user"></i> Guru BK
-                    </button>
-                </div>
-
-                <div class="form-wrapper">
-                    <!-- Form Login Siswa -->
-                    <form id="siswa-form" class="login-form active" onsubmit="handleLogin(event, 'siswa')">
-                        <div class="input-group">
-                            <label for="nisn">NISN</label>
-                            <div class="input-wrapper">
-                                <i class="fa-solid fa-id-card"></i>
-                                <input type="text" id="nisn" placeholder="Masukkan NISN" required autocomplete="off">
-                            </div>
-                        </div>
-                        <button type="submit" class="submit-btn siswa-btn">
-                            Masuk <i class="fa-solid fa-arrow-right"></i>
-                        </button>
-                    </form>
-
-                    <!-- Form Login Guru BK -->
-                    <form id="guru-form" class="login-form" onsubmit="handleLogin(event, 'guru')">
-                        <div class="input-group">
-                            <label for="password-guru">Password</label>
-                            <div class="input-wrapper">
-                                <i class="fa-solid fa-lock"></i>
-                                <input type="password" id="password-guru" placeholder="Masukkan Password Guru BK" required>
-                                <i class="fa-solid fa-eye-slash toggle-password"></i>
-                            </div>
-                            <div class="forgot-password">
-                                <a href="#" onclick="alert('Fitur lupa password dapat diakses melalui Admin Sekolah.')">Lupa
-                                    Password?</a>
-                            </div>
-                        </div>
-                        <button type="submit" class="submit-btn guru-btn">
-                            Masuk <i class="fa-solid fa-arrow-right"></i>
-                        </button>
-                    </form>
-                </div>
-
-                <div class="rules-section">
-                    <a href="tata-tertib.html" class="rules-btn">
-                        <i class="fa-solid fa-book-open"></i> Tata Tertib
-                    </a>
-                    <a href="point-prestasi.html" class="rules-btn">
-                        <i class="fa-solid fa-star"></i> Poin Prestasi
-                    </a>
-                    <a href="point-pelanggaran.html" class="rules-btn">
-                        <i class="fa-solid fa-triangle-exclamation"></i> Poin Pelanggaran
-                    </a>
-                </div>
-
-                <div class="login-footer">
-                    <p>&copy; 2026 MTs Al Fatah Talun. All rights reserved.</p>
-                </div>
+        <div class="role-badge-container">
+            <div class="role-badge role-badge-siswa">
+                <i class="fa-solid fa-user-graduate"></i> Portal Siswa
             </div>
-        </section>
-    </main>
+        </div>
+
+        <div class="form-wrapper">
+            <!-- Form Login Siswa -->
+            <form id="siswa-form" class="login-form active" onsubmit="handleLogin(event, 'siswa')">
+                <div class="input-group">
+                    <label for="nisn">Nomor Induk Siswa Nasional (NISN)</label>
+                    <div class="input-wrapper">
+                        <i class="fa-solid fa-id-card"></i>
+                        <input type="password" id="nisn" placeholder="Masukkan NISN Siswa" required autocomplete="off" inputmode="numeric">
+                        <i class="fa-solid fa-eye-slash toggle-password" title="Tampilkan/Sembunyikan NISN"></i>
+                    </div>
+                </div>
+
+                <div class="form-options">
+                    <label class="remember-me">
+                        <input type="checkbox" id="remember-siswa">
+                        <span>Ingat Saya</span>
+                    </label>
+                </div>
+                <button type="submit" class="submit-btn">
+                    <span>Masuk Dashboard Siswa</span> <i class="fa-solid fa-arrow-right"></i>
+                </button>
+            </form>
+        </div>
+
+        <div class="section-divider">
+            <span>Informasi & Tata Tertib</span>
+        </div>
+
+        <div class="rules-grid">
+            <a href="tata-tertib.html" class="rule-card">
+                <div class="rule-card-left">
+                    <div class="rule-icon tatib">
+                        <i class="fa-solid fa-book-open"></i>
+                    </div>
+                    <div class="rule-info">
+                        <span class="rule-title">Tata Tertib MTs Al Fatah</span>
+                        <span class="rule-desc">Pedoman kedisiplinan & kewajiban</span>
+                    </div>
+                </div>
+            </a>
+
+            <a href="point-prestasi.html" class="rule-card">
+                <div class="rule-card-left">
+                    <div class="rule-icon prestasi">
+                        <i class="fa-solid fa-star"></i>
+                    </div>
+                    <div class="rule-info">
+                        <span class="rule-title">Poin Prestasi Siswa</span>
+                        <span class="rule-desc">Apresiasi pencapaian & kebaikan</span>
+                    </div>
+                </div>
+            </a>
+
+            <a href="point-pelanggaran.html" class="rule-card">
+                <div class="rule-card-left">
+                    <div class="rule-icon pelanggaran">
+                        <i class="fa-solid fa-triangle-exclamation"></i>
+                    </div>
+                    <div class="rule-info">
+                        <span class="rule-title">Poin Pelanggaran Siswa</span>
+                        <span class="rule-desc">Daftar sanksi & bobot pelanggaran</span>
+                    </div>
+                </div>
+            </a>
+        </div>
+
+        <div class="login-footer">
+            <p>&copy; 2026 MTs Al Fatah Talun. All rights reserved.</p>
+        </div>
+    </div>
 
     <!-- PWA Install Prompt Banner -->
     <div id="install-container" class="install-container hidden">

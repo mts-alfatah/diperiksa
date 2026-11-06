@@ -8,29 +8,30 @@ document.addEventListener('DOMContentLoaded', () => {
     // Tab Switching Logic
     tabBtns.forEach(btn => {
         btn.addEventListener('click', () => {
+            // Remove active class from all tabs
+            tabBtns.forEach(b => b.classList.remove('active'));
+            // Add active class to clicked tab
+            btn.classList.add('active');
+
             const targetId = btn.getAttribute('data-target');
-
-            const updateDOM = () => {
-                // Update tabs
-                tabBtns.forEach(b => b.classList.remove('active'));
-                btn.classList.add('active');
-
-                // Update forms
-                loginForms.forEach(form => {
-                    if (form.id === targetId) {
-                        form.classList.add('active');
-                    } else {
-                        form.classList.remove('active');
-                    }
-                });
-            };
-
-            // Gunakan View Transitions API jika didukung browser
-            if (document.startViewTransition) {
-                document.startViewTransition(() => updateDOM());
-            } else {
-                updateDOM();
-            }
+            
+            // Handle form transitions
+            loginForms.forEach(form => {
+                if (form.id === targetId) {
+                    form.classList.remove('inactive-left');
+                    form.classList.add('active');
+                } else {
+                    form.classList.remove('active');
+                    // Add inactive-left class if it's switching from Siswa to Guru
+                    // We can just use a simple translation
+                    form.style.transform = targetId === 'guru-form' ? 'translateX(-20px)' : 'translateX(20px)';
+                    setTimeout(() => {
+                        if (!form.classList.contains('active')) {
+                            form.style.transform = '';
+                        }
+                    }, 400);
+                }
+            });
         });
     });
 
@@ -50,6 +51,27 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
     });
+
+    // Remember Me: Restore saved NISN / Password
+    const nisnInputEl = document.getElementById('nisn');
+    const rememberSiswaEl = document.getElementById('remember-siswa');
+    if (nisnInputEl && rememberSiswaEl) {
+        const savedNisn = localStorage.getItem('diperiksa_saved_nisn');
+        if (savedNisn) {
+            nisnInputEl.value = savedNisn;
+            rememberSiswaEl.checked = true;
+        }
+    }
+
+    const guruPassEl = document.getElementById('password-guru');
+    const rememberGuruEl = document.getElementById('remember-guru');
+    if (guruPassEl && rememberGuruEl) {
+        const savedGuruPass = localStorage.getItem('diperiksa_saved_guru_pass');
+        if (savedGuruPass) {
+            guruPassEl.value = savedGuruPass;
+            rememberGuruEl.checked = true;
+        }
+    }
 
 });
 
@@ -116,6 +138,14 @@ async function handleLogin(event, role) {
                 console.warn('Spreadsheet ID belum diisi! Menggunakan simulasi login.');
                 await new Promise(r => setTimeout(r, 1200));
                 
+                // Mode Simulasi Ingat Saya
+                const rememberSiswaSim = document.getElementById('remember-siswa');
+                if (rememberSiswaSim && rememberSiswaSim.checked) {
+                    localStorage.setItem('diperiksa_saved_nisn', nisn.trim());
+                } else {
+                    localStorage.removeItem('diperiksa_saved_nisn');
+                }
+
                 // Anggap login berhasil untuk simulasi
                 showToast('Login berhasil! (Mode Simulasi)', 'success');
                 simulateRedirect('dashboard-siswa.html');
@@ -165,6 +195,14 @@ async function handleLogin(event, role) {
             }
 
             if (nisnFound) {
+                // Simpan atau hapus NISN untuk fitur Ingat Saya
+                const rememberSiswa = document.getElementById('remember-siswa');
+                if (rememberSiswa && rememberSiswa.checked) {
+                    localStorage.setItem('diperiksa_saved_nisn', nisn.trim());
+                } else {
+                    localStorage.removeItem('diperiksa_saved_nisn');
+                }
+
                 sessionStorage.setItem('siswaNISN', nisn.trim());
                 showToast('Login berhasil! NISN ditemukan.', 'success');
                 simulateRedirect('dashboard-siswa.html');
@@ -189,7 +227,7 @@ async function handleLogin(event, role) {
             return;
         }
 
-        const btn = document.querySelector('.login-form.active .submit-btn');
+        const btn = event.target.querySelector('.submit-btn') || document.querySelector('.submit-btn');
         const originalBtnContent = btn.innerHTML;
         
         btn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> Memeriksa Data...';
@@ -234,6 +272,14 @@ async function handleLogin(event, role) {
             }
 
             if (guruFound) {
+                // Simpan atau hapus Password Guru untuk fitur Ingat Saya
+                const rememberGuru = document.getElementById('remember-guru');
+                if (rememberGuru && rememberGuru.checked) {
+                    localStorage.setItem('diperiksa_saved_guru_pass', password.trim());
+                } else {
+                    localStorage.removeItem('diperiksa_saved_guru_pass');
+                }
+
                 sessionStorage.setItem('guruNama', namaGuru);
                 showToast('Login berhasil! Selamat datang, ' + namaGuru, 'success');
                 simulateRedirect('dashboard-guru.html');
@@ -253,12 +299,12 @@ async function handleLogin(event, role) {
 }
 
 function simulateRedirect(url) {
-    const btn = document.querySelector('.login-form.active .submit-btn');
-    const originalText = btn.innerHTML;
-    
-    btn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> Memproses...';
-    btn.style.opacity = '0.8';
-    btn.style.cursor = 'not-allowed';
+    const btn = document.querySelector('.login-form.active .submit-btn') || document.querySelector('.submit-btn');
+    if (btn) {
+        btn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> Memproses...';
+        btn.style.opacity = '0.8';
+        btn.style.cursor = 'not-allowed';
+    }
     
     setTimeout(() => {
         window.location.href = url;

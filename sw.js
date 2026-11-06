@@ -1,7 +1,8 @@
-const CACHE_NAME = 'bk-mts-v3';
+const CACHE_NAME = 'bk-mts-v12';
 const urlsToCache = [
   './',
   './index.html',
+  './login-guru.html',
   './style.css',
   './script.js',
   './logo.png',

@@ -32,13 +32,27 @@
             font-family: 'Outfit', sans-serif;
         }
 
+        html {
+            width: 100%;
+            max-width: 100%;
+            overflow-x: hidden !important;
+            overscroll-behavior-x: none;
+            -webkit-text-size-adjust: 100%;
+        }
+
         body {
             background-color: var(--bg-color);
             color: var(--text-main);
             min-height: 100vh;
+            min-height: 100dvh;
+            width: 100%;
+            max-width: 100%;
             display: flex;
             flex-direction: column;
-            overflow-x: hidden;
+            overflow-x: hidden !important;
+            position: relative;
+            touch-action: pan-y;
+            overscroll-behavior-x: none;
         }
 
         /* Navbar */
@@ -267,7 +281,11 @@
         }
 
         .table-responsive {
-            overflow-x: auto;
+            width: 100%;
+            max-width: 100%;
+            overflow-x: auto !important;
+            -webkit-overflow-scrolling: touch;
+            touch-action: pan-x pan-y;
         }
 
         table {
@@ -316,6 +334,57 @@
             background: rgba(239, 68, 68, 0.1);
             color: #ef4444;
         }
+
+        /* Responsive Card / Table Hybrid (Opsi 2: Touch-Friendly Card List) */
+        .m-card-cell {
+            display: none;
+        }
+
+        .d-cell {
+            display: table-cell;
+            vertical-align: middle;
+        }
+
+        .category-pill {
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            padding: 2.5px 8px;
+            border-radius: 6px;
+            display: inline-block;
+            letter-spacing: 0.3px;
+        }
+
+        .category-pill.green, .category-pill.point-badge {
+            background: #dcfce7;
+            color: #15803d;
+        }
+
+        .category-pill.yellow {
+            background: #fef3c7;
+            color: #b45309;
+        }
+
+        .category-pill.red {
+            background: #fee2e2;
+            color: #b91c1c;
+        }
+
+        .category-pill.blue {
+            background: #e0f2fe;
+            color: #0369a1;
+        }
+
+        .badge {
+            padding: 3px 8px;
+            border-radius: 20px;
+            font-size: 12.5px;
+            font-weight: 600;
+            display: inline-block;
+        }
+        .badge.green { background: #d1fae5; color: #10b981; }
+        .badge.yellow { background: #fef3c7; color: #f59e0b; }
+        .badge.red { background: #fee2e2; color: #ef4444; }
 
         .empty-state {
             text-align: center;
@@ -370,20 +439,33 @@
 
         /* Responsive */
         @media (max-width: 768px) {
+            .navbar {
+                padding: 12px 15px;
+            }
+
             .container {
-                margin: 20px auto;
-                padding: 0 15px;
+                margin: 15px auto;
+                padding: 0 12px;
+                max-width: 100%;
             }
 
             .profile-card {
+                padding: 20px 15px;
                 flex-direction: column;
                 text-align: center;
                 gap: 15px;
+                max-width: 100%;
+            }
+
+            .violations-card {
+                padding: 20px 15px;
+                max-width: 100%;
             }
 
             .info-grid {
                 justify-content: center;
                 flex-wrap: wrap;
+                gap: 15px;
             }
 
             .points-container {
@@ -399,8 +481,9 @@
 
             th,
             td {
-                padding: 8px 4px;
+                padding: 8px 6px;
                 font-size: 12px;
+                word-break: break-word;
             }
 
             th {
@@ -410,6 +493,113 @@
             .point-badge {
                 padding: 3px 6px;
                 font-size: 11px;
+            }
+
+            /* Transform Tabel Riwayat Siswa menjadi Kartu Mobile */
+            .responsive-card-table thead {
+                display: none !important;
+            }
+
+            .responsive-card-table .d-cell {
+                display: none !important;
+            }
+
+            .responsive-card-table {
+                display: block !important;
+                width: 100% !important;
+                border: none !important;
+            }
+
+            .responsive-card-table tbody {
+                display: flex !important;
+                flex-direction: column !important;
+                gap: 12px !important;
+                width: 100% !important;
+            }
+
+            .responsive-card-table tbody tr {
+                display: block;
+                width: 100%;
+                background: #ffffff;
+                border: 1px solid #e2e8f0;
+                border-radius: 12px;
+                box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+                box-sizing: border-box;
+                overflow: hidden;
+            }
+
+            .responsive-card-table .m-card-cell {
+                display: block !important;
+                width: 100% !important;
+                padding: 12px 14px !important;
+                box-sizing: border-box !important;
+                border: none !important;
+            }
+
+            .mobile-record-card {
+                display: flex;
+                flex-direction: column;
+                gap: 8px;
+                width: 100%;
+            }
+
+            .card-top-row {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                gap: 10px;
+            }
+
+            .card-point-badge {
+                font-size: 12px;
+                font-weight: 700;
+                padding: 3px 8px;
+                border-radius: 20px;
+                display: inline-flex;
+                align-items: center;
+                letter-spacing: 0.3px;
+                white-space: nowrap;
+            }
+
+            .card-content-box {
+                background: #f8fafc;
+                border-radius: 8px;
+                padding: 10px 12px;
+                margin-top: 2px;
+                border-left: 4px solid #94a3b8;
+            }
+
+            .card-content-box.pelanggaran-box {
+                border-left-color: #ef4444;
+            }
+
+            .card-content-box.prestasi-box {
+                border-left-color: #10b981;
+            }
+
+            .card-desc-text {
+                font-size: 13.5px;
+                font-weight: 600;
+                color: #1e293b;
+                line-height: 1.35;
+                word-break: break-word;
+            }
+
+            .card-bottom-row {
+                display: flex;
+                align-items: center;
+                gap: 6px;
+                margin-top: 2px;
+                font-size: 11.5px;
+                color: #64748b;
+            }
+
+            .card-date {
+                font-size: 11.5px;
+                color: #64748b;
+                display: inline-flex;
+                align-items: center;
+                gap: 5px;
             }
         }
     </style>
@@ -450,6 +640,10 @@
                         <span class="info-label">NISN</span>
                         <span class="info-val" id="student-nisn">-</span>
                     </div>
+                    <div class="info-item">
+                        <span class="info-label">Kelas</span>
+                        <span class="info-val" id="student-class">-</span>
+                    </div>
                 </div>
             </div>
             <div class="points-container">
@@ -475,7 +669,7 @@
             <!-- TAB PELANGGARAN -->
             <div id="tab-pelanggaran" class="tab-content active">
                 <div class="table-responsive">
-                    <table id="violations-table">
+                    <table id="violations-table" class="responsive-card-table">
                         <thead>
                             <tr>
                                 <th>No</th>
@@ -499,7 +693,7 @@
             <!-- TAB PRESTASI -->
             <div id="tab-prestasi" class="tab-content">
                 <div class="table-responsive">
-                    <table id="prestasi-table">
+                    <table id="prestasi-table" class="responsive-card-table">
                         <thead>
                             <tr>
                                 <th>No</th>
@@ -546,9 +740,9 @@
 
         async function fetchDashboardData(nisnTarget, spreadsheetId, sheetSiswa, sheetPelanggaran, sheetPrestasi) {
             try {
-                // 1. Ambil Data Profil Siswa
+                // 1. Ambil Data Profil Siswa (A: NISN, B: Nama, C: Kelas, D: Foto URL)
                 const dataSiswa = await fetchJSONP(
-                    `https://docs.google.com/spreadsheets/d/${spreadsheetId}/gviz/tq?sheet=${encodeURIComponent(sheetSiswa)}&tq=SELECT%20A,B,C`
+                    `https://docs.google.com/spreadsheets/d/${spreadsheetId}/gviz/tq?sheet=${encodeURIComponent(sheetSiswa)}&tq=SELECT%20A,B,C,D`
                 );
 
                 // 2. Ambil Data Riwayat Pelanggaran
@@ -631,6 +825,7 @@
 
         function processData(jsonSiswa, jsonPelanggaran, jsonPrestasi, targetNISN) {
             let studentName = "Nama Tidak Ditemukan";
+            let studentClass = "-";
             let studentPhoto = "";
             let totalPoints = 0;
             let totalPointsPrestasi = 0;
@@ -647,11 +842,16 @@
                         if (sheetNisn === targetNISN) {
                             if (row[1] && row[1].v) studentName = String(row[1].v);
                             
-                            // Cek apakah ada URL foto di kolom C
-                            if (row[2] && row[2].v && String(row[2].v).trim() !== "") {
-                                studentPhoto = convertGoogleDriveUrl(String(row[2].v));
+                            // Kolom C adalah Kelas di Sheet SISWA
+                            if (row[2] && row[2].v != null) {
+                                studentClass = String(row[2].v).trim();
+                            }
+
+                            // Kolom D adalah Foto URL di Sheet SISWA
+                            if (row[3] && row[3].v != null && String(row[3].v).trim() !== "") {
+                                studentPhoto = convertGoogleDriveUrl(String(row[3].v).trim());
                             } else {
-                                // Jika kolom C kosong, generate URL otomatis dari folder
+                                // Fallback otomatis dari Google Drive folder jika kolom D belum terisi
                                 studentPhoto = generatePhotoUrlFromFolder(targetNISN);
                             }
                             
@@ -682,17 +882,34 @@
                                 violationCount++;
                                 totalPoints += poin;
 
-                                let badgeClass = 'point-badge';
-                                if (kategoriStr.toLowerCase().includes('sedang')) badgeClass = 'point-badge yellow';
-                                if (kategoriStr.toLowerCase().includes('berat')) badgeClass = 'point-badge red';
+                                let badgeClass = 'green';
+                                if (kategoriStr.toLowerCase().includes('sedang')) badgeClass = 'yellow';
+                                if (kategoriStr.toLowerCase().includes('berat')) badgeClass = 'red';
 
                                 violationsHTML += `
                                     <tr>
-                                        <td>${violationCount}</td>
-                                        <td>${tanggalStr}</td>
-                                        <td><span style="font-size: 11px; font-weight: 600; text-transform: uppercase; color: var(--text-muted);">${kategoriStr}</span></td>
-                                        <td>${pelanggaranStr}</td>
-                                        <td><span class="${badgeClass}">+${poin}</span></td>
+                                        <!-- Desktop Cells -->
+                                        <td class="d-cell" style="text-align: center; font-weight: 500;">${violationCount}</td>
+                                        <td class="d-cell" style="color: var(--text-muted); font-size: 13px;">${tanggalStr}</td>
+                                        <td class="d-cell"><span class="category-pill ${badgeClass}">${kategoriStr}</span></td>
+                                        <td class="d-cell" style="font-weight: 500; color: #1e293b;">${pelanggaranStr}</td>
+                                        <td class="d-cell" style="text-align: center;"><span class="badge ${badgeClass}" style="font-weight: 700;">+${poin}</span></td>
+
+                                        <!-- Mobile Card Cell -->
+                                        <td class="m-card-cell">
+                                            <div class="mobile-record-card">
+                                                <div class="card-top-row">
+                                                    <span class="badge ${badgeClass} card-point-badge">+${poin} POIN</span>
+                                                    <span class="category-pill ${badgeClass}">${kategoriStr}</span>
+                                                </div>
+                                                <div class="card-content-box pelanggaran-box">
+                                                    <div class="card-desc-text">${pelanggaranStr}</div>
+                                                </div>
+                                                <div class="card-bottom-row">
+                                                    <div class="card-date"><i class="fa-regular fa-calendar-days"></i> ${tanggalStr}</div>
+                                                </div>
+                                            </div>
+                                        </td>
                                     </tr>
                                 `;
                             }
@@ -721,14 +938,31 @@
                                 prestasiCount++;
                                 totalPointsPrestasi += poin;
 
-                                let badgeClass = 'point-badge'; // default green
+                                let badgeClass = 'green';
                                 prestasiHTML += `
                                     <tr>
-                                        <td>${prestasiCount}</td>
-                                        <td>${tanggalStr}</td>
-                                        <td><span style="font-size: 11px; font-weight: 600; text-transform: uppercase; color: var(--text-muted);">${kategoriStr}</span></td>
-                                        <td>${prestasiStr}</td>
-                                        <td><span class="${badgeClass}">+${poin}</span></td>
+                                        <!-- Desktop Cells -->
+                                        <td class="d-cell" style="text-align: center; font-weight: 500;">${prestasiCount}</td>
+                                        <td class="d-cell" style="color: var(--text-muted); font-size: 13px;">${tanggalStr}</td>
+                                        <td class="d-cell"><span class="category-pill blue">${kategoriStr}</span></td>
+                                        <td class="d-cell" style="font-weight: 500; color: #1e293b;">${prestasiStr}</td>
+                                        <td class="d-cell" style="text-align: center;"><span class="badge green" style="font-weight: 700;">+${poin}</span></td>
+
+                                        <!-- Mobile Card Cell -->
+                                        <td class="m-card-cell">
+                                            <div class="mobile-record-card">
+                                                <div class="card-top-row">
+                                                    <span class="badge green card-point-badge">+${poin} POIN</span>
+                                                    <span class="category-pill blue">${kategoriStr}</span>
+                                                </div>
+                                                <div class="card-content-box prestasi-box">
+                                                    <div class="card-desc-text">${prestasiStr}</div>
+                                                </div>
+                                                <div class="card-bottom-row">
+                                                    <div class="card-date"><i class="fa-regular fa-calendar-days"></i> ${tanggalStr}</div>
+                                                </div>
+                                            </div>
+                                        </td>
                                     </tr>
                                 `;
                             }
@@ -744,6 +978,7 @@
 
             document.getElementById('student-nisn').textContent = targetNISN;
             document.getElementById('student-name').textContent = studentName;
+            document.getElementById('student-class').textContent = studentClass;
             document.getElementById('total-points').textContent = totalPoints;
             document.getElementById('total-points-prestasi').textContent = totalPointsPrestasi;
 

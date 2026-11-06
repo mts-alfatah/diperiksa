@@ -30,10 +30,24 @@
             font-family: 'Outfit', sans-serif;
         }
 
+        html {
+            width: 100%;
+            max-width: 100%;
+            overflow-x: hidden !important;
+            overscroll-behavior-x: none;
+            -webkit-text-size-adjust: 100%;
+        }
+
         body {
             background-color: var(--bg-color);
             color: var(--text-main);
             line-height: 1.6;
+            width: 100%;
+            max-width: 100%;
+            overflow-x: hidden !important;
+            position: relative;
+            touch-action: pan-y;
+            overscroll-behavior-x: none;
         }
 
         header {
@@ -79,17 +93,22 @@
 
         .container {
             max-width: 800px;
+            width: 100%;
             margin: -40px auto 40px;
-            padding: 0 20px;
+            padding: 0 15px;
             position: relative;
             z-index: 10;
+            box-sizing: border-box;
         }
 
         .rules-card {
             background: var(--card-bg);
             border-radius: var(--border-radius);
-            padding: 40px;
+            padding: 30px 20px;
             box-shadow: var(--shadow);
+            width: 100%;
+            max-width: 100%;
+            box-sizing: border-box;
         }
 
         .rules-section {
@@ -145,36 +164,60 @@
         }
 
         @media (max-width: 600px) {
-            .rules-card {
-                padding: 25px;
+            header {
+                padding: 45px 15px 35px;
+            }
+
+            .back-btn {
+                top: 12px;
+                left: 12px;
+                padding: 6px 12px;
+                font-size: 13px;
             }
 
             header h1 {
-                font-size: 28px;
+                font-size: 24px;
+            }
+
+            header p {
+                font-size: 13px;
+            }
+
+            .container {
+                margin: -25px auto 30px;
+                padding: 0 10px;
+            }
+
+            .rules-card {
+                padding: 18px 12px;
             }
         }
 
         .pdf-container {
             width: 100%;
+            max-width: 100%;
             height: 70vh;
             min-height: 500px;
             border-radius: 8px;
             overflow-y: auto;
-            overflow-x: hidden;
+            overflow-x: auto !important;
+            -webkit-overflow-scrolling: touch;
+            touch-action: pan-x pan-y;
             box-shadow: inset 0 4px 6px rgba(0, 0, 0, 0.05);
             background-color: #cbd5e1;
             border: 1px solid #94a3b8;
-            padding: 20px 0;
+            padding: 15px 0;
             display: flex;
             flex-direction: column;
             align-items: center;
             gap: 15px;
+            box-sizing: border-box;
         }
 
         .pdf-page-canvas {
             background-color: white;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-            max-width: 95%;
+            max-width: 98% !important;
             height: auto !important;
             border-radius: 4px;
         }

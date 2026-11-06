@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DIPERIKSA - Login Guru BK</title>
+    <link rel="icon" type="image/x-icon" href="mts.ico">
+    <meta name="theme-color" content="#11998e">
+    <link rel="manifest" href="site.webmanifest">
+    <meta name="description" content="Login Khusus Guru BK dan Manajemen Kedisiplinan MTs Al Fatah">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+
+<body>
+    <div class="background-shapes">
+        <div class="shape shape-1" style="background: #11998e;"></div>
+        <div class="shape shape-2" style="background: #38ef7d;"></div>
+        <div class="shape shape-3" style="background: #00b4db;"></div>
+    </div>
+
+    <div class="login-container guru-theme">
+        <div class="login-header">
+            <div class="logo-placeholder">
+                <img src="logo.png" alt="Logo MTs Al Fatah" class="logo-img">
+            </div>
+            <h1>DIPERIKSA</h1>
+            <p>Portal Manajemen & Konseling MTs Al Fatah</p>
+        </div>
+
+        <div class="role-badge-container">
+            <div class="role-badge role-badge-guru">
+                <i class="fa-solid fa-chalkboard-user"></i> Login Guru BK
+            </div>
+        </div>
+
+        <div class="form-wrapper">
+            <!-- Form Login Guru BK -->
+            <form id="guru-form" class="login-form active" onsubmit="handleLogin(event, 'guru')">
+                <div class="input-group">
+                    <label for="password-guru">Password Guru BK</label>
+                    <div class="input-wrapper">
+                        <i class="fa-solid fa-lock"></i>
+                        <input type="password" id="password-guru" placeholder="Masukkan Password Guru BK" required autocomplete="current-password">
+                        <i class="fa-solid fa-eye-slash toggle-password" title="Tampilkan/Sembunyikan Password"></i>
+                    </div>
+                </div>
+
+                <div class="form-options">
+                    <label class="remember-me">
+                        <input type="checkbox" id="remember-guru">
+                        <span>Ingat Saya</span>
+                    </label>
+                    <div class="forgot-password">
+                        <a href="#" onclick="alert('Fitur lupa password dapat diakses melalui Admin Madrasah / Koordinator BK.')">
+                            Lupa Password?
+                        </a>
+                    </div>
+                </div>
+                <button type="submit" class="submit-btn guru-btn">
+                    <span>Masuk Dashboard Guru</span> <i class="fa-solid fa-arrow-right"></i>
+                </button>
+            </form>
+        </div>
+
+        <div class="login-footer">
+            <p>&copy; 2026 MTs Al Fatah Talun. All rights reserved.</p>
+        </div>
+    </div>
+
+    <!-- Notification Toast -->
+    <div id="toast" class="toast">
+        <i class="fa-solid fa-circle-exclamation toast-icon"></i>
+        <span id="toast-message">Pesan notifikasi</span>
+    </div>
+
+    <script src="protection.js"></script>
+    <script src="script.js"></script>
+</body>
+
+</html>
+
