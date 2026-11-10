@@ -2454,11 +2454,16 @@
                     return;
                 }
 
+                const seenNames = new Set();
                 filteredRules.forEach(rule => {
-                    const option = document.createElement('option');
-                    option.value = rule.nama;
-                    option.textContent = rule.nama;
-                    selectNama.appendChild(option);
+                    const cleanName = rule.nama.trim();
+                    if (!seenNames.has(cleanName.toLowerCase())) {
+                        seenNames.add(cleanName.toLowerCase());
+                        const option = document.createElement('option');
+                        option.value = cleanName;
+                        option.textContent = cleanName;
+                        selectNama.appendChild(option);
+                    }
                 });
             }
         }
@@ -2677,28 +2682,42 @@
             inputPoin.value = '';
 
             if (window.achievementsList) {
-                const filteredRules = window.achievementsList.filter(rule => rule.kategori.includes(selectedKategori));
+                const isNon = selectedKategori.includes('non');
+                const filteredRules = window.achievementsList.filter(rule => {
+                    const k = (rule.kategori || '').toLowerCase();
+                    return isNon ? k.includes('non') : (k.includes('akademik') && !k.includes('non'));
+                });
 
                 if (filteredRules.length === 0) {
                     selectNama.innerHTML = '<option value="" disabled selected>Tidak ada data untuk kategori ini</option>';
                     return;
                 }
 
+                const seenNames = new Set();
                 filteredRules.forEach(rule => {
-                    const option = document.createElement('option');
-                    option.value = rule.nama;
-                    option.textContent = rule.nama;
-                    selectNama.appendChild(option);
+                    const cleanName = rule.nama.trim();
+                    if (!seenNames.has(cleanName.toLowerCase())) {
+                        seenNames.add(cleanName.toLowerCase());
+                        const option = document.createElement('option');
+                        option.value = cleanName;
+                        option.textContent = cleanName;
+                        selectNama.appendChild(option);
+                    }
                 });
             }
         }
 
         function autoFillPoinPrestasi() {
-            const nama = document.getElementById('input-nama-prestasi').value;
+            const nama = (document.getElementById('input-nama-prestasi').value || '').trim();
             const selectedKategori = document.getElementById('input-kategori-prestasi').value.toLowerCase();
 
             if (window.achievementsList) {
-                const rule = window.achievementsList.find(r => r.nama === nama && r.kategori.includes(selectedKategori));
+                const isNon = selectedKategori.includes('non');
+                const rule = window.achievementsList.find(r => {
+                    const k = (r.kategori || '').toLowerCase();
+                    const matchKat = isNon ? k.includes('non') : (k.includes('akademik') && !k.includes('non'));
+                    return r.nama.trim().toLowerCase() === nama.toLowerCase() && matchKat;
+                });
                 if (rule) {
                     document.getElementById('input-poin-prestasi').value = rule.poin;
                 }
@@ -2967,24 +2986,49 @@
             
             const sourceList = jenis === 'pelanggaran' ? window.rulesList : window.achievementsList;
             if (sourceList) {
-                const filtered = sourceList.filter(rule => rule.kategori.includes(kategori));
+                let filtered = [];
+                if (jenis === 'pelanggaran') {
+                    filtered = sourceList.filter(rule => (rule.kategori || '').toLowerCase().includes(kategori));
+                } else {
+                    const isNon = kategori.includes('non');
+                    filtered = sourceList.filter(rule => {
+                        const k = (rule.kategori || '').toLowerCase();
+                        return isNon ? k.includes('non') : (k.includes('akademik') && !k.includes('non'));
+                    });
+                }
+
+                const seenNames = new Set();
                 filtered.forEach(rule => {
-                    const option = document.createElement('option');
-                    option.value = rule.nama;
-                    option.textContent = rule.nama;
-                    selectNama.appendChild(option);
+                    const cleanName = rule.nama.trim();
+                    if (!seenNames.has(cleanName.toLowerCase())) {
+                        seenNames.add(cleanName.toLowerCase());
+                        const option = document.createElement('option');
+                        option.value = cleanName;
+                        option.textContent = cleanName;
+                        selectNama.appendChild(option);
+                    }
                 });
             }
         }
 
         function autoFillEditPoin() {
             const jenis = document.getElementById('edit-jenis').value;
-            const nama = document.getElementById('edit-nama-data').value;
+            const nama = (document.getElementById('edit-nama-data').value || '').trim();
             const kategori = document.getElementById('edit-kategori').value.toLowerCase();
             
             const sourceList = jenis === 'pelanggaran' ? window.rulesList : window.achievementsList;
             if (sourceList) {
-                const rule = sourceList.find(r => r.nama === nama && r.kategori.includes(kategori));
+                let rule = null;
+                if (jenis === 'pelanggaran') {
+                    rule = sourceList.find(r => r.nama.trim().toLowerCase() === nama.toLowerCase() && (r.kategori || '').toLowerCase().includes(kategori));
+                } else {
+                    const isNon = kategori.includes('non');
+                    rule = sourceList.find(r => {
+                        const k = (r.kategori || '').toLowerCase();
+                        const matchKat = isNon ? k.includes('non') : (k.includes('akademik') && !k.includes('non'));
+                        return r.nama.trim().toLowerCase() === nama.toLowerCase() && matchKat;
+                    });
+                }
                 if (rule) document.getElementById('edit-poin').value = rule.poin;
             }
         }
