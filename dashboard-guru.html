@@ -4,6 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="color-scheme" content="light">
     <title>Dashboard Guru BK - DIPERIKSA</title>
     <link rel="icon" type="image/x-icon" href="mts.ico">
     <meta name="description" content="Admin Panel Guru BK Digital Pencatatan Riwayat Kedisiplinan">
@@ -17,6 +18,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
     <style>
         :root {
+            color-scheme: light;
             --bg-color: #f0f4f8;
             --sidebar-bg: #111827;
             --sidebar-hover: #1f2937;
@@ -429,6 +431,167 @@
             outline: none;
             border-color: var(--primary-color);
             box-shadow: 0 0 0 3px rgba(17, 153, 142, 0.1);
+        }
+
+        /* Custom Autocomplete Suggestion Dropdown (100% Solid & Touch-Friendly) */
+        .autocomplete-group {
+            position: relative !important;
+        }
+
+        .custom-suggest-box {
+            position: absolute;
+            top: calc(100% + 5px);
+            left: 0;
+            width: 100%;
+            min-width: 280px;
+            max-width: calc(100vw - 32px);
+            background: #ffffff !important;
+            background-color: #ffffff !important;
+            opacity: 1 !important;
+            border: 1.5px solid #cbd5e1;
+            border-radius: 12px;
+            box-shadow: 0 16px 36px rgba(15, 23, 42, 0.22), 0 4px 10px rgba(15, 23, 42, 0.1);
+            max-height: 260px;
+            overflow-y: auto;
+            z-index: 99999 !important;
+            display: none;
+            -webkit-overflow-scrolling: touch;
+            box-sizing: border-box;
+        }
+
+        .custom-suggest-box.show {
+            display: block !important;
+        }
+
+        .suggest-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 9px 13px;
+            background: #f8fafc !important;
+            border-bottom: 1px solid #e2e8f0;
+            font-size: 11.5px;
+            font-weight: 700;
+            color: #475569;
+            position: sticky;
+            top: 0;
+            z-index: 3;
+            letter-spacing: 0.3px;
+        }
+
+        .suggest-header button {
+            background: none;
+            border: none;
+            font-size: 15px;
+            color: #94a3b8;
+            cursor: pointer;
+            padding: 3px 8px;
+            border-radius: 6px;
+            line-height: 1;
+        }
+
+        .suggest-header button:hover,
+        .suggest-header button:active {
+            color: #0f172a;
+            background: #e2e8f0;
+        }
+
+        .suggest-list {
+            display: flex;
+            flex-direction: column;
+            background: #ffffff !important;
+        }
+
+        .suggest-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 11px 14px;
+            border-bottom: 1px solid #f1f5f9;
+            cursor: pointer;
+            background: #ffffff !important;
+            transition: background-color 0.12s ease;
+            touch-action: manipulation;
+            -webkit-tap-highlight-color: rgba(2, 132, 199, 0.15);
+            user-select: none;
+        }
+
+        .suggest-item:last-child {
+            border-bottom: none;
+        }
+
+        .suggest-item:hover,
+        .suggest-item:active {
+            background: #f0f9ff !important;
+        }
+
+        .suggest-avatar {
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 1.5px solid #0284c7;
+            flex-shrink: 0;
+            background: #e2e8f0;
+        }
+
+        .suggest-avatar-placeholder {
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            background: #f1f5f9;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #64748b;
+            font-size: 15px;
+            border: 1px dashed #cbd5e1;
+            flex-shrink: 0;
+        }
+
+        .suggest-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .suggest-nama {
+            font-size: 14px;
+            font-weight: 700;
+            color: #0f172a;
+            line-height: 1.3;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .suggest-nama mark {
+            background: #fef08a;
+            color: #854d0e;
+            padding: 0 2px;
+            border-radius: 3px;
+            font-weight: 700;
+        }
+
+        .suggest-meta {
+            display: flex;
+            align-items: center;
+            gap: 7px;
+            font-size: 11.5px;
+            color: #64748b;
+            margin-top: 3px;
+            flex-wrap: wrap;
+        }
+
+        .suggest-meta i {
+            color: #94a3b8;
+        }
+
+        .suggest-empty {
+            padding: 22px 16px;
+            text-align: center;
+            color: #64748b;
+            font-size: 13px;
+            background: #ffffff !important;
         }
 
         .alert-info {
@@ -931,15 +1094,17 @@
                     <form id="form-pelanggaran" onsubmit="submitPelanggaran(event)">
                         <div
                             style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px;">
-                            <div class="form-group" style="margin-bottom: 0;">
+                            <div class="form-group autocomplete-group" style="margin-bottom: 0;">
                                 <label>NISN Siswa</label>
-                                <input type="text" class="form-control" id="input-nisn" list="nisn-list" placeholder="Cth: 0111946795"
-                                    onchange="autoFillSiswa('nisn', 'pelanggaran')" required>
+                                <input type="text" class="form-control" id="input-nisn" placeholder="Cth: 0111946795"
+                                    autocomplete="off" oninput="handleStudentSearch(this, 'nisn', 'pelanggaran')" onfocus="handleStudentSearch(this, 'nisn', 'pelanggaran')" required>
+                                <div id="suggest-nisn-pelanggaran" class="custom-suggest-box"></div>
                             </div>
-                            <div class="form-group" style="margin-bottom: 0;">
+                            <div class="form-group autocomplete-group" style="margin-bottom: 0;">
                                 <label>Nama Siswa</label>
-                                <input type="text" class="form-control" id="input-nama-siswa" list="nama-list" placeholder="Cth: Budi Santoso"
-                                    onchange="autoFillSiswa('nama', 'pelanggaran')" required>
+                                <input type="text" class="form-control" id="input-nama-siswa" placeholder="Cth: Budi Santoso"
+                                    autocomplete="off" oninput="handleStudentSearch(this, 'nama', 'pelanggaran')" onfocus="handleStudentSearch(this, 'nama', 'pelanggaran')" required>
+                                <div id="suggest-nama-pelanggaran" class="custom-suggest-box"></div>
                             </div>
                             <div class="form-group" style="margin-bottom: 0;">
                                 <label>Tanggal</label>
@@ -1102,15 +1267,17 @@
                     <form id="form-prestasi" onsubmit="submitPrestasi(event)">
                         <div
                             style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px;">
-                            <div class="form-group" style="margin-bottom: 0;">
+                            <div class="form-group autocomplete-group" style="margin-bottom: 0;">
                                 <label>NISN Siswa</label>
-                                <input type="text" class="form-control" id="input-nisn-prestasi" list="nisn-list"
-                                    onchange="autoFillSiswa('nisn', 'prestasi')" placeholder="Cth: 0111946795" required>
+                                <input type="text" class="form-control" id="input-nisn-prestasi"
+                                    autocomplete="off" oninput="handleStudentSearch(this, 'nisn', 'prestasi')" onfocus="handleStudentSearch(this, 'nisn', 'prestasi')" placeholder="Cth: 0111946795" required>
+                                <div id="suggest-nisn-prestasi" class="custom-suggest-box"></div>
                             </div>
-                            <div class="form-group" style="margin-bottom: 0;">
+                            <div class="form-group autocomplete-group" style="margin-bottom: 0;">
                                 <label>Nama Siswa</label>
-                                <input type="text" class="form-control" id="input-nama-siswa-prestasi" list="nama-list"
-                                    onchange="autoFillSiswa('nama', 'prestasi')" placeholder="Cth: Budi Santoso" required>
+                                <input type="text" class="form-control" id="input-nama-siswa-prestasi"
+                                    autocomplete="off" oninput="handleStudentSearch(this, 'nama', 'prestasi')" onfocus="handleStudentSearch(this, 'nama', 'prestasi')" placeholder="Cth: Budi Santoso" required>
+                                <div id="suggest-nama-prestasi" class="custom-suggest-box"></div>
                             </div>
                             <div class="form-group" style="margin-bottom: 0;">
                                 <label>Tanggal</label>
@@ -1670,15 +1837,12 @@
             window.studentClassMap = studentClassMap;
             window.studentPhotoMap = studentPhotoMap;
             window.allStudentsList = allStudentsList;
-            let nisnOptions = '';
-            let namaOptions = '';
-            for (let nisn in studentMap) {
-                const kls = (studentClassMap[nisn] && studentClassMap[nisn] !== '-') ? ` (${studentClassMap[nisn]})` : '';
-                nisnOptions += `<option value="${nisn}">${studentMap[nisn]}${kls}</option>`;
-                namaOptions += `<option value="${studentMap[nisn]}">${nisn}${kls}</option>`;
-            }
-            document.getElementById('nisn-list').innerHTML = nisnOptions;
-            document.getElementById('nama-list').innerHTML = namaOptions;
+            
+            // Kosongkan native datalist agar Android browser tidak memunculkan overlay transparan
+            const nisnListEl = document.getElementById('nisn-list');
+            if (nisnListEl) nisnListEl.innerHTML = '';
+            const namaListEl = document.getElementById('nama-list');
+            if (namaListEl) namaListEl.innerHTML = '';
 
             // Process Pelanggaran (Group by Siswa)
             const groupedViolations = {};
@@ -2561,6 +2725,154 @@
             table.setAttribute('data-current-page', 1);
             setupPagination('admin-achievements-table', 'pagination-prestasi');
         }
+
+        // ============================================
+        // CUSTOM AUTOCOMPLETE SISWA (SOLID & TOUCH-FRIENDLY)
+        // ============================================
+
+        function handleStudentSearch(inputEl, fieldType, formType) {
+            const rawVal = (inputEl.value || '').trim();
+            const query = rawVal.toLowerCase();
+            const isPelanggaran = formType === 'pelanggaran';
+            const suggestBoxId = fieldType === 'nisn' 
+                ? (isPelanggaran ? 'suggest-nisn-pelanggaran' : 'suggest-nisn-prestasi')
+                : (isPelanggaran ? 'suggest-nama-pelanggaran' : 'suggest-nama-prestasi');
+            const suggestBox = document.getElementById(suggestBoxId);
+            if (!suggestBox) return;
+
+            // Tutup suggest box lainnya
+            document.querySelectorAll('.custom-suggest-box').forEach(b => {
+                if (b !== suggestBox) b.classList.remove('show');
+            });
+
+            if (!window.allStudentsList || window.allStudentsList.length === 0) {
+                suggestBox.classList.remove('show');
+                return;
+            }
+
+            let filtered = [];
+            if (query === '') {
+                filtered = window.allStudentsList.slice(0, 10);
+            } else {
+                filtered = window.allStudentsList.filter(s => {
+                    const matchNama = s.nama.toLowerCase().includes(query);
+                    const matchNisn = s.nisn.toLowerCase().includes(query);
+                    return matchNama || matchNisn;
+                }).slice(0, 20);
+            }
+
+            if (filtered.length === 0) {
+                suggestBox.innerHTML = `
+                    <div class="suggest-empty">
+                        <i class="fa-solid fa-user-xmark" style="font-size: 20px; color: #cbd5e1; display: block; margin-bottom: 6px;"></i>
+                        Siswa "<strong>${escapeHtml(rawVal)}</strong>" tidak ditemukan.
+                    </div>
+                `;
+                suggestBox.classList.add('show');
+                return;
+            }
+
+            let itemsHtml = `
+                <div class="suggest-header">
+                    <span><i class="fa-solid fa-users"></i> PILIH SISWA (${filtered.length})</span>
+                    <button type="button" onclick="closeAllSuggestBoxes(event)" title="Tutup">✕</button>
+                </div>
+                <div class="suggest-list">
+            `;
+
+            filtered.forEach(s => {
+                const hasPhoto = Boolean(s.fotoUrl && s.fotoUrl.trim() !== '');
+                const directPhoto = hasPhoto ? convertGoogleDriveUrl(s.fotoUrl) : '';
+                const avatarHtml = hasPhoto 
+                    ? `<img src="${directPhoto}" alt="${escapeHtml(s.nama)}" class="suggest-avatar" onerror="this.onerror=null; this.outerHTML='<div class=\\\'suggest-avatar-placeholder\\\'><i class=\\\'fa-solid fa-user\\\'></i></div>';">`
+                    : `<div class="suggest-avatar-placeholder"><i class="fa-solid fa-user"></i></div>`;
+
+                const highlightedName = highlightMatch(s.nama, query);
+                const highlightedNisn = highlightMatch(s.nisn, query);
+
+                itemsHtml += `
+                    <div class="suggest-item" 
+                         onmousedown="selectStudent('${s.nisn}', '${escapeJs(s.nama)}', '${formType}')" 
+                         ontouchstart="selectStudent('${s.nisn}', '${escapeJs(s.nama)}', '${formType}')">
+                        ${avatarHtml}
+                        <div class="suggest-info">
+                            <div class="suggest-nama">${highlightedName}</div>
+                            <div class="suggest-meta">
+                                <span><i class="fa-solid fa-id-card"></i> ${highlightedNisn}</span>
+                                <span>•</span>
+                                <span class="class-badge" style="font-size: 10.5px; padding: 2px 7px;">${s.kelas}</span>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+
+            itemsHtml += `</div>`;
+            suggestBox.innerHTML = itemsHtml;
+            suggestBox.classList.add('show');
+        }
+
+        let isSelectingStudent = false;
+        function selectStudent(nisn, nama, formType) {
+            if (isSelectingStudent) return;
+            isSelectingStudent = true;
+            setTimeout(() => { isSelectingStudent = false; }, 300);
+
+            const isPelanggaran = formType === 'pelanggaran';
+            const nisnId = isPelanggaran ? 'input-nisn' : 'input-nisn-prestasi';
+            const namaId = isPelanggaran ? 'input-nama-siswa' : 'input-nama-siswa-prestasi';
+
+            const nisnInput = document.getElementById(nisnId);
+            const namaInput = document.getElementById(namaId);
+
+            if (nisnInput) nisnInput.value = nisn;
+            if (namaInput) namaInput.value = nama;
+
+            closeAllSuggestBoxes();
+        }
+
+        function closeAllSuggestBoxes(e) {
+            if (e) {
+                e.preventDefault();
+                e.stopPropagation();
+            }
+            document.querySelectorAll('.custom-suggest-box').forEach(b => b.classList.remove('show'));
+        }
+
+        function highlightMatch(text, query) {
+            if (!query) return escapeHtml(text);
+            const escaped = query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+            const regex = new RegExp(`(${escaped})`, 'gi');
+            return escapeHtml(text).replace(regex, '<mark>$1</mark>');
+        }
+
+        function escapeHtml(str) {
+            if (!str) return '';
+            return String(str)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#039;');
+        }
+
+        function escapeJs(str) {
+            if (!str) return '';
+            return String(str).replace(/\\/g, '\\\\').replace(/'/g, "\\'");
+        }
+
+        // Event listener klik di luar untuk menutup suggest box
+        document.addEventListener('click', (e) => {
+            if (!e.target.closest('.autocomplete-group')) {
+                closeAllSuggestBoxes();
+            }
+        });
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                closeAllSuggestBoxes();
+            }
+        });
 
         function autoFillSiswa(source, formType) {
             const isPelanggaran = formType === 'pelanggaran';
