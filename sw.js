@@ -1,4 +1,4 @@
-const CACHE_NAME = 'bk-mts-v14';
+const CACHE_NAME = 'bk-mts-v15';
 const urlsToCache = [
   './',
   './index.html',

@@ -1097,7 +1097,10 @@
                             <div class="form-group autocomplete-group" style="margin-bottom: 0;">
                                 <label>NISN Siswa</label>
                                 <input type="text" class="form-control" id="input-nisn" placeholder="Cth: 0111946795"
-                                    autocomplete="off" oninput="handleStudentSearch(this, 'nisn', 'pelanggaran')" onfocus="handleStudentSearch(this, 'nisn', 'pelanggaran')" required>
+                                    autocomplete="off" inputmode="numeric" pattern="[0-9]*"
+                                    oninput="sanitizeNisnInput(this); handleStudentSearch(this, 'nisn', 'pelanggaran')" 
+                                    onfocus="handleStudentSearch(this, 'nisn', 'pelanggaran')" 
+                                    onkeypress="return isNumberKey(event)" required>
                                 <div id="suggest-nisn-pelanggaran" class="custom-suggest-box"></div>
                             </div>
                             <div class="form-group autocomplete-group" style="margin-bottom: 0;">
@@ -1269,8 +1272,11 @@
                             style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px;">
                             <div class="form-group autocomplete-group" style="margin-bottom: 0;">
                                 <label>NISN Siswa</label>
-                                <input type="text" class="form-control" id="input-nisn-prestasi"
-                                    autocomplete="off" oninput="handleStudentSearch(this, 'nisn', 'prestasi')" onfocus="handleStudentSearch(this, 'nisn', 'prestasi')" placeholder="Cth: 0111946795" required>
+                                <input type="text" class="form-control" id="input-nisn-prestasi" placeholder="Cth: 0111946795"
+                                    autocomplete="off" inputmode="numeric" pattern="[0-9]*"
+                                    oninput="sanitizeNisnInput(this); handleStudentSearch(this, 'nisn', 'prestasi')" 
+                                    onfocus="handleStudentSearch(this, 'nisn', 'prestasi')" 
+                                    onkeypress="return isNumberKey(event)" required>
                                 <div id="suggest-nisn-prestasi" class="custom-suggest-box"></div>
                             </div>
                             <div class="form-group autocomplete-group" style="margin-bottom: 0;">
@@ -1445,7 +1451,7 @@
                         <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px;">
                             <div class="form-group" style="margin-bottom: 0;">
                                 <label>NISN Siswa <span style="color: var(--danger-color);">*</span></label>
-                                <input type="text" class="form-control" id="input-siswa-nisn" placeholder="Cth: 0123907263" required maxlength="15" pattern="[0-9]+" title="Hanya angka NISN">
+                                <input type="text" class="form-control" id="input-siswa-nisn" placeholder="Cth: 0123907263" required maxlength="15" inputmode="numeric" pattern="[0-9]*" oninput="sanitizeNisnInput(this)" onkeypress="return isNumberKey(event)" title="Hanya angka NISN">
                             </div>
                             <div class="form-group" style="margin-bottom: 0;">
                                 <label>Nama Lengkap Siswa <span style="color: var(--danger-color);">*</span></label>
@@ -1612,7 +1618,7 @@
                 
                 <div class="form-group">
                     <label>NISN Siswa <span style="color: var(--danger-color);">*</span></label>
-                    <input type="text" class="form-control" id="edit-siswa-nisn" required maxlength="15" pattern="[0-9]+" title="Hanya angka NISN">
+                    <input type="text" class="form-control" id="edit-siswa-nisn" required maxlength="15" inputmode="numeric" pattern="[0-9]*" oninput="sanitizeNisnInput(this)" onkeypress="return isNumberKey(event)" title="Hanya angka NISN">
                     <small style="color: var(--text-muted); font-size: 11px;">Jika NISN diubah, riwayat pelanggaran & prestasi anak ini akan otomatis disinkronkan.</small>
                 </div>
                 <div class="form-group">
@@ -2749,7 +2755,28 @@
         // CUSTOM AUTOCOMPLETE SISWA (SOLID & TOUCH-FRIENDLY)
         // ============================================
 
+        function sanitizeNisnInput(inputEl) {
+            if (!inputEl) return;
+            const clean = inputEl.value.replace(/[^0-9]/g, '');
+            if (inputEl.value !== clean) {
+                inputEl.value = clean;
+            }
+        }
+
+        function isNumberKey(evt) {
+            const charCode = (evt.which) ? evt.which : evt.keyCode;
+            // Hanya izinkan angka 0-9 (ASCII 48 - 57)
+            if (charCode > 31 && (charCode < 48 || charCode > 57)) {
+                evt.preventDefault();
+                return false;
+            }
+            return true;
+        }
+
         function handleStudentSearch(inputEl, fieldType, formType) {
+            if (fieldType === 'nisn') {
+                sanitizeNisnInput(inputEl);
+            }
             const rawVal = (inputEl.value || '').trim();
             const query = rawVal.toLowerCase();
             const isPelanggaran = formType === 'pelanggaran';
@@ -2774,17 +2801,22 @@
                 filtered = window.allStudentsList.slice(0, 10);
             } else {
                 filtered = window.allStudentsList.filter(s => {
-                    const matchNama = s.nama.toLowerCase().includes(query);
-                    const matchNisn = s.nisn.toLowerCase().includes(query);
-                    return matchNama || matchNisn;
+                    if (fieldType === 'nisn') {
+                        // Khusus input NISN: Hanya filter berdasarkan angka NISN
+                        return s.nisn.toLowerCase().includes(query);
+                    } else {
+                        // Input Nama: Filter berdasarkan nama atau NISN
+                        return s.nama.toLowerCase().includes(query) || s.nisn.toLowerCase().includes(query);
+                    }
                 }).slice(0, 20);
             }
 
             if (filtered.length === 0) {
+                const labelType = fieldType === 'nisn' ? 'NISN' : 'Siswa';
                 suggestBox.innerHTML = `
                     <div class="suggest-empty">
                         <i class="fa-solid fa-user-xmark" style="font-size: 20px; color: #cbd5e1; display: block; margin-bottom: 6px;"></i>
-                        Siswa "<strong>${escapeHtml(rawVal)}</strong>" tidak ditemukan.
+                        ${labelType} "<strong>${escapeHtml(rawVal)}</strong>" tidak ditemukan.
                     </div>
                 `;
                 suggestBox.classList.add('show');

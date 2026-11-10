@@ -45,7 +45,7 @@
                     <label for="nisn">Nomor Induk Siswa Nasional (NISN)</label>
                     <div class="input-wrapper">
                         <i class="fa-solid fa-id-card"></i>
-                        <input type="password" id="nisn" placeholder="Masukkan NISN Siswa" required autocomplete="off" inputmode="numeric">
+                        <input type="password" id="nisn" placeholder="Masukkan NISN Siswa" required autocomplete="off" inputmode="numeric" pattern="[0-9]*" oninput="this.value = this.value.replace(/[^0-9]/g, '')" onkeypress="return (event.which ? event.which : event.keyCode) >= 48 && (event.which ? event.which : event.keyCode) <= 57">
                         <i class="fa-solid fa-eye-slash toggle-password" title="Tampilkan/Sembunyikan NISN"></i>
                     </div>
                 </div>
