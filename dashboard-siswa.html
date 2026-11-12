@@ -1047,9 +1047,11 @@
         }
 
         let siswaTabDepth = 0;
+        let pendingSiswaLogout = false;
 
         function initSiswaHistoryNavigation() {
             siswaTabDepth = 0;
+            pendingSiswaLogout = false;
             try {
                 history.replaceState({ siswaDepth: 0 }, '');
             } catch (e) {}
@@ -1058,11 +1060,25 @@
         function logoutSiswa(e) {
             if (e) e.preventDefault();
             sessionStorage.removeItem('siswaNISN');
-            window.location.replace('index.html');
+            if (siswaTabDepth > 0) {
+                pendingSiswaLogout = true;
+                try {
+                    history.go(-siswaTabDepth);
+                } catch (err) {
+                    window.location.replace('index.html');
+                }
+            } else {
+                window.location.replace('index.html');
+            }
             return false;
         }
 
         window.addEventListener('popstate', (e) => {
+            if (pendingSiswaLogout) {
+                pendingSiswaLogout = false;
+                window.location.replace('index.html');
+                return;
+            }
             const targetDepth = (e.state && typeof e.state.siswaDepth === 'number')
                 ? e.state.siswaDepth
                 : 0;

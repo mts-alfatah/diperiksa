@@ -154,33 +154,6 @@
             text-align: center;
         }
 
-        .sidebar-footer {
-            padding: 20px;
-            border-top: 1px solid rgba(255, 255, 255, 0.1);
-        }
-
-        .logout-btn {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-            width: 100%;
-            padding: 12px;
-            background: rgba(239, 68, 68, 0.1);
-            color: #fca5a5;
-            border: 1px solid rgba(239, 68, 68, 0.2);
-            border-radius: 8px;
-            cursor: pointer;
-            text-decoration: none;
-            font-weight: 500;
-            transition: var(--transition);
-        }
-
-        .logout-btn:hover {
-            background: var(--danger-color);
-            color: white;
-        }
-
         /* Main Content */
         .main-content {
             flex: 1;
@@ -1312,11 +1285,6 @@
                 <i class="fa-solid fa-file-word"></i> Surat Pemberitahuan
             </a>
         </div>
-        <div class="sidebar-footer">
-            <a href="login-guru.html" class="logout-btn" onclick="return logoutGuru(event);">
-                <i class="fa-solid fa-right-from-bracket"></i> Keluar
-            </a>
-        </div>
     </div>
 
     <!-- Main Content -->
@@ -2042,19 +2010,11 @@
     <script>
         const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxWaDcKsYPBF7Y1nhnvsZXVmx2OntEYNLei-MXiS0r06mLdjxXLrsaI4MsGRPUlMB0B/exec';
 
-        // ==================== ANDROID / WEBVIEW BACK NAVIGATION & LOGOUT ====================
+        // ==================== ANDROID / WEBVIEW BACK NAVIGATION ====================
         const UI_HOME_TAB = 'pelanggaran';
         let currentHistoryDepth = 0;
         let uiLayerStack = [];
         let isPageReloading = false;
-
-        function logoutGuru(e) {
-            if (e) e.preventDefault();
-            sessionStorage.removeItem('guruNama');
-            sessionStorage.removeItem('activeAdminTab');
-            window.location.replace('login-guru.html');
-            return false;
-        }
 
         function initHistoryNavigation() {
             currentHistoryDepth = 0;
