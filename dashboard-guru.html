@@ -1095,27 +1095,40 @@
 
         /* Surat Pemberitahuan Styles */
         .surat-preview-wrapper {
-            background: #e2e8f0;
-            border-radius: 10px;
-            padding: 20px;
-            overflow-x: auto;
-            -webkit-overflow-scrolling: touch;
+            background: #cbd5e1;
+            border: 1px solid #94a3b8;
+            border-radius: 8px;
+            padding: 16px;
+            box-shadow: inset 0 4px 6px rgba(0, 0, 0, 0.05);
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            overflow-x: hidden;
             width: 100%;
             box-sizing: border-box;
+        }
+
+        .surat-preview-scale-box {
+            position: relative;
+            margin: 0 auto;
+            overflow: hidden;
+            flex-shrink: 0;
+            background: #ffffff;
+            box-shadow: 0 4px 12px rgba(15, 23, 42, 0.16);
         }
 
         #surat-preview-paper {
             width: 210mm;
             min-height: 297mm;
-            margin: 0 auto;
+            margin: 0;
             background: #ffffff;
             color: #000000;
             padding: 15mm 20mm;
-            box-shadow: 0 10px 28px rgba(15, 23, 42, 0.18);
             font-family: 'Calibri', 'Carlito', 'Segoe UI', Arial, sans-serif;
             font-size: 11pt;
             line-height: 1.45;
             box-sizing: border-box;
+            transform-origin: top left;
         }
 
         /* Isolasi CSS tabel pratinjau surat dari gaya tabel dashboard & mobile media query */
@@ -1198,8 +1211,17 @@
         }
 
         @media (max-width: 768px) {
+            .surat-preview-card {
+                padding: 12px 6px;
+                border-radius: 10px;
+            }
+
+            .surat-preview-card .card-header {
+                padding: 0 6px;
+            }
+
             .surat-preview-wrapper {
-                padding: 10px;
+                padding: 10px 6px;
             }
         }
 
@@ -1234,8 +1256,20 @@
 
             body.printing-surat .surat-preview-wrapper {
                 background: #ffffff !important;
+                border: none !important;
+                box-shadow: none !important;
                 padding: 0 !important;
+                display: block !important;
                 overflow: visible !important;
+            }
+
+            body.printing-surat .surat-preview-scale-box {
+                width: auto !important;
+                height: auto !important;
+                overflow: visible !important;
+                margin: 0 !important;
+                box-shadow: none !important;
+                background: #ffffff !important;
             }
 
             body.printing-surat #surat-preview-paper {
@@ -1244,6 +1278,7 @@
                 width: 100% !important;
                 min-height: auto !important;
                 padding: 10mm 15mm !important;
+                transform: none !important;
             }
         }
     </style>
@@ -1874,8 +1909,10 @@
                         <span style="font-size: 12.5px; color: var(--text-muted);">Tampilan disesuaikan dengan hasil
                             ekspor Word A4</span>
                     </div>
-                    <div class="surat-preview-wrapper">
-                        <div id="surat-preview-paper"></div>
+                    <div id="surat-preview-wrapper" class="surat-preview-wrapper">
+                        <div id="surat-preview-scale-box" class="surat-preview-scale-box">
+                            <div id="surat-preview-paper"></div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -4524,6 +4561,53 @@
             };
         }
 
+        function resetSuratPreviewScale() {
+            const scaleBox = document.getElementById('surat-preview-scale-box');
+            const paper = document.getElementById('surat-preview-paper');
+            if (paper && paper.style) {
+                paper.style.transform = '';
+            }
+            if (scaleBox && scaleBox.style) {
+                scaleBox.style.width = '';
+                scaleBox.style.height = '';
+            }
+        }
+
+        function fitSuratPreviewToScreen() {
+            const previewCard = document.getElementById('surat-preview-card');
+            const wrapper = document.getElementById('surat-preview-wrapper');
+            const scaleBox = document.getElementById('surat-preview-scale-box');
+            const paper = document.getElementById('surat-preview-paper');
+            if (!wrapper || !scaleBox || !paper || !paper.style || !scaleBox.style) return;
+
+            if ((previewCard && previewCard.style && previewCard.style.display === 'none') ||
+                (typeof document !== 'undefined' && document.body && document.body.classList && document.body.classList.contains('printing-surat'))) {
+                resetSuratPreviewScale();
+                return;
+            }
+
+            const wrapperW = wrapper.clientWidth || 0;
+            if (wrapperW <= 0) return;
+
+            let padLeft = 0;
+            let padRight = 0;
+            if (typeof getComputedStyle === 'function') {
+                const cs = getComputedStyle(wrapper);
+                padLeft = parseFloat(cs.paddingLeft) || 0;
+                padRight = parseFloat(cs.paddingRight) || 0;
+            }
+
+            const availW = Math.max(200, wrapperW - padLeft - padRight);
+            paper.style.transform = 'none';
+            const naturalW = paper.offsetWidth || 794;
+            const naturalH = Math.max(paper.scrollHeight || 0, paper.offsetHeight || 0) || 1123;
+            const scale = Math.min(1, availW / naturalW);
+
+            paper.style.transform = scale < 0.999 ? `scale(${scale.toFixed(4)})` : 'none';
+            scaleBox.style.width = Math.floor(naturalW * scale) + 'px';
+            scaleBox.style.height = Math.ceil(naturalH * scale) + 'px';
+        }
+
         function renderSuratPreview() {
             const previewCard = document.getElementById('surat-preview-card');
             const paper = document.getElementById('surat-preview-paper');
@@ -4535,6 +4619,7 @@
             if (!hasStudent) {
                 if (previewCard) previewCard.style.display = 'none';
                 if (paper.innerHTML !== '') paper.innerHTML = '';
+                resetSuratPreviewScale();
                 return;
             }
 
@@ -4666,6 +4751,10 @@
                     </tr>
                 </table>
             `;
+            fitSuratPreviewToScreen();
+            if (typeof requestAnimationFrame === 'function') {
+                requestAnimationFrame(() => fitSuratPreviewToScreen());
+            }
         }
 
         async function loadLogoArrayBuffer() {
@@ -5102,13 +5191,18 @@
                 return;
             }
             document.body.classList.add('printing-surat');
+            resetSuratPreviewScale();
             window.print();
         }
+
+        window.addEventListener('resize', fitSuratPreviewToScreen);
+        window.addEventListener('orientationchange', () => setTimeout(fitSuratPreviewToScreen, 120));
 
         window.addEventListener('beforeprint', () => {
             const viewSurat = document.getElementById('view-surat');
             if (viewSurat && viewSurat.classList.contains('active')) {
                 document.body.classList.add('printing-surat');
+                resetSuratPreviewScale();
                 if (!activePrintSnapshot) {
                     prepareSuratForPrint();
                 }
@@ -5117,6 +5211,7 @@
 
         window.addEventListener('afterprint', () => {
             document.body.classList.remove('printing-surat');
+            fitSuratPreviewToScreen();
             if (activePrintSnapshot) {
                 const snap = activePrintSnapshot;
                 activePrintSnapshot = null;
