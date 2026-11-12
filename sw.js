@@ -1,4 +1,4 @@
-const CACHE_NAME = 'bk-mts-v17';
+const CACHE_NAME = 'bk-mts-v24';
 const urlsToCache = [
   './',
   './index.html',
@@ -9,6 +9,7 @@ const urlsToCache = [
   './logo-192.png',
   './logo-512.png',
   './mts.ico',
+  './mts.png',
   './site.webmanifest',
   './tata-tertib.html',
   './point-pelanggaran.html',
