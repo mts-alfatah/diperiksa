@@ -35,7 +35,7 @@
         html {
             width: 100%;
             max-width: 100%;
-            overflow-x: hidden !important;
+            overflow-x: clip !important;
             overscroll-behavior-x: none;
             -webkit-text-size-adjust: 100%;
         }
@@ -49,7 +49,7 @@
             max-width: 100%;
             display: flex;
             flex-direction: column;
-            overflow-x: hidden !important;
+            overflow-x: clip !important;
             position: relative;
             touch-action: pan-y;
             overscroll-behavior-x: none;
@@ -64,6 +64,7 @@
             justify-content: space-between;
             align-items: center;
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            position: -webkit-sticky;
             position: sticky;
             top: 0;
             z-index: 1000;
@@ -742,9 +743,9 @@
 
         async function fetchDashboardData(nisnTarget, spreadsheetId, sheetSiswa, sheetPelanggaran, sheetPrestasi) {
             try {
-                // 1. Ambil Data Profil Siswa (A: NISN, B: Nama, C: Kelas, D: Foto URL)
+                // 1. Ambil Data Profil Siswa (A: NISN, B: Nama, C: Kelas, D: No. WA, E: Foto URL)
                 const dataSiswa = await fetchJSONP(
-                    `https://docs.google.com/spreadsheets/d/${spreadsheetId}/gviz/tq?sheet=${encodeURIComponent(sheetSiswa)}&tq=SELECT%20A,B,C,D`
+                    `https://docs.google.com/spreadsheets/d/${spreadsheetId}/gviz/tq?sheet=${encodeURIComponent(sheetSiswa)}&tq=SELECT%20A,B,C,D,E`
                 );
 
                 // 2. Ambil Data Riwayat Pelanggaran
@@ -849,11 +850,11 @@
                                 studentClass = String(row[2].v).trim();
                             }
 
-                            // Kolom D adalah Foto URL di Sheet SISWA
-                            if (row[3] && row[3].v != null && String(row[3].v).trim() !== "") {
-                                studentPhoto = convertGoogleDriveUrl(String(row[3].v).trim());
+                            // Kolom E adalah Foto URL di Sheet SISWA (Kolom D adalah No. WA)
+                            if (row[4] && row[4].v != null && String(row[4].v).trim() !== "") {
+                                studentPhoto = convertGoogleDriveUrl(String(row[4].v).trim());
                             } else {
-                                // Fallback otomatis dari Google Drive folder jika kolom D belum terisi
+                                // Fallback otomatis dari Google Drive folder jika kolom E belum terisi
                                 studentPhoto = generatePhotoUrlFromFolder(targetNISN);
                             }
                             

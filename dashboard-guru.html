@@ -16,9 +16,6 @@
     <!-- ExcelJS & FileSaver for Export Excel -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.3.0/exceljs.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
-    <!-- docx.js for Export Word (.docx) -->
-    <script src="https://cdn.jsdelivr.net/npm/docx@9/dist/index.iife.js"
-        onerror="var s=document.createElement('script');s.src='https://unpkg.com/docx@9/dist/index.iife.js';document.head.appendChild(s);"></script>
     <style>
         :root {
             color-scheme: light;
@@ -46,7 +43,7 @@
         html {
             width: 100%;
             max-width: 100%;
-            overflow-x: hidden !important;
+            overflow-x: clip !important;
             overscroll-behavior-x: none;
             -webkit-text-size-adjust: 100%;
         }
@@ -59,7 +56,7 @@
             min-height: 100dvh;
             width: 100%;
             max-width: 100%;
-            overflow-x: hidden !important;
+            overflow-x: clip !important;
             position: relative;
             touch-action: pan-y;
             overscroll-behavior-x: none;
@@ -168,7 +165,8 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+            box-shadow: 0 2px 6px -1px rgba(0, 0, 0, 0.08);
+            position: -webkit-sticky;
             position: sticky;
             top: 0;
             z-index: 90;
@@ -411,6 +409,27 @@
 
         .sg-desktop-item.prestasi-item {
             border-left-color: #3b82f6;
+        }
+
+        .sg-detail-toggle-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 5px 11px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 600;
+            background: #f1f5f9;
+            color: #334155;
+            border: 1px solid #cbd5e1;
+            cursor: pointer;
+            transition: background-color 0.15s ease, color 0.15s ease;
+        }
+
+        .sg-detail-toggle-btn:hover,
+        .sg-detail-toggle-btn.open {
+            background: #e2e8f0;
+            color: #0f172a;
         }
 
         /* Settings Form */
@@ -673,7 +692,7 @@
                 width: 100% !important;
                 max-width: 100% !important;
                 min-width: 0;
-                overflow-x: hidden;
+                overflow-x: clip;
             }
 
             .content-area {
@@ -989,6 +1008,19 @@
                 background: #fecaca;
                 transform: scale(0.95);
             }
+
+            .card-btn-detail {
+                background: #f1f5f9;
+                color: #334155;
+                border: 1px solid #cbd5e1;
+                white-space: nowrap;
+                flex-shrink: 0;
+            }
+
+            .card-btn-detail.open {
+                background: #e2e8f0;
+                color: #0f172a;
+            }
         }
 
         /* Modal Styles */
@@ -1113,22 +1145,34 @@
             margin: 0 auto;
             overflow: hidden;
             flex-shrink: 0;
-            background: #ffffff;
-            box-shadow: 0 4px 12px rgba(15, 23, 42, 0.16);
+            background: transparent;
         }
 
         #surat-preview-paper {
             width: 210mm;
-            min-height: 297mm;
             margin: 0;
-            background: #ffffff;
+            background: transparent;
             color: #000000;
-            padding: 15mm 20mm;
+            padding: 0;
             font-family: 'Calibri', 'Carlito', 'Segoe UI', Arial, sans-serif;
             font-size: 11pt;
             line-height: 1.45;
             box-sizing: border-box;
             transform-origin: top left;
+        }
+
+        #surat-preview-paper .surat-page {
+            width: 210mm;
+            min-height: 297mm;
+            background: #ffffff;
+            padding: 15mm 20mm;
+            box-sizing: border-box;
+            border: 1px solid #94a3b8;
+            box-shadow: 0 4px 12px rgba(15, 23, 42, 0.14);
+        }
+
+        #surat-preview-paper .surat-page + .surat-page {
+            margin-top: 16px;
         }
 
         /* Isolasi CSS tabel pratinjau surat dari gaya tabel dashboard & mobile media query */
@@ -1177,7 +1221,8 @@
             margin: 8px 0 14px 0;
         }
 
-        #surat-preview-paper .meta-surat-table td {
+        #surat-preview-paper .meta-surat-table td,
+        #surat-preview-paper .undangan-detail-table td {
             padding: 1.5px 0;
             vertical-align: top;
             text-align: left;
@@ -1210,7 +1255,44 @@
             line-height: 1.35;
         }
 
+        .surat-actions-row {
+            margin-top: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .surat-actions-row .surat-action-btn {
+            border: 1px solid transparent;
+            justify-content: center;
+            white-space: nowrap;
+        }
+
+        .surat-actions-row .surat-reset-btn {
+            margin-right: auto;
+            background: #f1f5f9;
+            color: #475569;
+            border-color: #cbd5e1;
+        }
+
         @media (max-width: 768px) {
+            .surat-actions-row {
+                display: grid;
+                grid-template-columns: repeat(3, minmax(0, 1fr));
+                gap: 6px;
+            }
+
+            .surat-actions-row .surat-reset-btn {
+                margin-right: 0;
+            }
+
+            .surat-actions-row .surat-action-btn {
+                width: 100%;
+                padding: 10px 4px;
+                font-size: 11.5px;
+                gap: 5px;
+            }
+
             .surat-preview-card {
                 padding: 12px 6px;
                 border-radius: 10px;
@@ -1226,6 +1308,22 @@
         }
 
         @media print {
+            @page {
+                size: A4 portrait;
+                margin: 12mm 15mm;
+            }
+
+            html,
+            body.printing-surat {
+                display: block !important;
+                width: auto !important;
+                max-width: none !important;
+                height: auto !important;
+                min-height: 0 !important;
+                overflow: visible !important;
+                background: #ffffff !important;
+                position: static !important;
+            }
 
             body.printing-surat .sidebar,
             body.printing-surat .sidebar-overlay,
@@ -1235,16 +1333,30 @@
             }
 
             body.printing-surat .main-content {
+                display: block !important;
                 margin-left: 0 !important;
                 width: 100% !important;
+                max-width: none !important;
+                height: auto !important;
+                min-height: 0 !important;
+                overflow: visible !important;
             }
 
             body.printing-surat .content-area {
+                display: block !important;
                 padding: 0 !important;
+                height: auto !important;
+                overflow: visible !important;
+            }
+
+            body.printing-surat .view-section {
+                animation: none !important;
+                transform: none !important;
             }
 
             body.printing-surat .surat-preview-card {
                 box-shadow: none !important;
+                border: none !important;
                 padding: 0 !important;
                 margin: 0 !important;
                 border-radius: 0 !important;
@@ -1276,9 +1388,44 @@
                 box-shadow: none !important;
                 margin: 0 !important;
                 width: 100% !important;
-                min-height: auto !important;
-                padding: 10mm 15mm !important;
+                padding: 0 !important;
                 transform: none !important;
+            }
+
+            body.printing-surat #surat-preview-paper .surat-page {
+                box-shadow: none !important;
+                border: none !important;
+                margin: 0 !important;
+                width: 100% !important;
+                min-height: 0 !important;
+                padding: 0 !important;
+            }
+
+            body.printing-surat #surat-preview-paper .surat-page + .surat-page {
+                margin-top: 0 !important;
+                page-break-before: always;
+                break-before: page;
+            }
+
+            body.printing-surat #surat-preview-paper .pelanggaran-surat-table thead {
+                display: table-header-group;
+            }
+
+            body.printing-surat #surat-preview-paper .pelanggaran-surat-table tr {
+                break-inside: avoid !important;
+                page-break-inside: avoid !important;
+            }
+
+            body.printing-surat #surat-preview-paper .ttd-surat-table,
+            body.printing-surat #surat-preview-paper .ttd-surat-table tr,
+            body.printing-surat #surat-preview-paper .ttd-surat-table td {
+                break-inside: avoid !important;
+                page-break-inside: avoid !important;
+            }
+
+            body.printing-surat #surat-preview-paper .ttd-surat-table * {
+                color: #000000 !important;
+                visibility: visible !important;
             }
         }
     </style>
@@ -1754,8 +1901,14 @@
                                 </select>
                             </div>
                             <div class="form-group" style="margin-bottom: 0;">
+                                <label>No. WhatsApp <small style="color: var(--text-muted);">(Kolom D)</small></label>
+                                <input type="tel" class="form-control" id="input-siswa-wa"
+                                    placeholder="Cth: 6281234567890" inputmode="tel" maxlength="20"
+                                    oninput="sanitizeWaInput(this)">
+                            </div>
+                            <div class="form-group" style="margin-bottom: 0;">
                                 <label>Link Foto (Google Drive) <small
-                                        style="color: var(--text-muted);">(Opsional)</small></label>
+                                        style="color: var(--text-muted);">(Opsional, Kolom E)</small></label>
                                 <input type="url" class="form-control" id="input-siswa-foto"
                                     placeholder="https://drive.google.com/file/d/.../view"
                                     oninput="previewFotoInput(this.value, 'preview-foto-tambah')">
@@ -1838,12 +1991,13 @@
                                     <th style="width: 130px;">NISN</th>
                                     <th>Nama Siswa</th>
                                     <th style="width: 90px; text-align: center;">Kelas</th>
+                                    <th style="width: 145px;">No. WhatsApp</th>
                                     <th style="width: 140px; text-align: center;">Aksi</th>
                                 </tr>
                             </thead>
                             <tbody id="admin-students-body">
                                 <tr class="empty-row">
-                                    <td colspan="5" class="empty-cell" style="text-align: center; padding: 30px;">
+                                    <td colspan="6" class="empty-cell" style="text-align: center; padding: 30px;">
                                         <i class="fa-solid fa-circle-notch fa-spin"></i> Memuat data siswa...
                                     </td>
                                 </tr>
@@ -1861,13 +2015,23 @@
                         <h3><i class="fa-solid fa-file-word" style="color: #2563eb;"></i> Surat Pemberitahuan </h3>
                     </div>
 
-                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 15px;">
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px;">
                         <div class="form-group autocomplete-group" style="margin-bottom: 0;">
                             <label>Filter Nama Siswa</label>
                             <input type="text" class="form-control" id="surat-nama-siswa"
                                 placeholder="Ketik / cari nama siswa..." autocomplete="off"
                                 oninput="onSuratNamaInput(this)" onfocus="handleStudentSearch(this, 'nama', 'surat')">
                             <div id="suggest-nama-surat" class="custom-suggest-box"></div>
+                        </div>
+                        <div class="form-group" style="margin-bottom: 0;">
+                            <label>Tanggal Undangan</label>
+                            <input type="date" class="form-control" id="surat-undangan-tanggal"
+                                onchange="renderSuratPreview()" oninput="renderSuratPreview()">
+                        </div>
+                        <div class="form-group" style="margin-bottom: 0;">
+                            <label>Jam Undangan (WIB)</label>
+                            <input type="time" class="form-control" id="surat-undangan-jam"
+                                onchange="renderSuratPreview()" oninput="renderSuratPreview()">
                         </div>
                         <div class="form-group" style="margin-bottom: 0;">
                             <label>Kepala Madrasah</label>
@@ -1881,24 +2045,20 @@
                         </div>
                     </div>
 
-                    <div
-                        style="margin-top: 20px; display: flex; flex-wrap: wrap; gap: 10px; justify-content: space-between; align-items: center;">
-                        <button type="button" class="action-btn"
-                            style="background: #f1f5f9; color: #475569; border: 1px solid #cbd5e1;"
+                    <div class="surat-actions-row">
+                        <button type="button" class="action-btn surat-action-btn surat-reset-btn"
                             onclick="resetSuratForm()">
                             <i class="fa-solid fa-rotate-left"></i> Reset Form
                         </button>
-                        <div style="display: flex; flex-wrap: wrap; gap: 10px;">
-                            <button type="button" class="action-btn" style="background: #334155;"
-                                onclick="printSuratPreview()">
-                                <i class="fa-solid fa-print"></i> Cetak / PDF
-                            </button>
-                            <button type="button" id="btn-download-word" class="action-btn"
-                                style="background: linear-gradient(135deg, #1d4ed8, #2563eb);"
-                                onclick="downloadSuratWord()">
-                                <i class="fa-solid fa-file-word"></i> Download Word (.docx)
-                            </button>
-                        </div>
+                        <button type="button" class="action-btn surat-action-btn" style="background: #334155;"
+                            onclick="printSuratPreview()">
+                            <i class="fa-solid fa-print"></i> Cetak / PDF
+                        </button>
+                        <button type="button" id="btn-share-wa" class="action-btn surat-action-btn"
+                            style="background: linear-gradient(135deg, #16a34a, #22c55e);"
+                            onclick="shareUndanganWhatsApp()">
+                            <i class="fa-brands fa-whatsapp"></i> Share WA
+                        </button>
                     </div>
                 </div>
 
@@ -1906,8 +2066,7 @@
                 <div id="surat-preview-card" class="card surat-preview-card" style="display: none;">
                     <div class="card-header no-print">
                         <h3><i class="fa-regular fa-file-lines"></i> Pratinjau Surat Pemberitahuan</h3>
-                        <span style="font-size: 12.5px; color: var(--text-muted);">Tampilan disesuaikan dengan hasil
-                            ekspor Word A4</span>
+                        <span style="font-size: 12.5px; color: var(--text-muted);">Tampilan surat panggilan & lampiran poin A4</span>
                     </div>
                     <div id="surat-preview-wrapper" class="surat-preview-wrapper">
                         <div id="surat-preview-scale-box" class="surat-preview-scale-box">
@@ -2012,7 +2171,13 @@
                     </select>
                 </div>
                 <div class="form-group">
-                    <label>Link Foto (Google Drive)</label>
+                    <label>No. WhatsApp <small style="color: var(--text-muted);">(Kolom D)</small></label>
+                    <input type="tel" class="form-control" id="edit-siswa-wa"
+                        placeholder="Cth: 6281234567890" inputmode="tel" maxlength="20"
+                        oninput="sanitizeWaInput(this)">
+                </div>
+                <div class="form-group">
+                    <label>Link Foto (Google Drive) <small style="color: var(--text-muted);">(Kolom E)</small></label>
                     <input type="url" class="form-control" id="edit-siswa-foto"
                         placeholder="https://drive.google.com/file/d/.../view"
                         oninput="previewFotoInput(this.value, 'preview-foto-edit')">
@@ -2250,9 +2415,9 @@
                     `https://docs.google.com/spreadsheets/d/${spreadsheetId}/gviz/tq?sheet=${encodeURIComponent(sheetPelanggaran)}&tq=SELECT%20A,B,C,D,E,F`
                 );
 
-                // Fetch Siswa (A: NISN, B: Nama, C: Kelas, D: Foto URL) to map names, classes, and photos
+                // Fetch Siswa (A: NISN, B: Nama, C: Kelas, D: No. WA, E: Foto URL) to map names, classes, WA, and photos
                 const dataSiswa = await fetchJSONP(
-                    `https://docs.google.com/spreadsheets/d/${spreadsheetId}/gviz/tq?sheet=${encodeURIComponent(sheetSiswa)}&tq=SELECT%20A,B,C,D`
+                    `https://docs.google.com/spreadsheets/d/${spreadsheetId}/gviz/tq?sheet=${encodeURIComponent(sheetSiswa)}&tq=SELECT%20A,B,C,D,E`
                 );
 
                 // Fetch Tata Tertib (A: No, B: Kategori, C: Nama, D: Poin)
@@ -2293,7 +2458,7 @@
                     <tr><td colspan="4" style="text-align: center; color: var(--danger-color);">Gagal memuat data dari Google Sheet.</td></tr>
                 `;
                 document.getElementById('admin-students-body').innerHTML = `
-                    <tr><td colspan="5" style="text-align: center; color: var(--danger-color);">Gagal memuat data siswa dari Google Sheet.</td></tr>
+                    <tr><td colspan="6" style="text-align: center; color: var(--danger-color);">Gagal memuat data siswa dari Google Sheet.</td></tr>
                 `;
             }
         }
@@ -2323,10 +2488,26 @@
             return str;
         }
 
+        function formatRawWaFromCell(rawVal, formattedVal) {
+            if (rawVal == null && !formattedVal) return '';
+            const str = (formattedVal && String(formattedVal).trim())
+                || (typeof rawVal === 'number' ? String(Math.trunc(rawVal)) : String(rawVal).trim());
+            if (!str || str === '-' || /^https?:\/\//i.test(str)) return '';
+            const digits = str.replace(/\D/g, '');
+            if (digits.length < 7) return '';
+            return str;
+        }
+
+        function normalizeWaNumberForUrl(rawWa) {
+            const digits = String(rawWa || '').replace(/\D/g, '');
+            return digits.length >= 7 ? digits : '';
+        }
+
         function processAdminData(jsonPelanggaran, jsonSiswa, jsonTataTertib, jsonPrestasi, jsonDataPrestasi) {
-            // Map NISN to Names, Classes, and Photos
+            // Map NISN to Names, Classes, WA numbers, and Photos
             const studentMap = {};
             const studentClassMap = {};
+            const studentWaMap = {};
             const studentPhotoMap = {};
             const allStudentsList = [];
             if (jsonSiswa && jsonSiswa.table && jsonSiswa.table.rows) {
@@ -2338,15 +2519,18 @@
                         studentMap[nisn] = nama;
                         const kelas = (row.c[2] && row.c[2].v != null) ? String(row.c[2].v).trim() : "-";
                         studentClassMap[nisn] = kelas;
-                        const fotoUrl = (row.c[3] && row.c[3].v != null) ? String(row.c[3].v).trim() : "";
+                        const noWa = formatRawWaFromCell(row.c[3]?.v, row.c[3]?.f);
+                        studentWaMap[nisn] = noWa;
+                        const fotoUrl = (row.c[4] && row.c[4].v != null) ? String(row.c[4].v).trim() : "";
                         studentPhotoMap[nisn] = fotoUrl;
-                        allStudentsList.push({ nisn, nama, kelas, fotoUrl });
+                        allStudentsList.push({ nisn, nama, kelas, noWa, fotoUrl });
                     }
                 });
             }
 
             window.studentMap = studentMap;
             window.studentClassMap = studentClassMap;
+            window.studentWaMap = studentWaMap;
             window.studentPhotoMap = studentPhotoMap;
             window.allStudentsList = allStudentsList;
 
@@ -2418,7 +2602,12 @@
             }
 
             let htmlPelanggaran = '';
-            const nisnViolations = Object.keys(groupedViolations);
+            const nisnViolations = Object.keys(groupedViolations).sort((nisnA, nisnB) => {
+                const a = groupedViolations[nisnA];
+                const b = groupedViolations[nisnB];
+                if (b.totalPoin !== a.totalPoin) return b.totalPoin - a.totalPoin;
+                return (a.nama || '').localeCompare(b.nama || '');
+            });
 
             nisnViolations.forEach(nisn => {
                 const student = groupedViolations[nisn];
@@ -2427,56 +2616,11 @@
                 if (student.hasSedang || student.totalPoin >= 20) totalBadgeClass = 'yellow';
                 if (student.hasBerat || student.totalPoin >= 50) totalBadgeClass = 'red';
 
-                let desktopItemsHtml = '<div class="sg-desktop-list">';
-                let mobileItemsHtml = '';
-
-                student.items.forEach(item => {
-                    let itemBadgeClass = 'green';
-                    if (item.kategori.toLowerCase().includes('sedang')) itemBadgeClass = 'yellow';
-                    if (item.kategori.toLowerCase().includes('berat')) itemBadgeClass = 'red';
-
-                    desktopItemsHtml += `
-                        <div class="sg-desktop-item pelanggaran-${itemBadgeClass}">
-                            <div style="display: flex; align-items: center; justify-content: space-between; gap: 8px;">
-                                <div style="display: flex; align-items: center; gap: 6px; flex-wrap: wrap;">
-                                    <span class="category-pill ${itemBadgeClass}">${item.kategori}</span>
-                                    <span style="font-weight: 500; color: #1e293b;">${item.keterangan}</span>
-                                    <span style="font-size: 11px; color: #64748b; margin-left: 4px;"><i class="fa-regular fa-calendar"></i> ${formatTanggalPendekIndonesia(item.tanggal)}</span>
-                                </div>
-                                <div style="display: flex; align-items: center; gap: 6px; white-space: nowrap;">
-                                    <span class="badge ${itemBadgeClass}" style="font-weight: 700; padding: 2px 7px; font-size: 11px;">+${item.poin}</span>
-                                    <button class="action-btn" style="padding: 3px 7px; font-size: 11px; background: var(--primary-gradient);" title="Edit" onclick="editData('pelanggaran', '${student.nisn}', '${student.nama.replace(/'/g, "\\'")}', '${item.tanggal}', '${item.kategori}', '${item.keterangan.replace(/'/g, "\\'")}', '${item.poin}')"><i class="fa-solid fa-edit"></i></button>
-                                    <button class="action-btn" style="padding: 3px 7px; font-size: 11px; background: var(--danger-color);" title="Hapus" onclick="hapusData('pelanggaran', '${student.nisn}', '${item.tanggal}', '${item.keterangan.replace(/'/g, "\\'")}')"><i class="fa-solid fa-trash"></i></button>
-                                </div>
-                            </div>
-                        </div>
-                    `;
-
-                    mobileItemsHtml += `
-                        <div class="sg-item pelanggaran-${itemBadgeClass}">
-                            <div class="sg-item-header">
-                                <span class="category-pill ${itemBadgeClass}">${item.kategori}</span>
-                                <span class="sg-item-poin">+${item.poin} Poin</span>
-                            </div>
-                            <div class="sg-item-desc">${item.keterangan}</div>
-                            <div class="sg-item-footer">
-                                <span class="sg-item-date"><i class="fa-regular fa-calendar-days"></i> ${formatTanggalPendekIndonesia(item.tanggal)}</span>
-                                <div class="sg-item-actions">
-                                    <button type="button" class="card-btn-action card-btn-edit" onclick="editData('pelanggaran', '${student.nisn}', '${student.nama.replace(/'/g, "\\'")}', '${item.tanggal}', '${item.kategori}', '${item.keterangan.replace(/'/g, "\\'")}', '${item.poin}')">
-                                        <i class="fa-solid fa-edit"></i> Edit
-                                    </button>
-                                    <button type="button" class="card-btn-action card-btn-delete" onclick="hapusData('pelanggaran', '${student.nisn}', '${item.tanggal}', '${item.keterangan.replace(/'/g, "\\'")}')">
-                                        <i class="fa-solid fa-trash"></i> Hapus
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    `;
-                });
-                desktopItemsHtml += '</div>';
+                const showSuratBtn = (Number(student.totalPoin) || 0) >= 50;
+                const searchTextAttr = escapeHtml(buildStudentSearchText(student));
 
                 htmlPelanggaran += `
-                    <tr data-nisn="${student.nisn}">
+                    <tr data-nisn="${student.nisn}" data-search-text="${searchTextAttr}">
                         <!-- DESKTOP CELLS -->
                         <td class="d-cell" style="font-weight: 500; font-size: 13px;">${student.nisn}</td>
                         <td class="d-cell">
@@ -2484,15 +2628,20 @@
                             <div style="font-size: 11.5px; color: #64748b; margin-top: 2px;">
                                 <i class="fa-solid fa-triangle-exclamation" style="color: #f59e0b;"></i> ${student.items.length} Pelanggaran
                             </div>
-                            <button type="button" class="action-btn" style="padding: 3px 9px; font-size: 11px; background: #2563eb; margin-top: 6px; border-radius: 5px;" title="Buat Surat Pemberitahuan Word" onclick="buatSuratUntukSiswa('${student.nisn}')">
+                            ${showSuratBtn ? `<button type="button" class="action-btn" style="padding: 3px 9px; font-size: 11px; background: #2563eb; margin-top: 6px; border-radius: 5px;" title="Buat Surat Pemberitahuan" onclick="buatSuratUntukSiswa('${student.nisn}')">
                                 <i class="fa-solid fa-file-word"></i> Buat Surat
-                            </button>
+                            </button>` : ''}
                         </td>
                         <td class="d-cell" style="text-align: center;"><span class="class-badge">${student.kelas}</span></td>
                         <td class="d-cell" style="text-align: center;">
                             <span class="badge ${totalBadgeClass}" style="font-size: 13px; font-weight: 700; padding: 4px 10px;">+${student.totalPoin}</span>
                         </td>
-                        <td class="d-cell">${desktopItemsHtml}</td>
+                        <td class="d-cell">
+                            <button type="button" class="sg-detail-toggle-btn" aria-expanded="false" onclick="toggleStudentDetail('pelanggaran', '${student.nisn}')">
+                                <i class="fa-solid fa-chevron-down"></i> Lihat Detail (${student.items.length})
+                            </button>
+                            <div class="sg-desktop-list" id="d-detail-pelanggaran-${student.nisn}" style="display: none; margin-top: 8px;"></div>
+                        </td>
 
                         <!-- MOBILE GROUPED CARD CELL -->
                         <td class="m-card-cell">
@@ -2502,9 +2651,14 @@
                                         <span class="badge ${totalBadgeClass} sg-total-badge">+${student.totalPoin} POIN</span>
                                         <div class="sg-student-name">${student.nama}</div>
                                     </div>
-                                    <button type="button" class="card-btn-action" style="background: #dbeafe; color: #1d4ed8; white-space: nowrap; flex-shrink: 0;" onclick="buatSuratUntukSiswa('${student.nisn}')" title="Buat Surat Word">
-                                        <i class="fa-solid fa-file-word"></i> Surat
-                                    </button>
+                                    <div style="display: inline-flex; align-items: center; gap: 6px; flex-shrink: 0;">
+                                        ${showSuratBtn ? `<button type="button" class="card-btn-action" style="background: #dbeafe; color: #1d4ed8; white-space: nowrap; flex-shrink: 0;" onclick="buatSuratUntukSiswa('${student.nisn}')" title="Buat Surat">
+                                            <i class="fa-solid fa-file-word"></i> Surat
+                                        </button>` : ''}
+                                        <button type="button" class="card-btn-action card-btn-detail" aria-expanded="false" onclick="toggleStudentDetail('pelanggaran', '${student.nisn}')">
+                                            Detail <i class="fa-solid fa-chevron-down"></i>
+                                        </button>
+                                    </div>
                                 </div>
                                 <div class="sg-meta-row">
                                     <span class="sg-meta-item"><i class="fa-solid fa-graduation-cap"></i> Kelas: <strong>${student.kelas}</strong></span>
@@ -2513,9 +2667,7 @@
                                     <span class="sg-meta-dot">•</span>
                                     <span class="sg-count-badge">${student.items.length} Kasus</span>
                                 </div>
-                                <div class="sg-items-list">
-                                    ${mobileItemsHtml}
-                                </div>
+                                <div class="sg-items-list" id="m-detail-pelanggaran-${student.nisn}" style="display: none;"></div>
                             </div>
                         </td>
                     </tr>
@@ -2629,58 +2781,20 @@
             }
 
             let htmlPrestasi = '';
-            const nisnAchievements = Object.keys(groupedAchievements);
+            const nisnAchievements = Object.keys(groupedAchievements).sort((nisnA, nisnB) => {
+                const a = groupedAchievements[nisnA];
+                const b = groupedAchievements[nisnB];
+                if (b.totalPoin !== a.totalPoin) return b.totalPoin - a.totalPoin;
+                return (a.nama || '').localeCompare(b.nama || '');
+            });
 
             nisnAchievements.forEach(nisn => {
                 const student = groupedAchievements[nisn];
                 const totalBadgeClass = 'blue';
-
-                let desktopItemsHtml = '<div class="sg-desktop-list">';
-                let mobileItemsHtml = '';
-
-                student.items.forEach(item => {
-                    desktopItemsHtml += `
-                        <div class="sg-desktop-item prestasi-item">
-                            <div style="display: flex; align-items: center; justify-content: space-between; gap: 8px;">
-                                <div style="display: flex; align-items: center; gap: 6px; flex-wrap: wrap;">
-                                    <span class="category-pill blue">${item.kategori}</span>
-                                    <span style="font-weight: 500; color: #1e293b;">${item.keterangan}</span>
-                                    <span style="font-size: 11px; color: #64748b; margin-left: 4px;"><i class="fa-regular fa-calendar"></i> ${formatTanggalPendekIndonesia(item.tanggal)}</span>
-                                </div>
-                                <div style="display: flex; align-items: center; gap: 6px; white-space: nowrap;">
-                                    <span class="badge green" style="font-weight: 700; padding: 2px 7px; font-size: 11px;">+${item.poin}</span>
-                                    <button class="action-btn" style="padding: 3px 7px; font-size: 11px; background: var(--primary-gradient);" title="Edit" onclick="editData('prestasi', '${student.nisn}', '${student.nama.replace(/'/g, "\\'")}', '${item.tanggal}', '${item.kategori}', '${item.keterangan.replace(/'/g, "\\'")}', '${item.poin}')"><i class="fa-solid fa-edit"></i></button>
-                                    <button class="action-btn" style="padding: 3px 7px; font-size: 11px; background: var(--danger-color);" title="Hapus" onclick="hapusData('prestasi', '${student.nisn}', '${item.tanggal}', '${item.keterangan.replace(/'/g, "\\'")}')"><i class="fa-solid fa-trash"></i></button>
-                                </div>
-                            </div>
-                        </div>
-                    `;
-
-                    mobileItemsHtml += `
-                        <div class="sg-item prestasi-item">
-                            <div class="sg-item-header">
-                                <span class="category-pill blue">${item.kategori}</span>
-                                <span class="sg-item-poin">+${item.poin} Poin</span>
-                            </div>
-                            <div class="sg-item-desc">${item.keterangan}</div>
-                            <div class="sg-item-footer">
-                                <span class="sg-item-date"><i class="fa-regular fa-calendar-days"></i> ${formatTanggalPendekIndonesia(item.tanggal)}</span>
-                                <div class="sg-item-actions">
-                                    <button type="button" class="card-btn-action card-btn-edit" onclick="editData('prestasi', '${student.nisn}', '${student.nama.replace(/'/g, "\\'")}', '${item.tanggal}', '${item.kategori}', '${item.keterangan.replace(/'/g, "\\'")}', '${item.poin}')">
-                                        <i class="fa-solid fa-edit"></i> Edit
-                                    </button>
-                                    <button type="button" class="card-btn-action card-btn-delete" onclick="hapusData('prestasi', '${student.nisn}', '${item.tanggal}', '${item.keterangan.replace(/'/g, "\\'")}')">
-                                        <i class="fa-solid fa-trash"></i> Hapus
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    `;
-                });
-                desktopItemsHtml += '</div>';
+                const searchTextAttr = escapeHtml(buildStudentSearchText(student));
 
                 htmlPrestasi += `
-                    <tr data-nisn="${student.nisn}">
+                    <tr data-nisn="${student.nisn}" data-search-text="${searchTextAttr}">
                         <!-- DESKTOP CELLS -->
                         <td class="d-cell" style="font-weight: 500; font-size: 13px;">${student.nisn}</td>
                         <td class="d-cell">
@@ -2693,7 +2807,12 @@
                         <td class="d-cell" style="text-align: center;">
                             <span class="badge ${totalBadgeClass}" style="font-size: 13px; font-weight: 700; padding: 4px 10px;">+${student.totalPoin}</span>
                         </td>
-                        <td class="d-cell">${desktopItemsHtml}</td>
+                        <td class="d-cell">
+                            <button type="button" class="sg-detail-toggle-btn" aria-expanded="false" onclick="toggleStudentDetail('prestasi', '${student.nisn}')">
+                                <i class="fa-solid fa-chevron-down"></i> Lihat Detail (${student.items.length})
+                            </button>
+                            <div class="sg-desktop-list" id="d-detail-prestasi-${student.nisn}" style="display: none; margin-top: 8px;"></div>
+                        </td>
 
                         <!-- MOBILE GROUPED CARD CELL -->
                         <td class="m-card-cell">
@@ -2703,6 +2822,9 @@
                                         <span class="badge ${totalBadgeClass} sg-total-badge">+${student.totalPoin} POIN</span>
                                         <div class="sg-student-name">${student.nama}</div>
                                     </div>
+                                    <button type="button" class="card-btn-action card-btn-detail" aria-expanded="false" onclick="toggleStudentDetail('prestasi', '${student.nisn}')">
+                                        Detail <i class="fa-solid fa-chevron-down"></i>
+                                    </button>
                                 </div>
                                 <div class="sg-meta-row">
                                     <span class="sg-meta-item"><i class="fa-solid fa-graduation-cap"></i> Kelas: <strong>${student.kelas}</strong></span>
@@ -2711,14 +2833,14 @@
                                     <span class="sg-meta-dot">•</span>
                                     <span class="sg-count-badge">${student.items.length} Prestasi</span>
                                 </div>
-                                <div class="sg-items-list">
-                                    ${mobileItemsHtml}
-                                </div>
+                                <div class="sg-items-list" id="m-detail-prestasi-${student.nisn}" style="display: none;"></div>
                             </div>
                         </td>
                     </tr>
                 `;
             });
+
+            window.groupedAchievementsMap = groupedAchievements;
 
             if (htmlPrestasi === '') {
                 htmlPrestasi = '<tr class="empty-row"><td colspan="5" class="empty-cell" style="text-align: center; padding: 25px; color: var(--text-muted);">Belum ada data prestasi di Google Sheet.</td></tr>';
@@ -2780,7 +2902,15 @@
                     : `<div style="width: 44px; height: 44px; border-radius: 50%; background: #f1f5f9; display: flex; align-items: center; justify-content: center; color: #94a3b8; font-size: 18px; border: 1px dashed #cbd5e1; flex-shrink: 0;"><i class="fa-solid fa-user"></i></div>`;
 
                 const escapedNama = st.nama.replace(/'/g, "\\'");
+                const escapedWa = (st.noWa || '').replace(/'/g, "\\'");
                 const escapedFoto = (st.fotoUrl || '').replace(/'/g, "\\'");
+                const waIntl = normalizeWaNumberForUrl(st.noWa);
+                const desktopWaHtml = waIntl
+                    ? `<a href="https://wa.me/${waIntl}" target="_blank" rel="noopener noreferrer" style="display: inline-flex; align-items: center; gap: 5px; color: #15803d; font-weight: 600; font-size: 12.5px; text-decoration: none;"><i class="fa-brands fa-whatsapp" style="color: #16a34a;"></i> ${escapeHtml(st.noWa)}</a>`
+                    : `<span style="color: #94a3b8; font-size: 12px;">-</span>`;
+                const mobileWaHtml = waIntl
+                    ? `<div style="font-size: 12px; color: #15803d; margin-top: 2px;"><i class="fa-brands fa-whatsapp"></i> WA: <strong>${escapeHtml(st.noWa)}</strong></div>`
+                    : `<div style="font-size: 12px; color: #94a3b8; margin-top: 2px;"><i class="fa-brands fa-whatsapp"></i> WA: -</div>`;
 
                 htmlSiswa += `
                     <tr data-nisn="${st.nisn}" data-kelas="${st.kelas}">
@@ -2791,8 +2921,9 @@
                             <div style="font-weight: 700; color: #0f172a; font-size: 14px;">${st.nama}</div>
                         </td>
                         <td class="d-cell" style="text-align: center;"><span class="class-badge">${st.kelas}</span></td>
+                        <td class="d-cell">${desktopWaHtml}</td>
                         <td class="d-cell" style="text-align: center; white-space: nowrap;">
-                            <button type="button" class="action-btn" style="padding: 4px 9px; font-size: 12px; background: var(--primary-gradient); margin-right: 4px;" title="Edit Siswa" onclick="bukaEditSiswaModal('${st.nisn}', '${escapedNama}', '${st.kelas}', '${escapedFoto}')">
+                            <button type="button" class="action-btn" style="padding: 4px 9px; font-size: 12px; background: var(--primary-gradient); margin-right: 4px;" title="Edit Siswa" onclick="bukaEditSiswaModal('${st.nisn}', '${escapedNama}', '${st.kelas}', '${escapedWa}', '${escapedFoto}')">
                                 <i class="fa-solid fa-user-pen"></i> Edit
                             </button>
                             <button type="button" class="action-btn" style="padding: 4px 9px; font-size: 12px; background: var(--danger-color);" title="Hapus Siswa" onclick="hapusSiswa('${st.nisn}', '${escapedNama}')">
@@ -2811,13 +2942,14 @@
                                              <div style="font-size: 12px; color: #64748b; margin-top: 2px;">
                                                  <i class="fa-solid fa-id-card"></i> NISN: <strong>${st.nisn}</strong>
                                              </div>
+                                             ${mobileWaHtml}
                                          </div>
                                      </div>
                                      <span class="class-badge" style="font-size: 11px; padding: 3px 8px;">${st.kelas}</span>
                                 </div>
                                 
                                 <div style="display: flex; align-items: center; justify-content: flex-end; gap: 6px; padding-top: 8px; border-top: 1px dashed #e2e8f0; margin-top: 2px;">
-                                    <button type="button" class="card-btn-action card-btn-edit" onclick="bukaEditSiswaModal('${st.nisn}', '${escapedNama}', '${st.kelas}', '${escapedFoto}')">
+                                    <button type="button" class="card-btn-action card-btn-edit" onclick="bukaEditSiswaModal('${st.nisn}', '${escapedNama}', '${st.kelas}', '${escapedWa}', '${escapedFoto}')">
                                         <i class="fa-solid fa-user-pen"></i> Edit
                                     </button>
                                     <button type="button" class="card-btn-action card-btn-delete" onclick="hapusSiswa('${st.nisn}', '${escapedNama}')">
@@ -2831,7 +2963,7 @@
             });
 
             if (htmlSiswa === '') {
-                htmlSiswa = '<tr class="empty-row"><td colspan="5" class="empty-cell" style="text-align: center; padding: 25px; color: var(--text-muted);">Belum ada data siswa di Sheet Siswa.</td></tr>';
+                htmlSiswa = '<tr class="empty-row"><td colspan="6" class="empty-cell" style="text-align: center; padding: 25px; color: var(--text-muted);">Belum ada data siswa di Sheet Siswa.</td></tr>';
             }
             document.getElementById('admin-students-body').innerHTML = htmlSiswa;
             const badgeTotalSiswa = document.getElementById('badge-total-siswa');
@@ -2843,13 +2975,15 @@
 
             // Initialize Pagination
             setTimeout(() => {
+                const violTable = document.getElementById('admin-violations-table');
+                if (violTable) violTable.dataset.rowsPerPage = '10';
                 const searchPelEl = document.getElementById('search-pelanggaran');
                 if (searchPelEl && searchPelEl.value.trim() !== '') {
                     searchTable();
                 } else {
-                    setupPagination('admin-violations-table', 'pagination-pelanggaran');
+                    setupPagination('admin-violations-table', 'pagination-pelanggaran', 10);
                 }
-                setupPagination('admin-achievements-table', 'pagination-prestasi');
+                setupPagination('admin-achievements-table', 'pagination-prestasi', 10);
                 setupPagination('admin-rules-table', 'pagination-aturan');
                 setupPagination('admin-achievements-rules-table', 'pagination-aturan-prestasi');
                 setupPagination('admin-students-table', 'pagination-siswa', 10);
@@ -3091,7 +3225,7 @@
             const label = document.getElementById('rekap-surat-student-label');
             if (!btn || !label) return;
 
-            if (matchedNisn && window.groupedViolationsMap && window.groupedViolationsMap[matchedNisn]) {
+            if (matchedNisn && window.groupedViolationsMap && window.groupedViolationsMap[matchedNisn] && (Number(window.groupedViolationsMap[matchedNisn].totalPoin) || 0) >= 50) {
                 const st = window.groupedViolationsMap[matchedNisn];
                 btn.dataset.nisn = matchedNisn;
                 label.textContent = st.nama;
@@ -3120,7 +3254,7 @@
             for (let i = 1; i < tr.length; i++) {
                 if (tr[i].cells.length <= 1) continue; // Skip empty/loading state
 
-                const text = (tr[i].textContent || tr[i].innerText).toLowerCase();
+                const text = (tr[i].getAttribute('data-search-text') || tr[i].textContent || tr[i].innerText).toLowerCase();
                 if (!input || text.indexOf(input) > -1) {
                     tr[i].removeAttribute('data-search-hidden');
                 } else {
@@ -3371,7 +3505,7 @@
             for (let i = 1; i < tr.length; i++) {
                 if (tr[i].cells.length <= 1) continue; // Skip empty/loading state
 
-                const text = (tr[i].textContent || tr[i].innerText).toLowerCase();
+                const text = (tr[i].getAttribute('data-search-text') || tr[i].textContent || tr[i].innerText).toLowerCase();
                 if (text.indexOf(input) > -1) {
                     tr[i].removeAttribute('data-search-hidden');
                 } else {
@@ -3391,6 +3525,14 @@
         function sanitizeNisnInput(inputEl) {
             if (!inputEl) return;
             const clean = inputEl.value.replace(/[^0-9]/g, '');
+            if (inputEl.value !== clean) {
+                inputEl.value = clean;
+            }
+        }
+
+        function sanitizeWaInput(inputEl) {
+            if (!inputEl) return;
+            const clean = inputEl.value.replace(/(?!^\+)[^0-9]/g, '');
             if (inputEl.value !== clean) {
                 inputEl.value = clean;
             }
@@ -3903,6 +4045,7 @@
             const nisn = document.getElementById('input-siswa-nisn').value.trim();
             const nama = document.getElementById('input-siswa-nama').value.trim();
             const kelas = document.getElementById('input-siswa-kelas').value.trim();
+            const noWa = (document.getElementById('input-siswa-wa')?.value || '').replace(/(?!^\+)[^0-9]/g, '').trim();
             const fotoUrl = document.getElementById('input-siswa-foto').value.trim();
 
             const scriptUrl = localStorage.getItem('appsScriptUrl') || APPS_SCRIPT_URL;
@@ -3922,6 +4065,7 @@
                 formData.append('nisn', nisn);
                 formData.append('nama', nama);
                 formData.append('kelas', kelas);
+                formData.append('no_wa', noWa);
                 formData.append('foto_url', fotoUrl);
 
                 const response = await fetch(scriptUrl, {
@@ -3953,7 +4097,7 @@
             }
         }
 
-        function bukaEditSiswaModal(nisn, nama, kelas, fotoUrl) {
+        function bukaEditSiswaModal(nisn, nama, kelas, noWa, fotoUrl) {
             document.getElementById('edit-siswa-old-nisn').value = nisn;
             document.getElementById('edit-siswa-nisn').value = nisn;
             document.getElementById('edit-siswa-nama').value = nama;
@@ -3974,6 +4118,9 @@
                 kelasSelect.appendChild(opt);
                 kelasSelect.value = kelas;
             }
+
+            const waInput = document.getElementById('edit-siswa-wa');
+            if (waInput) waInput.value = noWa || '';
 
             const fotoInput = document.getElementById('edit-siswa-foto');
             fotoInput.value = fotoUrl || '';
@@ -4016,6 +4163,7 @@
             const newNisn = document.getElementById('edit-siswa-nisn').value.trim();
             const nama = document.getElementById('edit-siswa-nama').value.trim();
             const kelas = document.getElementById('edit-siswa-kelas').value.trim();
+            const noWa = (document.getElementById('edit-siswa-wa')?.value || '').replace(/(?!^\+)[^0-9]/g, '').trim();
             const fotoUrl = document.getElementById('edit-siswa-foto').value.trim();
 
             const scriptUrl = localStorage.getItem('appsScriptUrl') || APPS_SCRIPT_URL;
@@ -4036,6 +4184,7 @@
                 formData.append('nisn', newNisn);
                 formData.append('nama', nama);
                 formData.append('kelas', kelas);
+                formData.append('no_wa', noWa);
                 formData.append('foto_url', fotoUrl);
 
                 const response = await fetch(scriptUrl, {
@@ -4156,7 +4305,7 @@
             for (let i = 1; i < tr.length; i++) {
                 if (tr[i].cells.length <= 1) continue; // Skip empty row
                 const rowKelas = (tr[i].getAttribute("data-kelas") || "").toUpperCase().trim();
-                const text = (tr[i].textContent || tr[i].innerText).toLowerCase();
+                const text = (tr[i].getAttribute('data-search-text') || tr[i].textContent || tr[i].innerText).toLowerCase();
 
                 const matchSearch = !searchInput || text.indexOf(searchInput) > -1;
                 const matchKelas = !filterKelas || rowKelas === filterKelas;
@@ -4199,15 +4348,15 @@
             worksheet.views = [{ showGridLines: false }];
 
             // Title Row
-            const titleRow = worksheet.addRow(['DATA SISWA & FOTO MTS AL FATAH']);
+            const titleRow = worksheet.addRow(['DATA SISWA, WA & FOTO MTS AL FATAH']);
             titleRow.font = { name: 'Arial', size: 16, bold: true, color: { argb: 'FFFFFFFF' } };
             titleRow.getCell(1).fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF1F2937' } };
             titleRow.getCell(1).alignment = { vertical: 'middle', horizontal: 'center' };
-            worksheet.mergeCells('A1:D1');
+            worksheet.mergeCells('A1:E1');
             worksheet.addRow([]);
 
             // Headers
-            const headerRow = worksheet.addRow(['NISN', 'NAMA SISWA', 'KELAS', 'URL FOTO']);
+            const headerRow = worksheet.addRow(['NISN', 'NAMA SISWA', 'KELAS', 'NO. WHATSAPP', 'URL FOTO']);
             headerRow.font = { bold: true, color: { argb: 'FFFFFFFF' } };
             headerRow.alignment = { vertical: 'middle', horizontal: 'center' };
             headerRow.eachCell(cell => {
@@ -4217,10 +4366,10 @@
 
             students.forEach(st => {
                 if (hiddenNisns.has(st.nisn)) return;
-                const row = worksheet.addRow([st.nisn, st.nama, st.kelas, st.fotoUrl || '-']);
+                const row = worksheet.addRow([st.nisn, st.nama, st.kelas, st.noWa || '-', st.fotoUrl || '-']);
                 row.eachCell((cell, colNumber) => {
                     cell.border = { top: { style: 'thin', color: { argb: 'FFCCCCCC' } }, left: { style: 'thin', color: { argb: 'FFCCCCCC' } }, bottom: { style: 'thin', color: { argb: 'FFCCCCCC' } }, right: { style: 'thin', color: { argb: 'FFCCCCCC' } } };
-                    cell.alignment = { vertical: 'middle', horizontal: colNumber === 1 || colNumber === 3 ? 'center' : 'left' };
+                    cell.alignment = { vertical: 'middle', horizontal: colNumber === 1 || colNumber === 3 || colNumber === 4 ? 'center' : 'left' };
                 });
             });
 
@@ -4228,6 +4377,7 @@
                 { width: 16 }, // NISN
                 { width: 35 }, // Nama Siswa
                 { width: 12 }, // Kelas
+                { width: 20 }, // No. WhatsApp
                 { width: 55 }  // URL Foto
             ];
 
@@ -4236,9 +4386,136 @@
             saveAs(blob, 'Data_Siswa_MTs_Al_Fatah.xlsx');
         }
 
-        function setupPagination(tableId, paginationContainerId, rowsPerPage = 5) {
+        function escapeJsArg(val) {
+            return String(val ?? '').replace(/\\/g, '\\\\').replace(/'/g, "\\'");
+        }
+
+        function buildStudentSearchText(student) {
+            const parts = [student.nisn, student.nama, student.kelas];
+            (student.items || []).forEach(item => {
+                parts.push(item.kategori, item.keterangan, item.tanggal);
+            });
+            return parts.filter(Boolean).join(' ').toLowerCase();
+        }
+
+        function buildStudentItemsHtml(jenis, student) {
+            const isPelanggaran = jenis === 'pelanggaran';
+            const safeNisn = escapeJsArg(student.nisn);
+            const safeNama = escapeJsArg(student.nama);
+            let desktopHtml = '';
+            let mobileHtml = '';
+
+            (student.items || []).forEach(item => {
+                let itemClass = 'prestasi-item';
+                let pillClass = 'blue';
+                let desktopBadgeClass = 'green';
+                if (isPelanggaran) {
+                    const katLower = (item.kategori || '').toLowerCase();
+                    pillClass = katLower.includes('berat') ? 'red' : (katLower.includes('sedang') ? 'yellow' : 'green');
+                    itemClass = `pelanggaran-${pillClass}`;
+                    desktopBadgeClass = pillClass;
+                }
+
+                const safeTgl = escapeJsArg(item.tanggal);
+                const safeKat = escapeJsArg(item.kategori);
+                const safeKet = escapeJsArg(item.keterangan);
+                const safePoin = escapeJsArg(item.poin);
+                const tglFormatted = formatTanggalPendekIndonesia(item.tanggal);
+
+                desktopHtml += `
+                    <div class="sg-desktop-item ${itemClass}">
+                        <div style="display: flex; align-items: center; justify-content: space-between; gap: 8px;">
+                            <div style="display: flex; align-items: center; gap: 6px; flex-wrap: wrap;">
+                                <span class="category-pill ${pillClass}">${escapeHtml(item.kategori)}</span>
+                                <span style="font-weight: 500; color: #1e293b;">${escapeHtml(item.keterangan)}</span>
+                                <span style="font-size: 11px; color: #64748b; margin-left: 4px;"><i class="fa-regular fa-calendar"></i> ${escapeHtml(tglFormatted)}</span>
+                            </div>
+                            <div style="display: flex; align-items: center; gap: 6px; white-space: nowrap;">
+                                <span class="badge ${desktopBadgeClass}" style="font-weight: 700; padding: 2px 7px; font-size: 11px;">+${escapeHtml(String(item.poin))}</span>
+                                <button class="action-btn" style="padding: 3px 7px; font-size: 11px; background: var(--primary-gradient);" title="Edit" onclick="editData('${jenis}', '${safeNisn}', '${safeNama}', '${safeTgl}', '${safeKat}', '${safeKet}', '${safePoin}')"><i class="fa-solid fa-edit"></i></button>
+                                <button class="action-btn" style="padding: 3px 7px; font-size: 11px; background: var(--danger-color);" title="Hapus" onclick="hapusData('${jenis}', '${safeNisn}', '${safeTgl}', '${safeKet}')"><i class="fa-solid fa-trash"></i></button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+
+                mobileHtml += `
+                    <div class="sg-item ${itemClass}">
+                        <div class="sg-item-header">
+                            <span class="category-pill ${pillClass}">${escapeHtml(item.kategori)}</span>
+                            <span class="sg-item-poin">+${escapeHtml(String(item.poin))} Poin</span>
+                        </div>
+                        <div class="sg-item-desc">${escapeHtml(item.keterangan)}</div>
+                        <div class="sg-item-footer">
+                            <span class="sg-item-date"><i class="fa-regular fa-calendar-days"></i> ${escapeHtml(tglFormatted)}</span>
+                            <div class="sg-item-actions">
+                                <button type="button" class="card-btn-action card-btn-edit" onclick="editData('${jenis}', '${safeNisn}', '${safeNama}', '${safeTgl}', '${safeKat}', '${safeKet}', '${safePoin}')">
+                                    <i class="fa-solid fa-edit"></i> Edit
+                                </button>
+                                <button type="button" class="card-btn-action card-btn-delete" onclick="hapusData('${jenis}', '${safeNisn}', '${safeTgl}', '${safeKet}')">
+                                    <i class="fa-solid fa-trash"></i> Hapus
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+
+            return { desktopHtml, mobileHtml };
+        }
+
+        function toggleStudentDetail(jenis, nisn) {
+            const dataMap = jenis === 'pelanggaran' ? window.groupedViolationsMap : window.groupedAchievementsMap;
+            const student = dataMap && dataMap[nisn];
+            if (!student) return;
+
+            const dEl = document.getElementById(`d-detail-${jenis}-${nisn}`);
+            const mEl = document.getElementById(`m-detail-${jenis}-${nisn}`);
+            const row = (dEl && typeof dEl.closest === 'function' ? dEl.closest('tr') : null)
+                || (mEl && typeof mEl.closest === 'function' ? mEl.closest('tr') : null);
+            const currentlyOpen = row ? row.dataset.detailOpen === 'true' : (dEl?.style.display === 'flex' || mEl?.style.display === 'flex');
+            const nextOpen = !currentlyOpen;
+
+            if (nextOpen && ((dEl && dEl.dataset.loaded !== '1') || (mEl && mEl.dataset.loaded !== '1'))) {
+                const { desktopHtml, mobileHtml } = buildStudentItemsHtml(jenis, student);
+                if (dEl) {
+                    dEl.innerHTML = desktopHtml;
+                    dEl.dataset.loaded = '1';
+                }
+                if (mEl) {
+                    mEl.innerHTML = mobileHtml;
+                    mEl.dataset.loaded = '1';
+                }
+            }
+
+            if (dEl) dEl.style.display = nextOpen ? 'flex' : 'none';
+            if (mEl) mEl.style.display = nextOpen ? 'flex' : 'none';
+            if (row) row.dataset.detailOpen = nextOpen ? 'true' : 'false';
+
+            const itemCount = (student.items || []).length;
+            if (row && typeof row.querySelectorAll === 'function') {
+                row.querySelectorAll('.sg-detail-toggle-btn').forEach(btn => {
+                    btn.classList.toggle('open', nextOpen);
+                    btn.setAttribute('aria-expanded', nextOpen ? 'true' : 'false');
+                    btn.innerHTML = nextOpen
+                        ? '<i class="fa-solid fa-chevron-up"></i> Tutup Detail'
+                        : `<i class="fa-solid fa-chevron-down"></i> Lihat Detail (${itemCount})`;
+                });
+                row.querySelectorAll('.card-btn-detail').forEach(btn => {
+                    btn.classList.toggle('open', nextOpen);
+                    btn.setAttribute('aria-expanded', nextOpen ? 'true' : 'false');
+                    btn.innerHTML = nextOpen
+                        ? 'Tutup <i class="fa-solid fa-chevron-up"></i>'
+                        : 'Detail <i class="fa-solid fa-chevron-down"></i>';
+                });
+            }
+        }
+
+        function setupPagination(tableId, paginationContainerId, rowsPerPage) {
             const table = document.getElementById(tableId);
             if (!table) return;
+            const resolvedRowsPerPage = rowsPerPage || parseInt(table.dataset.rowsPerPage, 10) || 5;
+            if (rowsPerPage) table.dataset.rowsPerPage = String(rowsPerPage);
             const tbody = table.querySelector('tbody');
             if (!tbody) return;
 
@@ -4250,7 +4527,7 @@
             }
 
             const visibleRows = rows.filter(row => row.getAttribute('data-search-hidden') !== 'true');
-            const totalPages = Math.ceil(visibleRows.length / rowsPerPage) || 1;
+            const totalPages = Math.ceil(visibleRows.length / resolvedRowsPerPage) || 1;
             let currentPage = parseInt(table.getAttribute('data-current-page')) || 1;
 
             if (currentPage > totalPages) currentPage = totalPages;
@@ -4259,8 +4536,8 @@
 
             rows.forEach(row => row.style.display = 'none');
 
-            const start = (currentPage - 1) * rowsPerPage;
-            const end = start + rowsPerPage;
+            const start = (currentPage - 1) * resolvedRowsPerPage;
+            const end = start + resolvedRowsPerPage;
             visibleRows.slice(start, end).forEach(row => row.style.display = '');
 
             const container = document.getElementById(paginationContainerId);
@@ -4313,8 +4590,12 @@
         ];
 
         const SURAT_CONSTANTS = {
-            hal: "Pemberitahuan Catatan Pelanggaran",
+            hal: "Surat Panggilan Orang Tua/Wali Siswa",
             salamPembuka: "Assalamu’alaikum Wr. Wb.",
+            undanganPembuka: "Sehubungan dengan perkembangan dan pembinaan tata tertib sekolah, bersama surat ini kami mengharap Bapak/Ibu/Wali murid untuk hadir pada:",
+            undanganTempat: "MTs Al Fatah Talun",
+            undanganKeperluan: "Pembinaan dan koordinasi terkait perkembangan belajar serta kedisiplinan siswa di sekolah.",
+            undanganPenutup: "Mengingat pentingnya hal tersebut, kami sangat mengharapkan kehadiran Bapak/Ibu/Wali siswa tepat pada waktunya. Atas perhatian dan kerja sama Bapak/Ibu, kami ucapkan terima kasih.",
             pembukaIntro: "Berikut ini kami sampaikan catatan pelanggaran siswa berdasarkan rekam DIPERIKSA (digital Pencatatan Riwayat Kedisiplinan Siswa MTs Al Fatah Talun), atas nama ",
             salamPenutup: "Wassalamu’alaikum Wr. Wb.",
             penutup: "Demikian, agar menjadi perhatian besar untuk kebaikan siswa di waktu mendatang, terima kasih.",
@@ -4352,6 +4633,28 @@
             return `${now.getDate()} ${bulan[now.getMonth()]} ${now.getFullYear()}`;
         }
 
+        function formatHariTanggalUndangan(dateStr) {
+            if (!dateStr || !/^\d{4}-\d{2}-\d{2}$/.test(dateStr)) {
+                return '......./...................';
+            }
+            const hariList = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
+            const [y, m, d] = dateStr.split('-').map(Number);
+            const dt = new Date(y, m - 1, d);
+            const namaHari = hariList[dt.getDay()] || '';
+            return `${namaHari}, ${formatTanggalIndonesia(dateStr)}`;
+        }
+
+        function formatJamUndangan(rawJam) {
+            let val = String(rawJam || '').trim();
+            if (!val) return '................ WIB';
+            const timeMatch = val.match(/^(\d{1,2}):(\d{2})(?::\d{2})?$/);
+            if (timeMatch) {
+                val = `${timeMatch[1].padStart(2, '0')}.${timeMatch[2]}`;
+            }
+            if (/\bwib\b/i.test(val)) return val;
+            return `${val} WIB`;
+        }
+
         function formatTanggalPendekIndonesia(dateStr) {
             const bulanPendek = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'];
             if (!dateStr || dateStr === '-') return dateStr || '-';
@@ -4380,7 +4683,7 @@
             return str;
         }
 
-        const SURAT_SEQ_STORAGE_KEY = 'diperiksa_surat_seq_v1';
+        const SURAT_SEQ_STORAGE_KEY = 'diperiksa_surat_seq_v2';
 
         function parseSuratDateParts(dateStr) {
             if (dateStr && /^\d{4}-\d{2}-\d{2}$/.test(dateStr)) {
@@ -4451,6 +4754,9 @@
         }
 
         function initSuratDefaults() {
+            try {
+                localStorage.removeItem('diperiksa_surat_seq_v1');
+            } catch (e) { /* abaikan error storage */ }
             syncSuratDateForPrint();
             renderSuratPreview();
         }
@@ -4507,6 +4813,8 @@
                 if (el) el.value = val;
             };
             setVal('surat-nama-siswa', '');
+            setVal('surat-undangan-tanggal', '');
+            setVal('surat-undangan-jam', '');
             setVal('surat-kepala', SURAT_CONSTANTS.kepalaDefault);
             setVal('surat-guru-bk', SURAT_CONSTANTS.guruBkDefault);
 
@@ -4534,11 +4842,17 @@
             const vData = resolvedNisn ? groupedMap[resolvedNisn] : null;
             const nama = vData?.nama || studentObj?.nama || namaInputVal;
             const kelas = vData?.kelas || studentObj?.kelas || '';
+            const noWa = studentObj?.noWa || vData?.noWa || (window.studentWaMap && resolvedNisn ? window.studentWaMap[resolvedNisn] : '') || '';
+            const waNumberIntl = typeof normalizeWaNumberForUrl === 'function' ? normalizeWaNumberForUrl(noWa) : '';
             const tanggalRaw = activeSuratTanggal || getTodayLocalStr();
             const nomorSurat = activeSuratNomor || syncSuratNomorDisplay();
             const tanggalFormatted = formatTanggalIndonesia(tanggalRaw);
-            const lampiran = '-';
-            const tujuan = nama ? `Wali siswa ${nama}` : 'Wali siswa ......';
+            const lampiran = '1';
+            const tujuan = nama ? `Bapak/Ibu Orang Tua/Wali Siswa dari ${nama}` : 'Bapak/Ibu Orang Tua/Wali Siswa dari ............';
+            const undanganTanggalRaw = (document.getElementById('surat-undangan-tanggal')?.value || '').trim();
+            const undanganTanggalFormatted = formatHariTanggalUndangan(undanganTanggalRaw);
+            const undanganJamRaw = (document.getElementById('surat-undangan-jam')?.value || '').trim();
+            const undanganJamFormatted = formatJamUndangan(undanganJamRaw);
             const kepala = (document.getElementById('surat-kepala')?.value || '').trim() || SURAT_CONSTANTS.kepalaDefault;
             const guruBk = (document.getElementById('surat-guru-bk')?.value || '').trim() || SURAT_CONSTANTS.guruBkDefault;
 
@@ -4549,11 +4863,17 @@
                 nisn: resolvedNisn || '',
                 nama,
                 kelas,
+                noWa,
+                waNumberIntl,
                 nomorSurat,
                 tanggalRaw,
                 tanggalFormatted,
                 lampiran,
                 tujuan,
+                undanganTanggalRaw,
+                undanganTanggalFormatted,
+                undanganJamRaw,
+                undanganJamFormatted,
                 kepala,
                 guruBk,
                 items: selectedItems,
@@ -4611,10 +4931,17 @@
         function renderSuratPreview() {
             const previewCard = document.getElementById('surat-preview-card');
             const paper = document.getElementById('surat-preview-paper');
+            const btnShareWa = document.getElementById('btn-share-wa');
             if (!paper) return;
 
             const st = getSuratState();
             const hasStudent = Boolean(st.nisn && st.nama);
+
+            if (btnShareWa) {
+                btnShareWa.title = (hasStudent && st.waNumberIntl)
+                    ? `Kirim undangan langsung ke WhatsApp ${st.noWa}`
+                    : 'Bagikan undangan via WhatsApp';
+            }
 
             if (!hasStudent) {
                 if (previewCard) previewCard.style.display = 'none';
@@ -4660,96 +4987,147 @@
             }).join('');
 
             paper.innerHTML = `
-                <table class="kop-surat-table">
-                    <tr>
-                        <td class="kop-logo-cell">
-                            <img id="kop-logo-img" src="mts.png" alt="Logo MTs Al Fatah Talun"
-                                style="width: 96px; height: 96px; object-fit: contain; display: block; margin: 0 auto;"
-                                onerror="this.style.display='none';">
-                        </td>
-                        <td class="kop-text-cell">
-                            ${kopLinesHtml}
-                        </td>
-                    </tr>
-                </table>
-                <div class="kop-line-double"></div>
-
-                <div style="text-align: right; margin-bottom: 4px;">Talun, ${escapeHtml(st.tanggalFormatted)}</div>
-
-                <table class="meta-surat-table" style="width: auto; margin-bottom: 16px;">
-                    <tr>
-                        <td style="width: 65px;">No</td>
-                        <td style="width: 14px;">:</td>
-                        <td>${escapeHtml(st.nomorSurat)}</td>
-                    </tr>
-                    <tr>
-                        <td>Hal</td>
-                        <td>:</td>
-                        <td><strong><em><u>${SURAT_CONSTANTS.hal}</u></em></strong></td>
-                    </tr>
-                    <tr>
-                        <td>Lamp.</td>
-                        <td>:</td>
-                        <td>${escapeHtml(st.lampiran)}</td>
-                    </tr>
-                </table>
-
-                <div style="margin-bottom: 16px;">
-                    <div>Kepada Yth. ${escapeHtml(st.tujuan)}</div>
-                    <div>di <u>Tempat</u></div>
-                </div>
-
-                <div style="font-weight: 700; font-style: italic; margin-bottom: 6px;">
-                    ${SURAT_CONSTANTS.salamPembuka}
-                </div>
-
-                <p style="margin: 0 0 10px 0; text-align: left;">
-                    ${SURAT_CONSTANTS.pembukaIntro}${namaDisplay} Kelas ${kelasDisplay} Sebagai berikut:
-                </p>
-
-                <table class="pelanggaran-surat-table">
-                    <thead>
+                <!-- HALAMAN 1: UNDANGAN DENGAN KOP -->
+                <div class="surat-page">
+                    <table class="kop-surat-table">
                         <tr>
-                            <th style="width: 7%;">No.</th>
-                            <th style="width: 17%;">Tanggal</th>
-                            <th style="width: 16%;">Kategori</th>
-                            <th style="width: 50%;">Nama Pelanggaran</th>
-                            <th style="width: 10%;">Poin</th>
+                            <td class="kop-logo-cell">
+                                <img id="kop-logo-img" src="mts.png" alt="Logo MTs Al Fatah Talun"
+                                    style="width: 96px; height: 96px; object-fit: contain; display: block; margin: 0 auto;"
+                                    onerror="this.style.display='none';">
+                            </td>
+                            <td class="kop-text-cell">
+                                ${kopLinesHtml}
+                            </td>
                         </tr>
-                    </thead>
-                    <tbody>
-                        ${rowsHtml}
+                    </table>
+                    <div class="kop-line-double"></div>
+
+                    <div style="text-align: right; margin-bottom: 6px;">Talun, ${escapeHtml(st.tanggalFormatted)}</div>
+
+                    <table class="meta-surat-table" style="width: auto; margin-bottom: 18px;">
                         <tr>
-                            <td colspan="4" style="text-align: center; font-weight: 700;">Total</td>
-                            <td style="text-align: center; font-weight: 700;">${totalDisplay}</td>
+                            <td style="width: 65px;">No</td>
+                            <td style="width: 14px;">:</td>
+                            <td>${escapeHtml(st.nomorSurat)}</td>
                         </tr>
-                    </tbody>
-                </table>
+                        <tr>
+                            <td>Lamp</td>
+                            <td>:</td>
+                            <td>${escapeHtml(st.lampiran)}</td>
+                        </tr>
+                        <tr>
+                            <td>Hal</td>
+                            <td>:</td>
+                            <td><strong><em><u>${SURAT_CONSTANTS.hal}</u></em></strong></td>
+                        </tr>
+                    </table>
 
-                <p style="margin: 12px 0 6px 0;">
-                    ${SURAT_CONSTANTS.penutup}
-                </p>
+                    <div style="margin-bottom: 20px;">
+                        <div>Kepada Yth.</div>
+                        <div>Bapak/Ibu Orang Tua/Wali Siswa dari ${namaDisplay}</div>
+                        <div>di <u>Tempat</u></div>
+                    </div>
 
-                <div style="font-weight: 700; font-style: italic; margin-bottom: 24px;">
-                    ${SURAT_CONSTANTS.salamPenutup}
+                    <div style="font-weight: 700; font-style: italic; margin-bottom: 8px;">
+                        ${SURAT_CONSTANTS.salamPembuka}
+                    </div>
+
+                    <p style="margin: 0 0 14px 0; text-align: left;">
+                        ${SURAT_CONSTANTS.undanganPembuka}
+                    </p>
+
+                    <table class="undangan-detail-table" style="width: 100%; margin: 0 0 16px 0;">
+                        <tr>
+                            <td style="width: 110px;">Hari/Tanggal</td>
+                            <td style="width: 14px;">:</td>
+                            <td>${escapeHtml(st.undanganTanggalFormatted)}</td>
+                        </tr>
+                        <tr>
+                            <td>Jam</td>
+                            <td>:</td>
+                            <td>${escapeHtml(st.undanganJamFormatted)}</td>
+                        </tr>
+                        <tr>
+                            <td>Tempat</td>
+                            <td>:</td>
+                            <td>${SURAT_CONSTANTS.undanganTempat}</td>
+                        </tr>
+                        <tr>
+                            <td>Keperluan</td>
+                            <td>:</td>
+                            <td>${SURAT_CONSTANTS.undanganKeperluan}</td>
+                        </tr>
+                    </table>
+
+                    <p style="margin: 0 0 8px 0; text-align: left;">
+                        ${SURAT_CONSTANTS.undanganPenutup}
+                    </p>
+
+                    <div style="font-weight: 700; font-style: italic; margin-bottom: 28px;">
+                        ${SURAT_CONSTANTS.salamPenutup}
+                    </div>
+
+                    <table class="ttd-surat-table">
+                        <tr>
+                            <td></td>
+                            <td>
+                                <div>Guru BK</div>
+                                <div style="height: 75px;"></div>
+                                <div><u>${escapeHtml(st.guruBk)}</u></div>
+                            </td>
+                        </tr>
+                    </table>
                 </div>
 
-                <table class="ttd-surat-table">
-                    <tr>
-                        <td>
-                            <div>Kepala</div>
-                            <div>MTs Al Fatah Talun</div>
-                            <div style="height: 54px;"></div>
-                            <div><u>${escapeHtml(st.kepala)}</u></div>
-                        </td>
-                        <td>
-                            <div>&nbsp;</div>
-                            <div>Guru BK</div>
-                            <div style="height: 54px;"></div>
-                            <div><u>${escapeHtml(st.guruBk)}</u></div>
-                        </td>
-                    </tr>
-                </table>
+                <!-- HALAMAN 2: LAMPIRAN CATATAN POIN SISWA -->
+                <div class="surat-page">
+                    <div style="font-weight: 700; font-style: italic; margin-bottom: 28px;">Lampiran</div>
+
+                    <p style="margin: 0 0 12px 0; text-align: left;">
+                        ${SURAT_CONSTANTS.pembukaIntro}${namaDisplay} Kelas ${kelasDisplay}. Sebagai berikut:
+                    </p>
+
+                    <table class="pelanggaran-surat-table">
+                        <thead>
+                            <tr>
+                                <th style="width: 7%;">No.</th>
+                                <th style="width: 17%;">Tanggal</th>
+                                <th style="width: 16%;">Kategori</th>
+                                <th style="width: 50%;">Nama Pelanggaran</th>
+                                <th style="width: 10%;">Poin</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${rowsHtml}
+                            <tr>
+                                <td colspan="4" style="text-align: center; font-weight: 700;">Total</td>
+                                <td style="text-align: center; font-weight: 700;">${totalDisplay}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <p style="margin: 14px 0 32px 0;">
+                        ${SURAT_CONSTANTS.penutup}
+                    </p>
+
+                    <table class="ttd-surat-table">
+                        <tr>
+                            <td>
+                                <div>Mengetahui,</div>
+                                <div>Kepala MTs Al Fatah Talun</div>
+                                <div style="height: 75px;"></div>
+                                <div><u>${escapeHtml(st.kepala)}</u></div>
+                            </td>
+                            <td>
+                                <div>&nbsp;</div>
+                                <div>Guru BK</div>
+                                <div style="height: 75px;"></div>
+                                <div><u>${escapeHtml(st.guruBk)}</u></div>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
             `;
             fitSuratPreviewToScreen();
             if (typeof requestAnimationFrame === 'function') {
@@ -4757,382 +5135,45 @@
             }
         }
 
-        async function loadLogoArrayBuffer() {
-            try {
-                const resp = await fetch('./mts.png');
-                if (!resp.ok) throw new Error('HTTP ' + resp.status);
-                return await resp.arrayBuffer();
-            } catch (err) {
-                try {
-                    const img = document.getElementById('kop-logo-img');
-                    if (img && img.complete && img.naturalWidth > 0) {
-                        const canvas = document.createElement('canvas');
-                        canvas.width = img.naturalWidth;
-                        canvas.height = img.naturalHeight;
-                        const ctx = canvas.getContext('2d');
-                        ctx.drawImage(img, 0, 0);
-                        const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/png'));
-                        if (blob) return await blob.arrayBuffer();
-                    }
-                } catch (canvasErr) {
-                    console.warn('Logo tidak dapat dibaca langsung:', canvasErr);
-                }
-                return null;
-            }
+        function buildUndanganWaText(st) {
+            return [
+                '*MTs AL FATAH TALUN*',
+                '_(DIPERIKSA - Digital Pencatatan Riwayat Kedisiplinan Siswa)_',
+                '',
+                `Talun, ${st.tanggalFormatted}`,
+                `No   : ${st.nomorSurat}`,
+                `Lamp : ${st.lampiran}`,
+                `Hal  : *${SURAT_CONSTANTS.hal}*`,
+                '',
+                'Kepada Yth.',
+                `Bapak/Ibu Orang Tua/Wali Siswa dari *${st.nama}*${st.kelas ? ` (Kelas ${st.kelas})` : ''}`,
+                'di Tempat',
+                '',
+                `_${SURAT_CONSTANTS.salamPembuka}_`,
+                '',
+                SURAT_CONSTANTS.undanganPembuka,
+                '',
+                `• Hari/Tanggal : ${st.undanganTanggalFormatted}`,
+                `• Jam          : ${st.undanganJamFormatted}`,
+                `• Tempat       : ${SURAT_CONSTANTS.undanganTempat}`,
+                `• Keperluan    : ${SURAT_CONSTANTS.undanganKeperluan}`,
+                '',
+                SURAT_CONSTANTS.undanganPenutup,
+                '',
+                `_${SURAT_CONSTANTS.salamPenutup}_`,
+                '',
+                'Guru BK',
+                `*${st.guruBk}*`
+            ].join('\n');
         }
 
-        function buildDocxAndDownload(st, logoBytes) {
-            const {
-                Document, Packer, Paragraph, TextRun, Table, TableRow, TableCell,
-                ImageRun, WidthType, AlignmentType, BorderStyle, VerticalAlign,
-                UnderlineType, TableLayoutType
-            } = window.docx;
-
-            const FONT_NAME = 'Calibri';
-            const makeRun = (text, opts = {}) => new TextRun({
-                text: String(text),
-                font: FONT_NAME,
-                size: 22,
-                color: '000000',
-                ...opts
-            });
-
-            const noneEdge = { style: BorderStyle.NONE, size: 0, color: 'FFFFFF' };
-            const noTableBorders = {
-                top: noneEdge, bottom: noneEdge, left: noneEdge, right: noneEdge,
-                insideHorizontal: noneEdge, insideVertical: noneEdge
-            };
-            const noCellBorders = { top: noneEdge, bottom: noneEdge, left: noneEdge, right: noneEdge };
-
-            const solidEdge = { style: BorderStyle.SINGLE, size: 6, color: '000000' };
-            const gridTableBorders = {
-                top: solidEdge, bottom: solidEdge, left: solidEdge, right: solidEdge,
-                insideHorizontal: solidEdge, insideVertical: solidEdge
-            };
-            const gridCellBorders = { top: solidEdge, bottom: solidEdge, left: solidEdge, right: solidEdge };
-            const gridMargins = { top: 65, bottom: 65, left: 100, right: 100 };
-
-            // 1. Kop Surat Table (Total width = 9630 DXA)
-            const kopLogoChildren = logoBytes
-                ? [
-                    new Paragraph({
-                        alignment: AlignmentType.CENTER,
-                        spacing: { before: 0, after: 0 },
-                        children: [
-                            new ImageRun({
-                                type: 'png',
-                                data: logoBytes,
-                                transformation: { width: 94, height: 94 }
-                            })
-                        ]
-                    })
-                ]
-                : [new Paragraph({ children: [] })];
-
-            const kopTextParagraphs = SURAT_KOP_LINES.map((line, idx) => new Paragraph({
-                alignment: AlignmentType.CENTER,
-                spacing: {
-                    before: 0,
-                    after: idx === SURAT_KOP_LINES.length - 1 ? 0 : 10,
-                    line: 240
-                },
-                children: [
-                    makeRun(line.text, {
-                        font: 'Times New Roman',
-                        bold: line.bold,
-                        italics: line.italic,
-                        size: Math.round(line.pt * 2)
-                    })
-                ]
-            }));
-
-            const kopTable = new Table({
-                width: { size: 9630, type: WidthType.DXA },
-                layout: TableLayoutType.FIXED,
-                columnWidths: [1500, 8130],
-                borders: noTableBorders,
-                rows: [
-                    new TableRow({
-                        children: [
-                            new TableCell({
-                                width: { size: 1500, type: WidthType.DXA },
-                                verticalAlign: VerticalAlign.CENTER,
-                                borders: noCellBorders,
-                                children: kopLogoChildren
-                            }),
-                            new TableCell({
-                                width: { size: 8130, type: WidthType.DXA },
-                                verticalAlign: VerticalAlign.CENTER,
-                                borders: noCellBorders,
-                                children: kopTextParagraphs
-                            })
-                        ]
-                    })
-                ]
-            });
-
-            // 2. Garis Bawah Ganda Kop Surat
-            const kopDivider = new Paragraph({
-                spacing: { before: 40, after: 180 },
-                border: {
-                    bottom: {
-                        style: BorderStyle.THICK_THIN_SMALL_GAP,
-                        size: 18,
-                        space: 1,
-                        color: '000000'
-                    }
-                },
-                children: [makeRun('', { size: 2 })]
-            });
-
-            // 3. Tanggal Surat
-            const tanggalPara = new Paragraph({
-                alignment: AlignmentType.RIGHT,
-                spacing: { before: 0, after: 80 },
-                children: [makeRun(`Talun, ${st.tanggalFormatted}`)]
-            });
-
-            // 4. Meta Table (No, Hal, Lamp.)
-            const makeMetaRow = (label, valueRuns) => new TableRow({
-                children: [
-                    new TableCell({
-                        width: { size: 950, type: WidthType.DXA },
-                        borders: noCellBorders,
-                        children: [new Paragraph({ spacing: { before: 0, after: 30 }, children: [makeRun(label)] })]
-                    }),
-                    new TableCell({
-                        width: { size: 220, type: WidthType.DXA },
-                        borders: noCellBorders,
-                        children: [new Paragraph({ spacing: { before: 0, after: 30 }, children: [makeRun(':')] })]
-                    }),
-                    new TableCell({
-                        width: { size: 8460, type: WidthType.DXA },
-                        borders: noCellBorders,
-                        children: [new Paragraph({ spacing: { before: 0, after: 30 }, children: valueRuns })]
-                    })
-                ]
-            });
-
-            const metaTable = new Table({
-                width: { size: 9630, type: WidthType.DXA },
-                layout: TableLayoutType.FIXED,
-                columnWidths: [950, 220, 8460],
-                borders: noTableBorders,
-                rows: [
-                    makeMetaRow('No', [makeRun(st.nomorSurat)]),
-                    makeMetaRow('Hal', [makeRun(SURAT_CONSTANTS.hal, {
-                        bold: true,
-                        italics: true,
-                        underline: { type: UnderlineType.SINGLE }
-                    })]),
-                    makeMetaRow('Lamp.', [makeRun(st.lampiran)])
-                ]
-            });
-
-            // 5. Tabel Pelanggaran (Col widths = [680, 1650, 1550, 4850, 900] -> Total = 9630)
-            const pelColWidths = [680, 1650, 1550, 4850, 900];
-            const makeGridCell = (text, widthDxa, align, opts = {}) => new TableCell({
-                width: { size: widthDxa, type: WidthType.DXA },
-                verticalAlign: VerticalAlign.CENTER,
-                margins: gridMargins,
-                borders: gridCellBorders,
-                columnSpan: opts.columnSpan,
-                children: [
-                    new Paragraph({
-                        alignment: align,
-                        spacing: { before: 0, after: 0 },
-                        children: [makeRun(text, { size: 21, bold: Boolean(opts.bold), italics: Boolean(opts.italics) })]
-                    })
-                ]
-            });
-
-            const pelanggaranRows = [
-                new TableRow({
-                    tableHeader: true,
-                    children: [
-                        makeGridCell('No.', pelColWidths[0], AlignmentType.CENTER, { bold: true }),
-                        makeGridCell('Tanggal', pelColWidths[1], AlignmentType.CENTER, { bold: true }),
-                        makeGridCell('Kategori', pelColWidths[2], AlignmentType.CENTER, { bold: true }),
-                        makeGridCell('Nama Pelanggaran', pelColWidths[3], AlignmentType.CENTER, { bold: true }),
-                        makeGridCell('Poin', pelColWidths[4], AlignmentType.CENTER, { bold: true })
-                    ]
-                })
-            ];
-
-            if (st.items.length === 0) {
-                pelanggaranRows.push(
-                    new TableRow({
-                        children: [
-                            makeGridCell('Siswa ini belum memiliki catatan pelanggaran.', 9630, AlignmentType.CENTER, { columnSpan: 5, italics: true })
-                        ]
-                    })
-                );
-            } else {
-                st.items.forEach((item, idx) => {
-                    pelanggaranRows.push(
-                        new TableRow({
-                            children: [
-                                makeGridCell(String(idx + 1), pelColWidths[0], AlignmentType.CENTER),
-                                makeGridCell(formatTanggalPendekIndonesia(item.tanggal), pelColWidths[1], AlignmentType.CENTER),
-                                makeGridCell(item.kategori, pelColWidths[2], AlignmentType.CENTER),
-                                makeGridCell(item.keterangan, pelColWidths[3], AlignmentType.LEFT),
-                                makeGridCell(String(item.poin), pelColWidths[4], AlignmentType.CENTER)
-                            ]
-                        })
-                    );
-                });
-            }
-
-            pelanggaranRows.push(
-                new TableRow({
-                    children: [
-                        makeGridCell('Total', 8730, AlignmentType.CENTER, { columnSpan: 4, bold: true }),
-                        makeGridCell(String(st.totalPoin), pelColWidths[4], AlignmentType.CENTER, { bold: true })
-                    ]
-                })
-            );
-
-            const pelanggaranTable = new Table({
-                width: { size: 9630, type: WidthType.DXA },
-                layout: TableLayoutType.FIXED,
-                columnWidths: pelColWidths,
-                borders: gridTableBorders,
-                rows: pelanggaranRows
-            });
-
-            // 6. Blok Tanda Tangan
-            const makeTtdCell = (line1, line2, signer) => new TableCell({
-                width: { size: 4815, type: WidthType.DXA },
-                borders: noCellBorders,
-                children: [
-                    new Paragraph({
-                        alignment: AlignmentType.CENTER,
-                        spacing: { before: 0, after: 20 },
-                        children: [makeRun(line1)]
-                    }),
-                    new Paragraph({
-                        alignment: AlignmentType.CENTER,
-                        spacing: { before: 0, after: 800 },
-                        children: [makeRun(line2)]
-                    }),
-                    new Paragraph({
-                        alignment: AlignmentType.CENTER,
-                        spacing: { before: 0, after: 0 },
-                        children: [makeRun(signer, { underline: { type: UnderlineType.SINGLE } })]
-                    })
-                ]
-            });
-
-            const ttdTable = new Table({
-                width: { size: 9630, type: WidthType.DXA },
-                layout: TableLayoutType.FIXED,
-                columnWidths: [4815, 4815],
-                borders: noTableBorders,
-                rows: [
-                    new TableRow({
-                        children: [
-                            makeTtdCell('Kepala', 'MTs Al Fatah Talun', st.kepala),
-                            makeTtdCell(' ', 'Guru BK', st.guruBk)
-                        ]
-                    })
-                ]
-            });
-
-            const doc = new Document({
-                sections: [{
-                    properties: {
-                        page: {
-                            size: { width: 11906, height: 16838 },
-                            margin: { top: 850, bottom: 850, left: 1134, right: 1134 }
-                        }
-                    },
-                    children: [
-                        kopTable,
-                        kopDivider,
-                        tanggalPara,
-                        metaTable,
-                        new Paragraph({
-                            spacing: { before: 220, after: 20 },
-                            children: [makeRun(`Kepada Yth. ${st.tujuan}`)]
-                        }),
-                        new Paragraph({
-                            spacing: { before: 0, after: 220 },
-                            children: [
-                                makeRun('di '),
-                                makeRun('Tempat', { underline: { type: UnderlineType.SINGLE } })
-                            ]
-                        }),
-                        new Paragraph({
-                            spacing: { before: 0, after: 100 },
-                            children: [makeRun(SURAT_CONSTANTS.salamPembuka, { bold: true, italics: true })]
-                        }),
-                        new Paragraph({
-                            alignment: AlignmentType.LEFT,
-                            spacing: { before: 0, after: 180, line: 276 },
-                            children: [
-                                makeRun(SURAT_CONSTANTS.pembukaIntro),
-                                makeRun(st.nama, { bold: true }),
-                                makeRun(' Kelas '),
-                                makeRun(st.kelas || '-', { bold: true }),
-                                makeRun(' Sebagai berikut:')
-                            ]
-                        }),
-                        pelanggaranTable,
-                        new Paragraph({
-                            spacing: { before: 200, after: 100, line: 276 },
-                            children: [makeRun(SURAT_CONSTANTS.penutup)]
-                        }),
-                        new Paragraph({
-                            spacing: { before: 0, after: 360 },
-                            children: [makeRun(SURAT_CONSTANTS.salamPenutup, { bold: true, italics: true })]
-                        }),
-                        ttdTable
-                    ]
-                }]
-            });
-
-            const safeNama = st.nama.replace(/[^a-zA-Z0-9_-]+/g, '_').replace(/^_+|_+$/g, '');
-            const safeKelas = (st.kelas || '').replace(/[^a-zA-Z0-9_-]+/g, '_');
-            const fileName = `Surat_Pemberitahuan_${safeNama}${safeKelas ? '_' + safeKelas : ''}.docx`;
-
-            return Packer.toBlob(doc).then(blob => saveAs(blob, fileName));
-        }
-
-        function downloadWordFallbackDoc(st) {
-            const paperEl = document.getElementById('surat-preview-paper');
-            const htmlContent = `
-                <html xmlns:o="urn:schemas-microsoft-com:office:office"
-                      xmlns:w="urn:schemas-microsoft-com:office:word"
-                      xmlns="http://www.w3.org/TR/REC-html40">
-                <head>
-                    <meta charset="utf-8">
-                    <title>Surat Pemberitahuan Catatan Pelanggaran</title>
-                    <style>
-                        @page { size: A4; margin: 1.5cm 2cm; }
-                        body { font-family: Calibri, Arial, sans-serif; font-size: 11pt; color: #000; }
-                        table { width: 100%; border-collapse: collapse; }
-                        .kop-logo-cell { width: 108px; text-align: center; vertical-align: middle; }
-                        .kop-text-cell { text-align: center; vertical-align: middle; font-family: 'Times New Roman', Times, serif; line-height: 1.18; }
-                        .kop-line-double { border-top: 3px solid #000; border-bottom: 1px solid #000; height: 2px; margin: 8px 0 14px 0; }
-                        .pelanggaran-surat-table th, .pelanggaran-surat-table td { border: 1px solid #000; padding: 5px 8px; }
-                        .ttd-surat-table td { width: 50%; text-align: center; vertical-align: top; }
-                    </style>
-                </head>
-                <body>${paperEl ? paperEl.innerHTML : ''}</body>
-                </html>
-            `;
-            const blob = new Blob(['\ufeff', htmlContent], { type: 'application/msword' });
-            const safeNama = st.nama.replace(/[^a-zA-Z0-9_-]+/g, '_').replace(/^_+|_+$/g, '');
-            saveAs(blob, `Surat_Pemberitahuan_${safeNama}.doc`);
-        }
-
-        async function downloadSuratWord() {
+        function shareUndanganWhatsApp() {
             syncSuratDateForPrint();
             renderSuratPreview();
 
             const st = getSuratState();
             if (!st.nisn || !st.nama) {
-                alert('Silakan pilih nama siswa dari daftar pencarian terlebih dahulu sebelum mengunduh surat Word!');
+                alert('Silakan pilih nama siswa dari daftar pencarian terlebih dahulu sebelum membagikan undangan ke WhatsApp!');
                 const namaEl = document.getElementById('surat-nama-siswa');
                 if (namaEl) {
                     namaEl.focus();
@@ -5141,29 +5182,21 @@
                 return;
             }
 
-            const btn = document.getElementById('btn-download-word');
-            const originalHtml = btn ? btn.innerHTML : '';
-            if (btn) {
-                btn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> Membuat File Word...';
-                btn.disabled = true;
-            }
+            const waText = buildUndanganWaText(st);
+            const waUrl = st.waNumberIntl
+                ? `https://wa.me/${st.waNumberIntl}?text=${encodeURIComponent(waText)}`
+                : `https://wa.me/?text=${encodeURIComponent(waText)}`;
+            consumeAndAdvanceSuratNomor(st.nomorSurat, st.tanggalRaw);
 
-            try {
-                if (typeof window.docx === 'undefined' || !window.docx.Document) {
-                    downloadWordFallbackDoc(st);
-                } else {
-                    const logoBytes = await loadLogoArrayBuffer();
-                    await buildDocxAndDownload(st, logoBytes);
-                }
-                consumeAndAdvanceSuratNomor(st.nomorSurat, st.tanggalRaw);
-            } catch (err) {
-                console.error('Gagal membuat file .docx:', err);
-                alert('Terjadi kendala saat membuat file Word (.docx): ' + err.message);
-            } finally {
-                if (btn) {
-                    btn.innerHTML = originalHtml;
-                    btn.disabled = false;
-                }
+            const openedWin = window.open(waUrl, '_blank', 'noopener,noreferrer');
+            if (!openedWin && typeof document !== 'undefined' && document.body) {
+                const tempLink = document.createElement('a');
+                tempLink.href = waUrl;
+                tempLink.target = '_blank';
+                tempLink.rel = 'noopener noreferrer';
+                document.body.appendChild(tempLink);
+                tempLink.click();
+                tempLink.remove();
             }
         }
 
@@ -5192,6 +5225,9 @@
             }
             document.body.classList.add('printing-surat');
             resetSuratPreviewScale();
+            if (document.body) {
+                void document.body.offsetHeight;
+            }
             window.print();
         }
 
@@ -5209,15 +5245,24 @@
             }
         });
 
-        window.addEventListener('afterprint', () => {
+        function handleSuratAfterPrint() {
             document.body.classList.remove('printing-surat');
             fitSuratPreviewToScreen();
             if (activePrintSnapshot) {
                 const snap = activePrintSnapshot;
                 activePrintSnapshot = null;
-                consumeAndAdvanceSuratNomor(snap.nomorSurat, snap.tanggalRaw);
+                const confirmed = confirm(
+                    `Apakah surat nomor ${snap.nomorSurat} sudah berhasil dicetak/disimpan?\n\n` +
+                    `• Klik OK untuk menaikkan ke nomor surat berikutnya.\n` +
+                    `• Klik Batal/Cancel jika tadi membatalkan cetak.`
+                );
+                if (confirmed) {
+                    consumeAndAdvanceSuratNomor(snap.nomorSurat, snap.tanggalRaw);
+                }
             }
-        });
+        }
+
+        window.addEventListener('afterprint', handleSuratAfterPrint);
     </script>
     <script src="protection.js"></script>
 </body>
