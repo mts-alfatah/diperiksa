@@ -307,7 +307,7 @@ function simulateRedirect(url) {
     }
     
     setTimeout(() => {
-        window.location.href = url;
+        window.location.replace(url);
     }, 1500);
 }
 

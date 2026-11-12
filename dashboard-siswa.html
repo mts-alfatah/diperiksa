@@ -612,7 +612,7 @@
             <img src="logo.png" alt="Logo MTs Al Fatah" style="height: 28px; width: auto; object-fit: contain;">
             DIPERIKSA
         </div>
-        <a href="index.html" class="logout-btn" onclick="sessionStorage.removeItem('siswaNISN')">
+        <a href="index.html" class="logout-btn" onclick="return logoutSiswa(event);">
             <i class="fa-solid fa-right-from-bracket"></i> Keluar
         </a>
     </nav>
@@ -660,9 +660,9 @@
 
         <div id="history-card" class="violations-card" style="display: none;">
             <div class="tabs">
-                <button class="tab-btn active" onclick="switchHistoryTab('pelanggaran')"><i
+                <button class="tab-btn active" onclick="switchHistoryTab('pelanggaran', this)"><i
                         class="fa-solid fa-clipboard-list"></i> Riwayat Pelanggaran</button>
-                <button class="tab-btn" onclick="switchHistoryTab('prestasi')"><i class="fa-solid fa-star"></i> Riwayat
+                <button class="tab-btn" onclick="switchHistoryTab('prestasi', this)"><i class="fa-solid fa-star"></i> Riwayat
                     Prestasi</button>
             </div>
 
@@ -722,9 +722,11 @@
             const loggedInNISN = sessionStorage.getItem('siswaNISN');
             if (!loggedInNISN) {
                 alert('Anda belum login atau sesi telah berakhir!');
-                window.location.href = 'index.html';
+                window.location.replace('index.html');
                 return;
             }
+
+            initSiswaHistoryNavigation();
 
             // Ganti dengan ID Spreadsheet Anda
             const SPREADSHEET_ID = '1jFFuABePc7tGcc0rG7K8G0aV4lRIQJuVuV-FzDIAzf4';
@@ -1044,12 +1046,54 @@
             }
         }
 
-        function switchHistoryTab(tabId) {
+        let siswaTabDepth = 0;
+
+        function initSiswaHistoryNavigation() {
+            siswaTabDepth = 0;
+            try {
+                history.replaceState({ siswaDepth: 0 }, '');
+            } catch (e) {}
+        }
+
+        function logoutSiswa(e) {
+            if (e) e.preventDefault();
+            sessionStorage.removeItem('siswaNISN');
+            window.location.replace('index.html');
+            return false;
+        }
+
+        window.addEventListener('popstate', (e) => {
+            const targetDepth = (e.state && typeof e.state.siswaDepth === 'number')
+                ? e.state.siswaDepth
+                : 0;
+            if (siswaTabDepth > targetDepth) {
+                siswaTabDepth = targetDepth;
+                switchHistoryTab('pelanggaran', null, { fromPopState: true });
+            }
+        });
+
+        function switchHistoryTab(tabId, btnEl, opts = {}) {
             document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
-            event.currentTarget.classList.add('active');
+            const activeBtn = btnEl || document.querySelector(`.tab-btn[onclick*="'${tabId}'"]`);
+            if (activeBtn) activeBtn.classList.add('active');
 
             document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
-            document.getElementById('tab-' + tabId).classList.add('active');
+            const targetContent = document.getElementById('tab-' + tabId);
+            if (targetContent) targetContent.classList.add('active');
+
+            if (!opts.fromPopState) {
+                if (tabId !== 'pelanggaran' && siswaTabDepth === 0) {
+                    siswaTabDepth = 1;
+                    try {
+                        history.pushState({ siswaDepth: 1 }, '');
+                    } catch (e) {}
+                } else if (tabId === 'pelanggaran' && siswaTabDepth > 0) {
+                    siswaTabDepth = 0;
+                    try {
+                        history.back();
+                    } catch (e) {}
+                }
+            }
         }
     </script>
     <script src="protection.js"></script>

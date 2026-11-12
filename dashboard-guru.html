@@ -12,12 +12,13 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
+
     <!-- ExcelJS & FileSaver for Export Excel -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.3.0/exceljs.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
     <!-- docx.js for Export Word (.docx) -->
-    <script src="https://cdn.jsdelivr.net/npm/docx@9/dist/index.iife.js" onerror="var s=document.createElement('script');s.src='https://unpkg.com/docx@9/dist/index.iife.js';document.head.appendChild(s);"></script>
+    <script src="https://cdn.jsdelivr.net/npm/docx@9/dist/index.iife.js"
+        onerror="var s=document.createElement('script');s.src='https://unpkg.com/docx@9/dist/index.iife.js';document.head.appendChild(s);"></script>
     <style>
         :root {
             color-scheme: light;
@@ -423,10 +424,21 @@
             transition: background 0.15s ease;
         }
 
-        .sg-desktop-item.pelanggaran-green { border-left-color: #10b981; }
-        .sg-desktop-item.pelanggaran-yellow { border-left-color: #f59e0b; }
-        .sg-desktop-item.pelanggaran-red { border-left-color: #ef4444; }
-        .sg-desktop-item.prestasi-item { border-left-color: #3b82f6; }
+        .sg-desktop-item.pelanggaran-green {
+            border-left-color: #10b981;
+        }
+
+        .sg-desktop-item.pelanggaran-yellow {
+            border-left-color: #f59e0b;
+        }
+
+        .sg-desktop-item.pelanggaran-red {
+            border-left-color: #ef4444;
+        }
+
+        .sg-desktop-item.prestasi-item {
+            border-left-color: #3b82f6;
+        }
 
         /* Settings Form */
         .form-group {
@@ -909,10 +921,21 @@
                 gap: 6px;
             }
 
-            .sg-item.pelanggaran-green { border-left-color: #10b981; }
-            .sg-item.pelanggaran-yellow { border-left-color: #f59e0b; }
-            .sg-item.pelanggaran-red { border-left-color: #ef4444; }
-            .sg-item.prestasi-item { border-left-color: #3b82f6; }
+            .sg-item.pelanggaran-green {
+                border-left-color: #10b981;
+            }
+
+            .sg-item.pelanggaran-yellow {
+                border-left-color: #f59e0b;
+            }
+
+            .sg-item.pelanggaran-red {
+                border-left-color: #ef4444;
+            }
+
+            .sg-item.prestasi-item {
+                border-left-color: #3b82f6;
+            }
 
             .sg-item-header {
                 display: flex;
@@ -1010,23 +1033,27 @@
             opacity: 0;
             transition: opacity 0.3s ease;
         }
+
         .modal-overlay.show {
             display: flex;
             opacity: 1;
         }
+
         .modal-content {
             background: var(--card-bg);
             border-radius: var(--border-radius);
             width: 90%;
             max-width: 500px;
             padding: 25px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
             transform: translateY(-20px);
             transition: transform 0.3s ease;
         }
+
         .modal-overlay.show .modal-content {
             transform: translateY(0);
         }
+
         .modal-header {
             display: flex;
             justify-content: space-between;
@@ -1035,10 +1062,12 @@
             border-bottom: 1px solid #e5e7eb;
             padding-bottom: 15px;
         }
+
         .modal-header h3 {
             font-size: 18px;
             color: #1f2937;
         }
+
         .modal-close {
             background: none;
             border: none;
@@ -1053,10 +1082,12 @@
             justify-content: flex-end;
             margin-top: 15px;
         }
+
         .pagination {
             display: flex;
             gap: 5px;
         }
+
         .pagination button {
             padding: 6px 12px;
             border: 1px solid #e5e7eb;
@@ -1068,18 +1099,22 @@
             font-size: 13px;
             font-weight: 500;
         }
+
         .pagination button:hover:not(:disabled) {
             background: #f3f4f6;
         }
+
         .pagination button.active {
             background: var(--primary-gradient);
             color: white;
             border-color: transparent;
         }
+
         .pagination button:disabled {
             opacity: 0.5;
             cursor: not-allowed;
         }
+
         .pagination .dots {
             padding: 6px 4px;
             color: var(--text-muted);
@@ -1196,33 +1231,40 @@
         }
 
         @media print {
+
             body.printing-surat .sidebar,
             body.printing-surat .sidebar-overlay,
             body.printing-surat .top-navbar,
             body.printing-surat .no-print {
                 display: none !important;
             }
+
             body.printing-surat .main-content {
                 margin-left: 0 !important;
                 width: 100% !important;
             }
+
             body.printing-surat .content-area {
                 padding: 0 !important;
             }
+
             body.printing-surat .surat-preview-card {
                 box-shadow: none !important;
                 padding: 0 !important;
                 margin: 0 !important;
                 border-radius: 0 !important;
             }
+
             body.printing-surat .surat-preview-card .card-header {
                 display: none !important;
             }
+
             body.printing-surat .surat-preview-wrapper {
                 background: #ffffff !important;
                 padding: 0 !important;
                 overflow: visible !important;
             }
+
             body.printing-surat #surat-preview-paper {
                 box-shadow: none !important;
                 margin: 0 !important;
@@ -1271,7 +1313,7 @@
             </a>
         </div>
         <div class="sidebar-footer">
-            <a href="login-guru.html" class="logout-btn" onclick="sessionStorage.removeItem('guruNama')">
+            <a href="login-guru.html" class="logout-btn" onclick="return logoutGuru(event);">
                 <i class="fa-solid fa-right-from-bracket"></i> Keluar
             </a>
         </div>
@@ -1310,15 +1352,17 @@
                                 <label>NISN Siswa</label>
                                 <input type="text" class="form-control" id="input-nisn" placeholder="Cth: 0111946795"
                                     autocomplete="off" inputmode="numeric" pattern="[0-9]*"
-                                    oninput="sanitizeNisnInput(this); handleStudentSearch(this, 'nisn', 'pelanggaran')" 
-                                    onfocus="handleStudentSearch(this, 'nisn', 'pelanggaran')" 
+                                    oninput="sanitizeNisnInput(this); handleStudentSearch(this, 'nisn', 'pelanggaran')"
+                                    onfocus="handleStudentSearch(this, 'nisn', 'pelanggaran')"
                                     onkeypress="return isNumberKey(event)" required>
                                 <div id="suggest-nisn-pelanggaran" class="custom-suggest-box"></div>
                             </div>
                             <div class="form-group autocomplete-group" style="margin-bottom: 0;">
                                 <label>Nama Siswa</label>
-                                <input type="text" class="form-control" id="input-nama-siswa" placeholder="Cth: Budi Santoso"
-                                    autocomplete="off" oninput="handleStudentSearch(this, 'nama', 'pelanggaran')" onfocus="handleStudentSearch(this, 'nama', 'pelanggaran')" required>
+                                <input type="text" class="form-control" id="input-nama-siswa"
+                                    placeholder="Cth: Budi Santoso" autocomplete="off"
+                                    oninput="handleStudentSearch(this, 'nama', 'pelanggaran')"
+                                    onfocus="handleStudentSearch(this, 'nama', 'pelanggaran')" required>
                                 <div id="suggest-nama-pelanggaran" class="custom-suggest-box"></div>
                             </div>
                             <div class="form-group" style="margin-bottom: 0;">
@@ -1372,15 +1416,16 @@
                                     style="position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: var(--text-muted); z-index: 2;"></i>
                                 <input type="text" id="search-pelanggaran" placeholder="Cari NISN atau Nama..."
                                     class="form-control" style="padding-left: 35px; width: 100%; max-width: 250px;"
-                                    autocomplete="off"
-                                    oninput="handleRekapSearchSuggest(this); searchTable()"
+                                    autocomplete="off" oninput="handleRekapSearchSuggest(this); searchTable()"
                                     onfocus="handleRekapSearchSuggest(this)">
-                                <div id="suggest-search-pelanggaran" class="custom-suggest-box" style="min-width: 260px; max-width: calc(100vw - 48px);"></div>
+                                <div id="suggest-search-pelanggaran" class="custom-suggest-box"
+                                    style="min-width: 260px; max-width: calc(100vw - 48px);"></div>
                             </div>
                             <button type="button" id="btn-rekap-buat-surat" class="action-btn"
                                 style="display: none; background: #2563eb;"
                                 onclick="if(this.dataset.nisn) buatSuratUntukSiswa(this.dataset.nisn)">
-                                <i class="fa-solid fa-file-word"></i> Buat Surat: <span id="rekap-surat-student-label"></span>
+                                <i class="fa-solid fa-file-word"></i> Buat Surat: <span
+                                    id="rekap-surat-student-label"></span>
                             </button>
                             <button type="button" class="action-btn"
                                 onclick="exportTableToExcel('Data_Pelanggaran_Siswa.xlsx', 'admin-violations-table', 'LAPORAN PELANGGARAN SISWA')"
@@ -1492,17 +1537,20 @@
                             style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px;">
                             <div class="form-group autocomplete-group" style="margin-bottom: 0;">
                                 <label>NISN Siswa</label>
-                                <input type="text" class="form-control" id="input-nisn-prestasi" placeholder="Cth: 0111946795"
-                                    autocomplete="off" inputmode="numeric" pattern="[0-9]*"
-                                    oninput="sanitizeNisnInput(this); handleStudentSearch(this, 'nisn', 'prestasi')" 
-                                    onfocus="handleStudentSearch(this, 'nisn', 'prestasi')" 
+                                <input type="text" class="form-control" id="input-nisn-prestasi"
+                                    placeholder="Cth: 0111946795" autocomplete="off" inputmode="numeric"
+                                    pattern="[0-9]*"
+                                    oninput="sanitizeNisnInput(this); handleStudentSearch(this, 'nisn', 'prestasi')"
+                                    onfocus="handleStudentSearch(this, 'nisn', 'prestasi')"
                                     onkeypress="return isNumberKey(event)" required>
                                 <div id="suggest-nisn-prestasi" class="custom-suggest-box"></div>
                             </div>
                             <div class="form-group autocomplete-group" style="margin-bottom: 0;">
                                 <label>Nama Siswa</label>
                                 <input type="text" class="form-control" id="input-nama-siswa-prestasi"
-                                    autocomplete="off" oninput="handleStudentSearch(this, 'nama', 'prestasi')" onfocus="handleStudentSearch(this, 'nama', 'prestasi')" placeholder="Cth: Budi Santoso" required>
+                                    autocomplete="off" oninput="handleStudentSearch(this, 'nama', 'prestasi')"
+                                    onfocus="handleStudentSearch(this, 'nama', 'prestasi')"
+                                    placeholder="Cth: Budi Santoso" required>
                                 <div id="suggest-nama-prestasi" class="custom-suggest-box"></div>
                             </div>
                             <div class="form-group" style="margin-bottom: 0;">
@@ -1663,19 +1711,26 @@
                 <div class="card" style="margin-bottom: 25px;">
                     <div class="card-header" style="flex-wrap: wrap; gap: 10px;">
                         <h3><i class="fa-solid fa-user-plus"></i> Tambah Siswa Baru</h3>
-                        <button type="button" class="action-btn" onclick="sinkronFotoDrive()" style="background: linear-gradient(135deg, #0284c7, #0369a1); font-size: 13px; padding: 7px 14px;" title="Cari otomatis file foto di Google Drive berdasarkan NISN">
+                        <button type="button" class="action-btn" onclick="sinkronFotoDrive()"
+                            style="background: linear-gradient(135deg, #0284c7, #0369a1); font-size: 13px; padding: 7px 14px;"
+                            title="Cari otomatis file foto di Google Drive berdasarkan NISN">
                             <i class="fa-brands fa-google-drive"></i> Auto Sinkron Foto Folder Drive
                         </button>
                     </div>
                     <form id="form-siswa" onsubmit="submitSiswa(event)">
-                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px;">
+                        <div
+                            style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px;">
                             <div class="form-group" style="margin-bottom: 0;">
                                 <label>NISN Siswa <span style="color: var(--danger-color);">*</span></label>
-                                <input type="text" class="form-control" id="input-siswa-nisn" placeholder="Cth: 0123907263" required maxlength="15" inputmode="numeric" pattern="[0-9]*" oninput="sanitizeNisnInput(this)" onkeypress="return isNumberKey(event)" title="Hanya angka NISN">
+                                <input type="text" class="form-control" id="input-siswa-nisn"
+                                    placeholder="Cth: 0123907263" required maxlength="15" inputmode="numeric"
+                                    pattern="[0-9]*" oninput="sanitizeNisnInput(this)"
+                                    onkeypress="return isNumberKey(event)" title="Hanya angka NISN">
                             </div>
                             <div class="form-group" style="margin-bottom: 0;">
                                 <label>Nama Lengkap Siswa <span style="color: var(--danger-color);">*</span></label>
-                                <input type="text" class="form-control" id="input-siswa-nama" placeholder="Cth: Muhammad Abdillah" required>
+                                <input type="text" class="form-control" id="input-siswa-nama"
+                                    placeholder="Cth: Muhammad Abdillah" required>
                             </div>
                             <div class="form-group" style="margin-bottom: 0;">
                                 <label>Kelas <span style="color: var(--danger-color);">*</span></label>
@@ -1696,23 +1751,34 @@
                                 </select>
                             </div>
                             <div class="form-group" style="margin-bottom: 0;">
-                                <label>Link Foto (Google Drive) <small style="color: var(--text-muted);">(Opsional)</small></label>
-                                <input type="url" class="form-control" id="input-siswa-foto" placeholder="https://drive.google.com/file/d/.../view" oninput="previewFotoInput(this.value, 'preview-foto-tambah')">
+                                <label>Link Foto (Google Drive) <small
+                                        style="color: var(--text-muted);">(Opsional)</small></label>
+                                <input type="url" class="form-control" id="input-siswa-foto"
+                                    placeholder="https://drive.google.com/file/d/.../view"
+                                    oninput="previewFotoInput(this.value, 'preview-foto-tambah')">
                             </div>
                         </div>
 
                         <!-- Live Photo Preview -->
-                        <div id="preview-foto-tambah-container" style="margin-top: 15px; display: none; align-items: center; gap: 12px; background: #f8fafc; padding: 10px 14px; border-radius: 8px; border: 1px solid #e2e8f0;">
-                            <img id="preview-foto-tambah" src="" alt="Preview Foto" style="width: 50px; height: 50px; border-radius: 8px; object-fit: cover; border: 2px solid #3b82f6;">
+                        <div id="preview-foto-tambah-container"
+                            style="margin-top: 15px; display: none; align-items: center; gap: 12px; background: #f8fafc; padding: 10px 14px; border-radius: 8px; border: 1px solid #e2e8f0;">
+                            <img id="preview-foto-tambah" src="" alt="Preview Foto"
+                                style="width: 50px; height: 50px; border-radius: 8px; object-fit: cover; border: 2px solid #3b82f6;">
                             <div style="font-size: 12.5px; color: #475569;">
                                 <strong style="color: #0f172a; display: block;">Preview Foto Terdeteksi</strong>
-                                <span style="font-size: 11.5px; color: #16a34a;"><i class="fa-solid fa-circle-check"></i> Tautan foto valid dan siap ditampilkan</span>
+                                <span style="font-size: 11.5px; color: #16a34a;"><i
+                                        class="fa-solid fa-circle-check"></i> Tautan foto valid dan siap
+                                    ditampilkan</span>
                             </div>
                         </div>
 
-                        <div style="margin-top: 20px; display: flex; flex-wrap: wrap; gap: 10px; justify-content: flex-end;">
-                            <button type="button" class="action-btn" style="background: #f1f5f9; color: #475569; border: 1px solid #cbd5e1;" onclick="resetFormSiswa()">Reset</button>
-                            <button type="submit" class="action-btn" id="btn-submit-siswa" style="background: var(--primary-gradient);">
+                        <div
+                            style="margin-top: 20px; display: flex; flex-wrap: wrap; gap: 10px; justify-content: flex-end;">
+                            <button type="button" class="action-btn"
+                                style="background: #f1f5f9; color: #475569; border: 1px solid #cbd5e1;"
+                                onclick="resetFormSiswa()">Reset</button>
+                            <button type="submit" class="action-btn" id="btn-submit-siswa"
+                                style="background: var(--primary-gradient);">
                                 <i class="fa-solid fa-save"></i> Simpan Siswa
                             </button>
                         </div>
@@ -1724,11 +1790,15 @@
                     <div class="card-header" style="flex-wrap: wrap; gap: 15px;">
                         <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
                             <h3>Daftar Siswa & Foto</h3>
-                            <span id="badge-total-siswa" class="badge" style="background: #e0e7ff; color: #4338ca; font-weight: 700; font-size: 12px;">0 Siswa</span>
+                            <span id="badge-total-siswa" class="badge"
+                                style="background: #e0e7ff; color: #4338ca; font-weight: 700; font-size: 12px;">0
+                                Siswa</span>
                         </div>
                         <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
                             <!-- Filter Kelas -->
-                            <select id="filter-siswa-kelas" class="form-control" style="width: auto; min-width: 130px; font-size: 13px; padding: 7px 10px;" onchange="searchTableSiswa()">
+                            <select id="filter-siswa-kelas" class="form-control"
+                                style="width: auto; min-width: 130px; font-size: 13px; padding: 7px 10px;"
+                                onchange="searchTableSiswa()">
                                 <option value="">Semua Kelas</option>
                                 <option value="7A">Kelas 7A</option>
                                 <option value="7B">Kelas 7B</option>
@@ -1744,10 +1814,14 @@
                                 <option value="9D">Kelas 9D</option>
                             </select>
                             <div style="position: relative;">
-                                <i class="fa-solid fa-magnifying-glass" style="position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: var(--text-muted);"></i>
-                                <input type="text" id="search-siswa" placeholder="Cari NISN atau Nama..." class="form-control" style="padding-left: 35px; width: 100%; max-width: 220px;" onkeyup="searchTableSiswa()">
+                                <i class="fa-solid fa-magnifying-glass"
+                                    style="position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: var(--text-muted);"></i>
+                                <input type="text" id="search-siswa" placeholder="Cari NISN atau Nama..."
+                                    class="form-control" style="padding-left: 35px; width: 100%; max-width: 220px;"
+                                    onkeyup="searchTableSiswa()">
                             </div>
-                            <button type="button" class="action-btn" onclick="exportSiswaToExcel()" style="background-color: #10b981;">
+                            <button type="button" class="action-btn" onclick="exportSiswaToExcel()"
+                                style="background-color: #10b981;">
                                 <i class="fa-solid fa-file-excel"></i> Export Excel
                             </button>
                         </div>
@@ -1781,17 +1855,15 @@
             <div id="view-surat" class="view-section">
                 <div class="card no-print" style="margin-bottom: 25px;">
                     <div class="card-header">
-                        <h3><i class="fa-solid fa-file-word" style="color: #2563eb;"></i> Buat Surat Pemberitahuan Catatan Pelanggaran</h3>
-                        <span class="badge" style="background: #dbeafe; color: #1d4ed8;">Format Word (.docx)</span>
+                        <h3><i class="fa-solid fa-file-word" style="color: #2563eb;"></i> Surat Pemberitahuan </h3>
                     </div>
 
                     <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 15px;">
                         <div class="form-group autocomplete-group" style="margin-bottom: 0;">
                             <label>Filter Nama Siswa</label>
-                            <input type="text" class="form-control" id="surat-nama-siswa" placeholder="Ketik / cari nama siswa..."
-                                autocomplete="off"
-                                oninput="onSuratNamaInput(this)"
-                                onfocus="handleStudentSearch(this, 'nama', 'surat')">
+                            <input type="text" class="form-control" id="surat-nama-siswa"
+                                placeholder="Ketik / cari nama siswa..." autocomplete="off"
+                                oninput="onSuratNamaInput(this)" onfocus="handleStudentSearch(this, 'nama', 'surat')">
                             <div id="suggest-nama-surat" class="custom-suggest-box"></div>
                         </div>
                         <div class="form-group" style="margin-bottom: 0;">
@@ -1806,15 +1878,21 @@
                         </div>
                     </div>
 
-                    <div style="margin-top: 20px; display: flex; flex-wrap: wrap; gap: 10px; justify-content: space-between; align-items: center;">
-                        <button type="button" class="action-btn" style="background: #f1f5f9; color: #475569; border: 1px solid #cbd5e1;" onclick="resetSuratForm()">
+                    <div
+                        style="margin-top: 20px; display: flex; flex-wrap: wrap; gap: 10px; justify-content: space-between; align-items: center;">
+                        <button type="button" class="action-btn"
+                            style="background: #f1f5f9; color: #475569; border: 1px solid #cbd5e1;"
+                            onclick="resetSuratForm()">
                             <i class="fa-solid fa-rotate-left"></i> Reset Form
                         </button>
                         <div style="display: flex; flex-wrap: wrap; gap: 10px;">
-                            <button type="button" class="action-btn" style="background: #334155;" onclick="printSuratPreview()">
+                            <button type="button" class="action-btn" style="background: #334155;"
+                                onclick="printSuratPreview()">
                                 <i class="fa-solid fa-print"></i> Cetak / PDF
                             </button>
-                            <button type="button" id="btn-download-word" class="action-btn" style="background: linear-gradient(135deg, #1d4ed8, #2563eb);" onclick="downloadSuratWord()">
+                            <button type="button" id="btn-download-word" class="action-btn"
+                                style="background: linear-gradient(135deg, #1d4ed8, #2563eb);"
+                                onclick="downloadSuratWord()">
                                 <i class="fa-solid fa-file-word"></i> Download Word (.docx)
                             </button>
                         </div>
@@ -1825,7 +1903,8 @@
                 <div id="surat-preview-card" class="card surat-preview-card" style="display: none;">
                     <div class="card-header no-print">
                         <h3><i class="fa-regular fa-file-lines"></i> Pratinjau Surat Pemberitahuan</h3>
-                        <span style="font-size: 12.5px; color: var(--text-muted);">Tampilan disesuaikan dengan hasil ekspor Word A4</span>
+                        <span style="font-size: 12.5px; color: var(--text-muted);">Tampilan disesuaikan dengan hasil
+                            ekspor Word A4</span>
                     </div>
                     <div class="surat-preview-wrapper">
                         <div id="surat-preview-paper"></div>
@@ -1846,10 +1925,11 @@
                 <input type="hidden" id="edit-jenis">
                 <input type="hidden" id="edit-old-tanggal">
                 <input type="hidden" id="edit-old-data">
-                
+
                 <div class="form-group">
                     <label>NISN & Nama Siswa</label>
-                    <input type="text" class="form-control" id="edit-siswa-info" readonly style="background-color: #f3f4f6;">
+                    <input type="text" class="form-control" id="edit-siswa-info" readonly
+                        style="background-color: #f3f4f6;">
                     <input type="hidden" id="edit-nisn">
                     <input type="hidden" id="edit-nama-siswa">
                 </div>
@@ -1871,11 +1951,16 @@
                 </div>
                 <div class="form-group">
                     <label>Poin</label>
-                    <input type="number" class="form-control" id="edit-poin" readonly style="background-color: #f8fafc; font-weight: 700; border-color: #e2e8f0; cursor: not-allowed;" required>
+                    <input type="number" class="form-control" id="edit-poin" readonly
+                        style="background-color: #f8fafc; font-weight: 700; border-color: #e2e8f0; cursor: not-allowed;"
+                        required>
                 </div>
                 <div style="display: flex; gap: 10px; justify-content: flex-end; margin-top: 20px;">
-                    <button type="button" class="action-btn" style="background: #f1f5f9; color: #475569; border: 1px solid #cbd5e1;" onclick="closeEditModal()">Batal</button>
-                    <button type="submit" class="action-btn" id="btn-submit-edit"><i class="fa-solid fa-save"></i> Simpan Perubahan</button>
+                    <button type="button" class="action-btn"
+                        style="background: #f1f5f9; color: #475569; border: 1px solid #cbd5e1;"
+                        onclick="closeEditModal()">Batal</button>
+                    <button type="submit" class="action-btn" id="btn-submit-edit"><i class="fa-solid fa-save"></i>
+                        Simpan Perubahan</button>
                 </div>
             </form>
         </div>
@@ -1890,11 +1975,14 @@
             </div>
             <form id="form-edit-siswa" onsubmit="submitEditSiswa(event)">
                 <input type="hidden" id="edit-siswa-old-nisn">
-                
+
                 <div class="form-group">
                     <label>NISN Siswa <span style="color: var(--danger-color);">*</span></label>
-                    <input type="text" class="form-control" id="edit-siswa-nisn" required maxlength="15" inputmode="numeric" pattern="[0-9]*" oninput="sanitizeNisnInput(this)" onkeypress="return isNumberKey(event)" title="Hanya angka NISN">
-                    <small style="color: var(--text-muted); font-size: 11px;">Jika NISN diubah, riwayat pelanggaran & prestasi anak ini akan otomatis disinkronkan.</small>
+                    <input type="text" class="form-control" id="edit-siswa-nisn" required maxlength="15"
+                        inputmode="numeric" pattern="[0-9]*" oninput="sanitizeNisnInput(this)"
+                        onkeypress="return isNumberKey(event)" title="Hanya angka NISN">
+                    <small style="color: var(--text-muted); font-size: 11px;">Jika NISN diubah, riwayat pelanggaran &
+                        prestasi anak ini akan otomatis disinkronkan.</small>
                 </div>
                 <div class="form-group">
                     <label>Nama Lengkap Siswa <span style="color: var(--danger-color);">*</span></label>
@@ -1920,20 +2008,28 @@
                 </div>
                 <div class="form-group">
                     <label>Link Foto (Google Drive)</label>
-                    <input type="url" class="form-control" id="edit-siswa-foto" placeholder="https://drive.google.com/file/d/.../view" oninput="previewFotoInput(this.value, 'preview-foto-edit')">
+                    <input type="url" class="form-control" id="edit-siswa-foto"
+                        placeholder="https://drive.google.com/file/d/.../view"
+                        oninput="previewFotoInput(this.value, 'preview-foto-edit')">
                 </div>
 
                 <!-- Live Preview in Modal -->
-                <div id="preview-foto-edit-container" style="display: flex; align-items: center; gap: 12px; background: #f8fafc; padding: 10px 14px; border-radius: 8px; border: 1px solid #e2e8f0; margin-bottom: 15px;">
-                    <img id="preview-foto-edit" src="" alt="Preview Foto" style="width: 50px; height: 50px; border-radius: 8px; object-fit: cover; border: 2px solid #3b82f6;">
+                <div id="preview-foto-edit-container"
+                    style="display: flex; align-items: center; gap: 12px; background: #f8fafc; padding: 10px 14px; border-radius: 8px; border: 1px solid #e2e8f0; margin-bottom: 15px;">
+                    <img id="preview-foto-edit" src="" alt="Preview Foto"
+                        style="width: 50px; height: 50px; border-radius: 8px; object-fit: cover; border: 2px solid #3b82f6;">
                     <div style="font-size: 12px; color: #475569;" id="preview-foto-edit-text">
                         Pratinjau Foto Siswa
                     </div>
                 </div>
 
                 <div style="display: flex; gap: 10px; justify-content: flex-end; margin-top: 20px;">
-                    <button type="button" class="action-btn" style="background: #f1f5f9; color: #475569; border: 1px solid #cbd5e1;" onclick="closeEditSiswaModal()">Batal</button>
-                    <button type="submit" class="action-btn" id="btn-submit-edit-siswa" style="background: var(--primary-gradient);"><i class="fa-solid fa-save"></i> Simpan Perubahan</button>
+                    <button type="button" class="action-btn"
+                        style="background: #f1f5f9; color: #475569; border: 1px solid #cbd5e1;"
+                        onclick="closeEditSiswaModal()">Batal</button>
+                    <button type="submit" class="action-btn" id="btn-submit-edit-siswa"
+                        style="background: var(--primary-gradient);"><i class="fa-solid fa-save"></i> Simpan
+                        Perubahan</button>
                 </div>
             </form>
         </div>
@@ -1946,11 +2042,90 @@
     <script>
         const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxWaDcKsYPBF7Y1nhnvsZXVmx2OntEYNLei-MXiS0r06mLdjxXLrsaI4MsGRPUlMB0B/exec';
 
+        // ==================== ANDROID / WEBVIEW BACK NAVIGATION & LOGOUT ====================
+        const UI_HOME_TAB = 'pelanggaran';
+        let currentHistoryDepth = 0;
+        let uiLayerStack = [];
+        let isPageReloading = false;
+
+        function logoutGuru(e) {
+            if (e) e.preventDefault();
+            sessionStorage.removeItem('guruNama');
+            sessionStorage.removeItem('activeAdminTab');
+            window.location.replace('login-guru.html');
+            return false;
+        }
+
+        function initHistoryNavigation() {
+            currentHistoryDepth = 0;
+            uiLayerStack = [];
+            try {
+                history.replaceState({ diperiksaDepth: 0 }, '');
+            } catch (e) {}
+        }
+
+        function syncHistoryState(allowPush = true) {
+            const desiredDepth = uiLayerStack.length;
+            if (desiredDepth === currentHistoryDepth) return;
+
+            if (desiredDepth > currentHistoryDepth && allowPush) {
+                while (currentHistoryDepth < desiredDepth) {
+                    currentHistoryDepth++;
+                    try {
+                        history.pushState({ diperiksaDepth: currentHistoryDepth }, '');
+                    } catch (e) { break; }
+                }
+            } else if (desiredDepth < currentHistoryDepth) {
+                const delta = desiredDepth - currentHistoryDepth;
+                currentHistoryDepth = desiredDepth;
+                try {
+                    history.go(delta);
+                } catch (e) {}
+            }
+        }
+
+        function pushUiLayer(layerName, allowPush = true) {
+            if (!uiLayerStack.includes(layerName)) {
+                uiLayerStack.push(layerName);
+            }
+            syncHistoryState(allowPush);
+        }
+
+        function removeUiLayer(layerName, shouldSync = true) {
+            const idx = uiLayerStack.indexOf(layerName);
+            if (idx !== -1) {
+                uiLayerStack.splice(idx, 1);
+            }
+            if (shouldSync) syncHistoryState();
+        }
+
+        window.addEventListener('popstate', (event) => {
+            const targetDepth = (event.state && typeof event.state.diperiksaDepth === 'number')
+                ? event.state.diperiksaDepth
+                : 0;
+            currentHistoryDepth = targetDepth;
+
+            while (uiLayerStack.length > targetDepth) {
+                const layer = uiLayerStack.pop();
+                if (layer === 'edit-modal') {
+                    closeEditModal(true);
+                } else if (layer === 'edit-siswa-modal') {
+                    closeEditSiswaModal(true);
+                } else if (layer === 'sidebar') {
+                    toggleSidebar(true, true);
+                } else if (layer === 'tab') {
+                    switchTab(UI_HOME_TAB, null, { fromPopState: true });
+                }
+            }
+        });
+
         // Sidebar Toggle & Close on Outside Click
-        function toggleSidebar(forceClose) {
+        function toggleSidebar(forceClose, skipHistorySync = false) {
             const sidebar = document.getElementById('sidebar');
             const overlay = document.getElementById('sidebar-overlay');
             if (!sidebar) return;
+
+            const wasOpen = sidebar.classList.contains('show');
 
             if (forceClose === true) {
                 sidebar.classList.remove('show');
@@ -1961,6 +2136,12 @@
                     if (isOpen) overlay.classList.add('show');
                     else overlay.classList.remove('show');
                 }
+            }
+
+            const isNowOpen = sidebar.classList.contains('show');
+            if (!skipHistorySync && isNowOpen !== wasOpen) {
+                if (isNowOpen) pushUiLayer('sidebar');
+                else removeUiLayer('sidebar');
             }
         }
 
@@ -1977,7 +2158,7 @@
         });
 
         // Tab Navigation
-        function switchTab(tabId, element) {
+        function switchTab(tabId, element, opts = {}) {
             // Update Menu Active State
             document.querySelectorAll('.menu-item').forEach(el => el.classList.remove('active'));
             if (element) {
@@ -2016,8 +2197,18 @@
             // Save active tab state
             sessionStorage.setItem('activeAdminTab', tabId);
 
-            // Close mobile menu if open
-            toggleSidebar(true);
+            // Close mobile menu visually first, then reconcile history once
+            toggleSidebar(true, true);
+
+            if (!opts.fromPopState && !opts.skipHistorySync) {
+                removeUiLayer('sidebar', false);
+                if (tabId !== UI_HOME_TAB) {
+                    if (!uiLayerStack.includes('tab')) uiLayerStack.push('tab');
+                } else {
+                    removeUiLayer('tab', false);
+                }
+                syncHistoryState(true);
+            }
         }
 
         // Fetch Data from Google Sheets
@@ -2026,9 +2217,11 @@
             const guruNama = sessionStorage.getItem('guruNama');
             if (!guruNama) {
                 alert('Anda belum login atau sesi telah berakhir!');
-                window.location.href = 'login-guru.html';
+                window.location.replace('login-guru.html');
                 return;
             }
+
+            initHistoryNavigation();
 
             // Load and display Guru Nama
             document.getElementById('profile-guru-name').textContent = guruNama;
@@ -2040,7 +2233,7 @@
             // Restore active tab if any
             const savedTab = sessionStorage.getItem('activeAdminTab');
             if (savedTab) {
-                switchTab(savedTab, null);
+                switchTab(savedTab, null, { skipHistorySync: true });
             }
 
             const SPREADSHEET_ID = '1jFFuABePc7tGcc0rG7K8G0aV4lRIQJuVuV-FzDIAzf4';
@@ -2159,7 +2352,7 @@
             window.studentClassMap = studentClassMap;
             window.studentPhotoMap = studentPhotoMap;
             window.allStudentsList = allStudentsList;
-            
+
             // Kosongkan native datalist agar Android browser tidak memunculkan overlay transparan
             const nisnListEl = document.getElementById('nisn-list');
             if (nisnListEl) nisnListEl.innerHTML = '';
@@ -2580,8 +2773,8 @@
             allStudentsList.forEach(st => {
                 const hasPhoto = Boolean(st.fotoUrl && st.fotoUrl.trim() !== '');
                 const directPhoto = hasPhoto ? convertGoogleDriveUrl(st.fotoUrl) : '';
-                
-                const desktopAvatar = hasPhoto 
+
+                const desktopAvatar = hasPhoto
                     ? `<img src="${directPhoto}" alt="${st.nama}" style="width: 38px; height: 38px; border-radius: 50%; object-fit: cover; border: 1.5px solid #0284c7; display: inline-block; vertical-align: middle;" onerror="this.onerror=null; this.outerHTML='<div style=\\\'width:38px;height:38px;border-radius:50%;background:#e2e8f0;display:inline-flex;align-items:center;justify-content:center;color:#64748b;font-size:14px;\\\'>👤</div>';">`
                     : `<div style="width: 38px; height: 38px; border-radius: 50%; background: #f1f5f9; display: inline-flex; align-items: center; justify-content: center; color: #94a3b8; font-size: 14px; border: 1px dashed #cbd5e1;"><i class="fa-solid fa-user"></i></div>`;
 
@@ -2937,7 +3130,7 @@
                     tr[i].setAttribute('data-search-hidden', 'true');
                 }
             }
-            
+
             // Reset to page 1 on search and trigger pagination
             table.setAttribute('data-current-page', 1);
             setupPagination('admin-violations-table', 'pagination-pelanggaran');
@@ -2968,7 +3161,7 @@
             titleRow.getCell(1).fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF1F2937' } };
             titleRow.getCell(1).alignment = { vertical: 'middle', horizontal: 'center' };
             worksheet.mergeCells('A1:G1');
-            
+
             // Empty row
             worksheet.addRow([]);
 
@@ -2985,7 +3178,7 @@
             const isPelanggaran = (tableId === 'admin-violations-table');
             const dataList = isPelanggaran ? (window.rawViolationsList || []) : (window.rawAchievementsList || []);
             const hiddenNisns = new Set();
-            
+
             const tr = table.getElementsByTagName("tr");
             for (let i = 1; i < tr.length; i++) {
                 if (tr[i].getAttribute('data-search-hidden') === 'true') {
@@ -2998,12 +3191,12 @@
                 if (hiddenNisns.has(item.nisn)) return;
 
                 const dataRow = worksheet.addRow([item.nisn, item.nama, item.kelas, item.tanggal, item.kategori, item.keterangan, item.poin]);
-                
+
                 dataRow.eachCell((cell, colNumber) => {
-                    cell.border = { top: { style: 'thin', color: { argb: 'FFCCCCCC'} }, left: { style: 'thin', color: { argb: 'FFCCCCCC'} }, bottom: { style: 'thin', color: { argb: 'FFCCCCCC'} }, right: { style: 'thin', color: { argb: 'FFCCCCCC'} } };
+                    cell.border = { top: { style: 'thin', color: { argb: 'FFCCCCCC' } }, left: { style: 'thin', color: { argb: 'FFCCCCCC' } }, bottom: { style: 'thin', color: { argb: 'FFCCCCCC' } }, right: { style: 'thin', color: { argb: 'FFCCCCCC' } } };
                     cell.alignment = { vertical: 'middle', horizontal: colNumber === 1 || colNumber === 3 || colNumber === 4 || colNumber === 7 ? 'center' : 'left' };
                 });
-                
+
                 // Color Poin
                 const poinCell = dataRow.getCell(7);
                 const poinStr = String(item.poin);
@@ -3188,7 +3381,7 @@
                     tr[i].setAttribute('data-search-hidden', 'true');
                 }
             }
-            
+
             // Reset to page 1 on search and trigger pagination
             table.setAttribute('data-current-page', 1);
             setupPagination('admin-achievements-table', 'pagination-prestasi');
@@ -3415,7 +3608,7 @@
             const isPelanggaran = formType === 'pelanggaran';
             const nisnId = isPelanggaran ? 'input-nisn' : 'input-nisn-prestasi';
             const namaId = isPelanggaran ? 'input-nama-siswa' : 'input-nama-siswa-prestasi';
-            
+
             const nisnInput = document.getElementById(nisnId);
             const namaInput = document.getElementById(namaId);
 
@@ -3437,29 +3630,33 @@
             }
         }
 
-        function closeEditModal() {
-            document.getElementById('edit-modal').classList.remove('show');
+        function closeEditModal(skipHistorySync = false) {
+            const modal = document.getElementById('edit-modal');
+            if (modal) modal.classList.remove('show');
+            if (!skipHistorySync) {
+                removeUiLayer('edit-modal', !isPageReloading);
+            }
         }
 
         function editData(jenis, nisn, namaSiswa, tanggal, kategori, namaData, poin) {
             document.getElementById('edit-modal-title').textContent = jenis === 'pelanggaran' ? 'Edit Pelanggaran' : 'Edit Prestasi';
             document.getElementById('edit-label-data').textContent = jenis === 'pelanggaran' ? 'Nama Pelanggaran' : 'Nama Prestasi';
-            
+
             document.getElementById('edit-jenis').value = jenis;
             document.getElementById('edit-old-tanggal').value = tanggal;
             document.getElementById('edit-old-data').value = namaData;
-            
+
             document.getElementById('edit-nisn').value = nisn;
             document.getElementById('edit-nama-siswa').value = namaSiswa;
             document.getElementById('edit-siswa-info').value = nisn + " - " + namaSiswa;
-            
+
             try {
                 // Konversi tanggal jika formatnya bukan yyyy-mm-dd
                 let d = new Date(tanggal);
                 if (!isNaN(d.getTime())) {
                     document.getElementById('edit-tanggal').value = d.toISOString().split('T')[0];
                 }
-            } catch(e) {}
+            } catch (e) { }
 
             const kategoriSelect = document.getElementById('edit-kategori');
             kategoriSelect.innerHTML = '<option value="" disabled>Pilih Kategori</option>';
@@ -3472,8 +3669,8 @@
                     kategoriSelect.innerHTML += `<option value="${k}">${k}</option>`;
                 });
             }
-            
-            for(let i=0; i<kategoriSelect.options.length; i++) {
+
+            for (let i = 0; i < kategoriSelect.options.length; i++) {
                 if (kategoriSelect.options[i].value.toLowerCase() === kategori.toLowerCase()) {
                     kategoriSelect.selectedIndex = i;
                     break;
@@ -3481,27 +3678,28 @@
             }
 
             filterEditOptions();
-            
+
             const dataSelect = document.getElementById('edit-nama-data');
-            for(let i=0; i<dataSelect.options.length; i++) {
+            for (let i = 0; i < dataSelect.options.length; i++) {
                 if (dataSelect.options[i].value === namaData) {
                     dataSelect.selectedIndex = i;
                     break;
                 }
             }
-            
+
             document.getElementById('edit-poin').value = poin;
             document.getElementById('edit-modal').classList.add('show');
+            pushUiLayer('edit-modal');
         }
 
         function filterEditOptions() {
             const jenis = document.getElementById('edit-jenis').value;
             const kategori = document.getElementById('edit-kategori').value.toLowerCase();
             const selectNama = document.getElementById('edit-nama-data');
-            
+
             selectNama.innerHTML = '<option value="" disabled selected>Pilih Data</option>';
             document.getElementById('edit-poin').value = '';
-            
+
             const sourceList = jenis === 'pelanggaran' ? window.rulesList : window.achievementsList;
             if (sourceList) {
                 let filtered = [];
@@ -3533,7 +3731,7 @@
             const jenis = document.getElementById('edit-jenis').value;
             const nama = (document.getElementById('edit-nama-data').value || '').trim();
             const kategori = document.getElementById('edit-kategori').value.toLowerCase();
-            
+
             const sourceList = jenis === 'pelanggaran' ? window.rulesList : window.achievementsList;
             if (sourceList) {
                 let rule = null;
@@ -3554,12 +3752,12 @@
         async function submitEditData(e) {
             e.preventDefault();
             const jenis = document.getElementById('edit-jenis').value;
-            
+
             const nisn = document.getElementById('edit-nisn').value;
             const namaSiswa = document.getElementById('edit-nama-siswa').value;
             const oldTanggal = document.getElementById('edit-old-tanggal').value;
             const oldData = document.getElementById('edit-old-data').value;
-            
+
             const newTanggal = document.getElementById('edit-tanggal').value;
             const newKategori = document.getElementById('edit-kategori').value;
             const newData = document.getElementById('edit-nama-data').value;
@@ -3582,7 +3780,7 @@
                 formData.append('nisn', "'" + nisn);
                 formData.append('nama_siswa', namaSiswa);
                 formData.append('old_tanggal', oldTanggal);
-                
+
                 if (jenis === 'pelanggaran') {
                     formData.append('old_pelanggaran', oldData);
                     formData.append('new_pelanggaran', newData);
@@ -3590,7 +3788,7 @@
                     formData.append('old_prestasi', oldData);
                     formData.append('new_prestasi', newData);
                 }
-                
+
                 formData.append('new_tanggal', newTanggal);
                 formData.append('new_kategori', newKategori);
                 formData.append('new_poin', newPoin);
@@ -3604,6 +3802,7 @@
                 const result = await response.json();
                 if (result.result === 'success') {
                     alert('Berhasil! Data telah diperbarui.\nHalaman akan dimuat ulang.');
+                    isPageReloading = true;
                     location.reload();
                 } else {
                     alert('Gagal: ' + (result.error || 'Terjadi kesalahan di server'));
@@ -3737,7 +3936,7 @@
                 let result = null;
                 try {
                     result = await response.json();
-                } catch(err) {
+                } catch (err) {
                     result = { result: 'success' };
                 }
 
@@ -3761,7 +3960,7 @@
             document.getElementById('edit-siswa-old-nisn').value = nisn;
             document.getElementById('edit-siswa-nisn').value = nisn;
             document.getElementById('edit-siswa-nama').value = nama;
-            
+
             const kelasSelect = document.getElementById('edit-siswa-kelas');
             let matched = false;
             for (let i = 0; i < kelasSelect.options.length; i++) {
@@ -3781,7 +3980,7 @@
 
             const fotoInput = document.getElementById('edit-siswa-foto');
             fotoInput.value = fotoUrl || '';
-            
+
             const previewImg = document.getElementById('preview-foto-edit');
             const previewContainer = document.getElementById('preview-foto-edit-container');
             const previewText = document.getElementById('preview-foto-edit-text');
@@ -3803,10 +4002,15 @@
             }
 
             document.getElementById('edit-siswa-modal').classList.add('show');
+            pushUiLayer('edit-siswa-modal');
         }
 
-        function closeEditSiswaModal() {
-            document.getElementById('edit-siswa-modal').classList.remove('show');
+        function closeEditSiswaModal(skipHistorySync = false) {
+            const modal = document.getElementById('edit-siswa-modal');
+            if (modal) modal.classList.remove('show');
+            if (!skipHistorySync) {
+                removeUiLayer('edit-siswa-modal', !isPageReloading);
+            }
         }
 
         async function submitEditSiswa(e) {
@@ -3846,13 +4050,14 @@
                 let result = null;
                 try {
                     result = await response.json();
-                } catch(err) {
+                } catch (err) {
                     result = { result: 'success' };
                 }
 
                 if (result && result.result === 'success') {
                     alert(`Berhasil! Data siswa ${nama} telah diperbarui.`);
-                    closeEditSiswaModal();
+                    isPageReloading = true;
+                    closeEditSiswaModal(true);
                     location.reload();
                 } else {
                     alert('Gagal memperbarui siswa: ' + (result ? result.error : 'Terjadi kesalahan'));
@@ -3888,7 +4093,7 @@
                     let result = null;
                     try {
                         result = await response.json();
-                    } catch(err) {
+                    } catch (err) {
                         result = { result: 'success' };
                     }
 
@@ -3929,7 +4134,7 @@
                 let result = null;
                 try {
                     result = await response.json();
-                } catch(err) {
+                } catch (err) {
                     result = { result: 'success', updated: 0 };
                 }
 
@@ -4017,7 +4222,7 @@
                 if (hiddenNisns.has(st.nisn)) return;
                 const row = worksheet.addRow([st.nisn, st.nama, st.kelas, st.fotoUrl || '-']);
                 row.eachCell((cell, colNumber) => {
-                    cell.border = { top: { style: 'thin', color: { argb: 'FFCCCCCC'} }, left: { style: 'thin', color: { argb: 'FFCCCCCC'} }, bottom: { style: 'thin', color: { argb: 'FFCCCCCC'} }, right: { style: 'thin', color: { argb: 'FFCCCCCC'} } };
+                    cell.border = { top: { style: 'thin', color: { argb: 'FFCCCCCC' } }, left: { style: 'thin', color: { argb: 'FFCCCCCC' } }, bottom: { style: 'thin', color: { argb: 'FFCCCCCC' } }, right: { style: 'thin', color: { argb: 'FFCCCCCC' } } };
                     cell.alignment = { vertical: 'middle', horizontal: colNumber === 1 || colNumber === 3 ? 'center' : 'left' };
                 });
             });
@@ -4039,39 +4244,39 @@
             if (!table) return;
             const tbody = table.querySelector('tbody');
             if (!tbody) return;
-            
+
             const rows = Array.from(tbody.querySelectorAll('tr'));
             // Cek jika barisnya hanya 'memuat data' atau 'belum ada data'
             if (rows.length === 1 && (rows[0].classList.contains('empty-row') || (rows[0].querySelector('td') && rows[0].querySelector('td').colSpan > 1))) {
                 document.getElementById(paginationContainerId).innerHTML = '';
                 return;
             }
-            
+
             const visibleRows = rows.filter(row => row.getAttribute('data-search-hidden') !== 'true');
             const totalPages = Math.ceil(visibleRows.length / rowsPerPage) || 1;
             let currentPage = parseInt(table.getAttribute('data-current-page')) || 1;
-            
+
             if (currentPage > totalPages) currentPage = totalPages;
             if (currentPage < 1) currentPage = 1;
             table.setAttribute('data-current-page', currentPage);
-            
+
             rows.forEach(row => row.style.display = 'none');
-            
+
             const start = (currentPage - 1) * rowsPerPage;
             const end = start + rowsPerPage;
             visibleRows.slice(start, end).forEach(row => row.style.display = '');
-            
+
             const container = document.getElementById(paginationContainerId);
             if (!container) return;
-            
+
             if (totalPages <= 1) {
                 container.innerHTML = '';
                 return;
             }
-            
+
             let html = `<div class="pagination">`;
             html += `<button type="button" onclick="goToPage('${tableId}', '${paginationContainerId}', ${currentPage - 1})" ${currentPage === 1 ? 'disabled' : ''}>&laquo; Prev</button>`;
-            
+
             for (let i = 1; i <= totalPages; i++) {
                 if (totalPages > 7) {
                     if (i === 1 || i === totalPages || (i >= currentPage - 1 && i <= currentPage + 1)) {
@@ -4083,10 +4288,10 @@
                     html += `<button type="button" onclick="goToPage('${tableId}', '${paginationContainerId}', ${i})" class="${i === currentPage ? 'active' : ''}">${i}</button>`;
                 }
             }
-            
+
             html += `<button type="button" onclick="goToPage('${tableId}', '${paginationContainerId}', ${currentPage + 1})" ${currentPage === totalPages ? 'disabled' : ''}>Next &raquo;</button>`;
             html += `</div>`;
-            
+
             container.innerHTML = html;
         }
 
