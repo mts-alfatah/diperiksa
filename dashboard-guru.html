@@ -10,7 +10,7 @@
     <meta name="description" content="Admin Panel Guru BK Digital Pencatatan Riwayat Kedisiplinan">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Tinos:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
     <!-- ExcelJS & FileSaver for Export Excel -->
@@ -1154,11 +1154,23 @@
             background: transparent;
             color: #000000;
             padding: 0;
-            font-family: 'Calibri', 'Carlito', 'Segoe UI', Arial, sans-serif;
-            font-size: 11pt;
+            font-family: 'Times New Roman', 'Tinos', Times, serif;
+            font-size: 12pt;
             line-height: 1.45;
             box-sizing: border-box;
             transform-origin: top left;
+        }
+
+        #surat-preview-paper * {
+            font-family: inherit;
+        }
+
+        #surat-preview-paper .surat-page > p {
+            text-align: justify;
+        }
+
+        #surat-preview-paper u {
+            text-decoration-skip-ink: none;
         }
 
         #surat-preview-paper .surat-page {
@@ -1188,7 +1200,7 @@
             border: none;
             background: transparent !important;
             color: #000000;
-            font-size: 11pt;
+            font-size: 12pt;
             font-weight: 400;
             text-transform: none;
             letter-spacing: normal;
@@ -1210,7 +1222,7 @@
         #surat-preview-paper .kop-surat-table td.kop-text-cell {
             text-align: center;
             vertical-align: middle;
-            font-family: 'Times New Roman', Times, serif;
+            font-family: 'Times New Roman', 'Tinos', Times, serif;
             line-height: 1.18;
         }
 
@@ -1230,13 +1242,17 @@
 
         #surat-preview-paper .pelanggaran-surat-table {
             margin: 12px 0 14px 0;
+            width: 100%;
+            table-layout: fixed;
         }
 
         #surat-preview-paper .pelanggaran-surat-table th,
         #surat-preview-paper .pelanggaran-surat-table td {
             border: 1px solid #000000;
-            padding: 5px 8px;
-            font-size: 10.5pt;
+            padding: 5px 6px;
+            font-size: 12pt;
+            overflow-wrap: break-word;
+            word-wrap: break-word;
         }
 
         #surat-preview-paper .pelanggaran-surat-table th {
@@ -1275,7 +1291,117 @@
             border-color: #cbd5e1;
         }
 
+        .catat-form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+        }
+
+        .catat-poin-actions-row {
+            margin-top: 15px;
+            display: flex;
+            flex-wrap: wrap;
+            align-items: flex-end;
+            gap: 15px;
+        }
+
+        .catat-poin-field {
+            flex: 0 0 clamp(150px, calc((100% - 60px) / 5), 220px);
+            min-inline-size: 0;
+        }
+
+        .catat-form-actions {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .catat-form-actions .action-btn {
+            border: 1px solid transparent;
+            min-height: 42px;
+        }
+
+        .catat-form-actions .catat-reset-btn {
+            background: #f1f5f9;
+            color: #475569;
+            border-color: #cbd5e1;
+        }
+
+        .catat-form-actions .catat-submit-prestasi {
+            background: linear-gradient(to right, #3b82f6, #2563eb);
+        }
+
+        .search-bar-with-clear {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex: 0 1 auto;
+            max-width: 100%;
+        }
+
+        .search-input-wrap {
+            position: relative;
+            flex: 1 1 250px;
+            min-inline-size: 0;
+            max-width: 250px;
+        }
+
+        .search-input-wrap--siswa {
+            flex-basis: 220px;
+            max-width: 220px;
+        }
+
+        .search-input-wrap .search-icon {
+            position: absolute;
+            left: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-muted);
+            z-index: 2;
+            pointer-events: none;
+        }
+
+        .search-input-wrap .form-control {
+            padding-left: 35px;
+            width: 100%;
+        }
+
+        .search-clear-btn {
+            background: #f1f5f9;
+            color: #475569;
+            border: 1px solid #cbd5e1;
+            min-height: 42px;
+            padding: 10px 14px;
+            flex-shrink: 0;
+        }
+
+        .surat-form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+
+        .surat-form-grid--signers {
+            margin-top: 15px;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+        }
+
         @media (max-width: 768px) {
+            .catat-poin-actions-row {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .catat-poin-field {
+                flex: 1 1 auto;
+                width: 100%;
+            }
+
+            .catat-form-actions {
+                width: 100%;
+            }
+
             .surat-actions-row {
                 display: grid;
                 grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -1496,8 +1622,7 @@
                         <h3><i class="fa-solid fa-plus-circle"></i> Catat Pelanggaran Baru</h3>
                     </div>
                     <form id="form-pelanggaran" onsubmit="submitPelanggaran(event)">
-                        <div
-                            style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px;">
+                        <div class="catat-form-grid">
                             <div class="form-group autocomplete-group" style="margin-bottom: 0;">
                                 <label>NISN Siswa</label>
                                 <input type="text" class="form-control" id="input-nisn" placeholder="Cth: 0111946795"
@@ -1536,18 +1661,16 @@
                                     <option value="" disabled selected>Pilih kategori dulu...</option>
                                 </select>
                             </div>
-                            <div class="form-group" style="margin-bottom: 0;">
-                                <label>Poin</label>
+                        </div>
+                        <div class="catat-poin-actions-row">
+                            <div class="form-group catat-poin-field" style="margin-bottom: 0;">
+                                <label for="input-poin">Poin</label>
                                 <input type="number" class="form-control" id="input-poin" placeholder="0" readonly
                                     style="background-color: #f8fafc; font-weight: 700; color: #ef4444; border-color: #e2e8f0; cursor: not-allowed;"
                                     required>
                             </div>
-                        </div>
-                        <div
-                            style="margin-top: 20px; display: flex; flex-wrap: wrap; gap: 15px; justify-content: space-between; align-items: center;">
-                            <div style="display: flex; gap: 10px; flex-wrap: wrap;">
-                                <button type="button" class="action-btn"
-                                    style="background: #f1f5f9; color: #475569; border: 1px solid #cbd5e1;"
+                            <div class="catat-form-actions">
+                                <button type="button" class="action-btn catat-reset-btn"
                                     onclick="document.getElementById('form-pelanggaran').reset()">Reset</button>
                                 <button type="submit" class="action-btn">
                                     <i class="fa-solid fa-paper-plane"></i> Simpan Pelanggaran
@@ -1561,15 +1684,20 @@
                     <div class="card-header" style="flex-wrap: wrap; gap: 15px;">
                         <h3>Daftar Riwayat Pelanggaran</h3>
                         <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
-                            <div class="autocomplete-group" style="position: relative;">
-                                <i class="fa-solid fa-magnifying-glass"
-                                    style="position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: var(--text-muted); z-index: 2;"></i>
-                                <input type="text" id="search-pelanggaran" placeholder="Cari NISN atau Nama..."
-                                    class="form-control" style="padding-left: 35px; width: 100%; max-width: 250px;"
-                                    autocomplete="off" oninput="handleRekapSearchSuggest(this); searchTable()"
-                                    onfocus="handleRekapSearchSuggest(this)">
-                                <div id="suggest-search-pelanggaran" class="custom-suggest-box"
-                                    style="min-width: 260px; max-width: calc(100vw - 48px);"></div>
+                            <div class="search-bar-with-clear">
+                                <div class="autocomplete-group search-input-wrap">
+                                    <i class="fa-solid fa-magnifying-glass search-icon" aria-hidden="true"></i>
+                                    <input type="text" id="search-pelanggaran" placeholder="Cari NISN atau Nama..."
+                                        class="form-control" autocomplete="off"
+                                        oninput="handleRekapSearchSuggest(this); searchTable()"
+                                        onfocus="handleRekapSearchSuggest(this)">
+                                    <div id="suggest-search-pelanggaran" class="custom-suggest-box"
+                                        style="min-width: 260px; max-width: calc(100vw - 48px);"></div>
+                                </div>
+                                <button type="button" class="action-btn search-clear-btn"
+                                    onclick="clearTableSearch('search-pelanggaran', searchTable, 'suggest-search-pelanggaran')">
+                                    <i class="fa-solid fa-xmark" aria-hidden="true"></i> Clear
+                                </button>
                             </div>
                             <button type="button" id="btn-rekap-buat-surat" class="action-btn"
                                 style="display: none; background: #2563eb;"
@@ -1639,7 +1767,9 @@
                         </div>
                         <div
                             style="margin-top: 20px; display: flex; flex-wrap: wrap; gap: 15px; justify-content: space-between; align-items: center;">
-                            <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                            <div class="catat-form-actions">
+                                <button type="button" class="action-btn catat-reset-btn"
+                                    onclick="document.getElementById('form-tatatertib').reset()">Reset</button>
                                 <button type="submit" class="action-btn">
                                     <i class="fa-solid fa-save"></i> Tambah Aturan
                                 </button>
@@ -1683,8 +1813,7 @@
                         <h3><i class="fa-solid fa-plus-circle"></i> Catat Prestasi Baru</h3>
                     </div>
                     <form id="form-prestasi" onsubmit="submitPrestasi(event)">
-                        <div
-                            style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px;">
+                        <div class="catat-form-grid">
                             <div class="form-group autocomplete-group" style="margin-bottom: 0;">
                                 <label>NISN Siswa</label>
                                 <input type="text" class="form-control" id="input-nisn-prestasi"
@@ -1723,22 +1852,19 @@
                                     <option value="" disabled selected>Pilih kategori dulu...</option>
                                 </select>
                             </div>
-                            <div class="form-group" style="margin-bottom: 0;">
-                                <label>Poin</label>
+                        </div>
+                        <div class="catat-poin-actions-row">
+                            <div class="form-group catat-poin-field" style="margin-bottom: 0;">
+                                <label for="input-poin-prestasi">Poin</label>
                                 <input type="number" class="form-control" id="input-poin-prestasi" placeholder="0"
                                     readonly
                                     style="background-color: #f8fafc; font-weight: 700; color: #3b82f6; border-color: #e2e8f0; cursor: not-allowed;"
                                     required>
                             </div>
-                        </div>
-                        <div
-                            style="margin-top: 20px; display: flex; flex-wrap: wrap; gap: 15px; justify-content: space-between; align-items: center;">
-                            <div style="display: flex; gap: 10px; flex-wrap: wrap;">
-                                <button type="button" class="action-btn"
-                                    style="background: #f1f5f9; color: #475569; border: 1px solid #cbd5e1;"
+                            <div class="catat-form-actions">
+                                <button type="button" class="action-btn catat-reset-btn"
                                     onclick="document.getElementById('form-prestasi').reset()">Reset</button>
-                                <button type="submit" class="action-btn"
-                                    style="background: linear-gradient(to right, #3b82f6, #2563eb);">
+                                <button type="submit" class="action-btn catat-submit-prestasi">
                                     <i class="fa-solid fa-paper-plane"></i> Simpan Prestasi
                                 </button>
                             </div>
@@ -1750,12 +1876,16 @@
                     <div class="card-header" style="flex-wrap: wrap; gap: 15px;">
                         <h3>Daftar Riwayat Prestasi</h3>
                         <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
-                            <div style="position: relative;">
-                                <i class="fa-solid fa-magnifying-glass"
-                                    style="position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: var(--text-muted);"></i>
-                                <input type="text" id="search-prestasi" placeholder="Cari NISN atau Nama..."
-                                    class="form-control" style="padding-left: 35px; width: 100%; max-width: 250px;"
-                                    onkeyup="searchTablePrestasi()">
+                            <div class="search-bar-with-clear">
+                                <div class="search-input-wrap">
+                                    <i class="fa-solid fa-magnifying-glass search-icon" aria-hidden="true"></i>
+                                    <input type="text" id="search-prestasi" placeholder="Cari NISN atau Nama..."
+                                        class="form-control" onkeyup="searchTablePrestasi()">
+                                </div>
+                                <button type="button" class="action-btn search-clear-btn"
+                                    onclick="clearTableSearch('search-prestasi', searchTablePrestasi)">
+                                    <i class="fa-solid fa-xmark" aria-hidden="true"></i> Clear
+                                </button>
                             </div>
                             <button type="button" class="action-btn"
                                 onclick="exportTableToExcel('Data_Prestasi_Siswa.xlsx', 'admin-achievements-table', 'LAPORAN PRESTASI SISWA')"
@@ -1818,9 +1948,10 @@
                         </div>
                         <div
                             style="margin-top: 20px; display: flex; flex-wrap: wrap; gap: 15px; justify-content: space-between; align-items: center;">
-                            <div style="display: flex; gap: 10px; flex-wrap: wrap;">
-                                <button type="submit" class="action-btn"
-                                    style="background: linear-gradient(to right, #3b82f6, #2563eb);">
+                            <div class="catat-form-actions">
+                                <button type="button" class="action-btn catat-reset-btn"
+                                    onclick="document.getElementById('form-dataprestasi').reset()">Reset</button>
+                                <button type="submit" class="action-btn catat-submit-prestasi">
                                     <i class="fa-solid fa-save"></i> Tambah Data Prestasi
                                 </button>
                             </div>
@@ -1969,12 +2100,16 @@
                                 <option value="9C">Kelas 9C</option>
                                 <option value="9D">Kelas 9D</option>
                             </select>
-                            <div style="position: relative;">
-                                <i class="fa-solid fa-magnifying-glass"
-                                    style="position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: var(--text-muted);"></i>
-                                <input type="text" id="search-siswa" placeholder="Cari NISN atau Nama..."
-                                    class="form-control" style="padding-left: 35px; width: 100%; max-width: 220px;"
-                                    onkeyup="searchTableSiswa()">
+                            <div class="search-bar-with-clear">
+                                <div class="search-input-wrap search-input-wrap--siswa">
+                                    <i class="fa-solid fa-magnifying-glass search-icon" aria-hidden="true"></i>
+                                    <input type="text" id="search-siswa" placeholder="Cari NISN atau Nama..."
+                                        class="form-control" onkeyup="searchTableSiswa()">
+                                </div>
+                                <button type="button" class="action-btn search-clear-btn"
+                                    onclick="clearTableSearch('search-siswa', searchTableSiswa)">
+                                    <i class="fa-solid fa-xmark" aria-hidden="true"></i> Clear
+                                </button>
                             </div>
                             <button type="button" class="action-btn" onclick="exportSiswaToExcel()"
                                 style="background-color: #10b981;">
@@ -2015,31 +2150,34 @@
                         <h3><i class="fa-solid fa-file-word" style="color: #2563eb;"></i> Surat Pemberitahuan </h3>
                     </div>
 
-                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px;">
+                    <div class="surat-form-grid">
                         <div class="form-group autocomplete-group" style="margin-bottom: 0;">
-                            <label>Filter Nama Siswa</label>
+                            <label for="surat-nama-siswa">Filter Nama Siswa</label>
                             <input type="text" class="form-control" id="surat-nama-siswa"
                                 placeholder="Ketik / cari nama siswa..." autocomplete="off"
                                 oninput="onSuratNamaInput(this)" onfocus="handleStudentSearch(this, 'nama', 'surat')">
                             <div id="suggest-nama-surat" class="custom-suggest-box"></div>
                         </div>
                         <div class="form-group" style="margin-bottom: 0;">
-                            <label>Tanggal Undangan</label>
+                            <label for="surat-undangan-tanggal">Tanggal Undangan</label>
                             <input type="date" class="form-control" id="surat-undangan-tanggal"
                                 onchange="renderSuratPreview()" oninput="renderSuratPreview()">
                         </div>
                         <div class="form-group" style="margin-bottom: 0;">
-                            <label>Jam Undangan (WIB)</label>
+                            <label for="surat-undangan-jam">Jam Undangan (WIB)</label>
                             <input type="time" class="form-control" id="surat-undangan-jam"
                                 onchange="renderSuratPreview()" oninput="renderSuratPreview()">
                         </div>
+                    </div>
+
+                    <div class="surat-form-grid surat-form-grid--signers">
                         <div class="form-group" style="margin-bottom: 0;">
-                            <label>Kepala Madrasah</label>
+                            <label for="surat-kepala">Kepala Madrasah</label>
                             <input type="text" class="form-control" id="surat-kepala" value="Imam Mahmudi, M. Pd."
                                 oninput="renderSuratPreview()">
                         </div>
                         <div class="form-group" style="margin-bottom: 0;">
-                            <label>Guru BK</label>
+                            <label for="surat-guru-bk">Guru BK</label>
                             <input type="text" class="form-control" id="surat-guru-bk" value="Nanik Prihastuti, S. Pd."
                                 oninput="renderSuratPreview()">
                         </div>
@@ -3271,6 +3409,21 @@
             updateRekapSuratShortcut(matchedNisn);
             if (matchedNisn && typeof onSuratStudentSelected === 'function') {
                 onSuratStudentSelected(matchedNisn);
+            }
+        }
+
+        function clearTableSearch(inputId, onClear, suggestBoxId) {
+            const inputEl = document.getElementById(inputId);
+            if (inputEl) {
+                inputEl.value = '';
+                inputEl.focus();
+            }
+            if (suggestBoxId) {
+                const suggestBox = document.getElementById(suggestBoxId);
+                if (suggestBox) suggestBox.classList.remove('show');
+            }
+            if (typeof onClear === 'function') {
+                onClear();
             }
         }
 
@@ -4592,7 +4745,7 @@
         const SURAT_CONSTANTS = {
             hal: "Surat Panggilan Orang Tua/Wali Siswa",
             salamPembuka: "Assalamu’alaikum Wr. Wb.",
-            undanganPembuka: "Sehubungan dengan perkembangan dan pembinaan tata tertib sekolah, bersama surat ini kami mengharap Bapak/Ibu/Wali murid untuk hadir pada:",
+            undanganPembuka: "Sehubungan dengan perkembangan dan pembinaan tata tertib sekolah, bersama surat ini kami mengharap Bapak/Ibu/Wali siswa untuk hadir pada:",
             undanganTempat: "MTs Al Fatah Talun",
             undanganKeperluan: "Pembinaan dan koordinasi terkait perkembangan belajar serta kedisiplinan siswa di sekolah.",
             undanganPenutup: "Mengingat pentingnya hal tersebut, kami sangat mengharapkan kehadiran Bapak/Ibu/Wali siswa tepat pada waktunya. Atas perhatian dan kerja sama Bapak/Ibu, kami ucapkan terima kasih.",
@@ -4983,7 +5136,7 @@
                 const weight = line.bold ? '700' : '400';
                 const fStyle = line.italic ? 'italic' : 'normal';
                 const marginTop = i === 0 ? '0' : '1px';
-                return `<div style="font-family: 'Times New Roman', Times, serif; font-size: ${line.pt}pt; font-weight: ${weight}; font-style: ${fStyle}; margin-top: ${marginTop}; color: #000000;">${escapeHtml(line.text)}</div>`;
+                return `<div style="font-family: 'Times New Roman', 'Tinos', Times, serif; font-size: ${line.pt}pt; font-weight: ${weight}; font-style: ${fStyle}; margin-top: ${marginTop}; color: #000000;">${escapeHtml(line.text)}</div>`;
             }).join('');
 
             paper.innerHTML = `
@@ -5023,7 +5176,7 @@
                         </tr>
                     </table>
 
-                    <div style="margin-bottom: 20px;">
+                    <div style="margin-bottom: 20px; text-align: left;">
                         <div>Kepada Yth.</div>
                         <div>Bapak/Ibu Orang Tua/Wali Siswa dari ${namaDisplay}</div>
                         <div>di <u>Tempat</u></div>
@@ -5033,7 +5186,7 @@
                         ${SURAT_CONSTANTS.salamPembuka}
                     </div>
 
-                    <p style="margin: 0 0 14px 0; text-align: left;">
+                    <p style="margin: 0 0 14px 0;">
                         ${SURAT_CONSTANTS.undanganPembuka}
                     </p>
 
@@ -5060,7 +5213,7 @@
                         </tr>
                     </table>
 
-                    <p style="margin: 0 0 8px 0; text-align: left;">
+                    <p style="margin: 0 0 8px 0;">
                         ${SURAT_CONSTANTS.undanganPenutup}
                     </p>
 
@@ -5084,18 +5237,18 @@
                 <div class="surat-page">
                     <div style="font-weight: 700; font-style: italic; margin-bottom: 28px;">Lampiran</div>
 
-                    <p style="margin: 0 0 12px 0; text-align: left;">
+                    <p style="margin: 0 0 12px 0;">
                         ${SURAT_CONSTANTS.pembukaIntro}${namaDisplay} Kelas ${kelasDisplay}. Sebagai berikut:
                     </p>
 
                     <table class="pelanggaran-surat-table">
                         <thead>
                             <tr>
-                                <th style="width: 7%;">No.</th>
+                                <th style="width: 6%;">No.</th>
                                 <th style="width: 17%;">Tanggal</th>
-                                <th style="width: 16%;">Kategori</th>
-                                <th style="width: 50%;">Nama Pelanggaran</th>
-                                <th style="width: 10%;">Poin</th>
+                                <th style="width: 13%;">Kategori</th>
+                                <th style="width: 56%;">Nama Pelanggaran</th>
+                                <th style="width: 8%;">Poin</th>
                             </tr>
                         </thead>
                         <tbody>
