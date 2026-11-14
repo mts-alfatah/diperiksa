@@ -76,9 +76,10 @@ function doPost(e) {
       const kategori = e.parameter.kategori || "";
       const prestasi = e.parameter.prestasi || ""; 
       const poin = e.parameter.poin || "0";
+      const keterangan = e.parameter.keterangan || "";
       
       if (nisn !== "" && prestasi !== "") {
-        sheetPrestasi.appendRow([nisn, namaSiswa, tanggal, kategori, prestasi, poin]);
+        sheetPrestasi.appendRow([nisn, namaSiswa, tanggal, kategori, prestasi, poin, keterangan]);
         return ContentService.createTextOutput(JSON.stringify({"result":"success"}))
           .setMimeType(ContentService.MimeType.JSON);
       } else {
@@ -95,9 +96,10 @@ function doPost(e) {
       const kategori = e.parameter.kategori || "";
       const pelanggaran = e.parameter.pelanggaran || "";
       const poin = e.parameter.poin || "0";
+      const keterangan = e.parameter.keterangan || "";
       
       if (nisn !== "" && pelanggaran !== "") {
-        sheetPelanggaran.appendRow([nisn, namaSiswa, tanggal, kategori, pelanggaran, poin]);
+        sheetPelanggaran.appendRow([nisn, namaSiswa, tanggal, kategori, pelanggaran, poin, keterangan]);
         return ContentService.createTextOutput(JSON.stringify({"result":"success"}))
           .setMimeType(ContentService.MimeType.JSON);
       } else {
@@ -181,6 +183,7 @@ function doPost(e) {
       const newKategori = e.parameter.new_kategori || "";
       const newPelanggaran = e.parameter.new_pelanggaran || "";
       const newPoin = e.parameter.new_poin || "0";
+      const newKeterangan = e.parameter.new_keterangan || "";
       const namaSiswa = e.parameter.nama_siswa || "";
       
       const data = sheet.getDataRange().getValues();
@@ -192,7 +195,8 @@ function doPost(e) {
         let inputNisn = String(nisn).replace(/^'/, "").trim();
         
         if (Number(rowNisn) === Number(inputNisn) && String(row[4]).trim() === oldPelanggaran.trim()) {
-            sheet.getRange(i + 1, 1, 1, 6).setValues([["'"+nisn, namaSiswa, newTanggal, newKategori, newPelanggaran, newPoin]]);
+            const cleanNisn = String(nisn).replace(/^'+/, "").trim();
+            sheet.getRange(i + 1, 1, 1, 7).setValues([["'"+cleanNisn, namaSiswa, newTanggal, newKategori, newPelanggaran, newPoin, newKeterangan]]);
             updated = true;
             break;
         }
@@ -216,6 +220,7 @@ function doPost(e) {
       const newKategori = e.parameter.new_kategori || "";
       const newPrestasi = e.parameter.new_prestasi || "";
       const newPoin = e.parameter.new_poin || "0";
+      const newKeterangan = e.parameter.new_keterangan || "";
       const namaSiswa = e.parameter.nama_siswa || "";
       
       const data = sheet.getDataRange().getValues();
@@ -227,7 +232,8 @@ function doPost(e) {
         let inputNisn = String(nisn).replace(/^'/, "").trim();
         
         if (Number(rowNisn) === Number(inputNisn) && String(row[4]).trim() === oldPrestasi.trim()) {
-            sheet.getRange(i + 1, 1, 1, 6).setValues([["'"+nisn, namaSiswa, newTanggal, newKategori, newPrestasi, newPoin]]);
+            const cleanNisn = String(nisn).replace(/^'+/, "").trim();
+            sheet.getRange(i + 1, 1, 1, 7).setValues([["'"+cleanNisn, namaSiswa, newTanggal, newKategori, newPrestasi, newPoin, newKeterangan]]);
             updated = true;
             break;
         }

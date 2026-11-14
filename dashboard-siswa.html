@@ -748,16 +748,16 @@
                     `https://docs.google.com/spreadsheets/d/${spreadsheetId}/gviz/tq?sheet=${encodeURIComponent(sheetSiswa)}&tq=SELECT%20A,B,C,D,E`
                 );
 
-                // 2. Ambil Data Riwayat Pelanggaran
+                // 2. Ambil Data Riwayat Pelanggaran (A: NISN, B: Nama, C: Tanggal, D: Kategori, E: Nama Pelanggaran, F: Poin, G: Keterangan)
                 const dataPelanggaran = await fetchJSONP(
-                    `https://docs.google.com/spreadsheets/d/${spreadsheetId}/gviz/tq?sheet=${encodeURIComponent(sheetPelanggaran)}&tq=SELECT%20A,B,C,D,E,F`
+                    `https://docs.google.com/spreadsheets/d/${spreadsheetId}/gviz/tq?sheet=${encodeURIComponent(sheetPelanggaran)}&tq=SELECT%20A,B,C,D,E,F,G`
                 );
 
-                // 3. Ambil Data Riwayat Prestasi
+                // 3. Ambil Data Riwayat Prestasi (A: NISN, B: Nama, C: Tanggal, D: Kategori, E: Nama Prestasi, F: Poin, G: Keterangan)
                 let dataPrestasi = null;
                 try {
                     dataPrestasi = await fetchJSONP(
-                        `https://docs.google.com/spreadsheets/d/${spreadsheetId}/gviz/tq?sheet=${encodeURIComponent(sheetPrestasi)}&tq=SELECT%20A,B,C,D,E,F`
+                        `https://docs.google.com/spreadsheets/d/${spreadsheetId}/gviz/tq?sheet=${encodeURIComponent(sheetPrestasi)}&tq=SELECT%20A,B,C,D,E,F,G`
                     );
                 } catch (e) { console.warn("Sheet Prestasi mungkin belum dibuat."); }
 
@@ -873,11 +873,12 @@
                         const sheetNisn = formatNISN(row[0].v, row[0].f);
 
                         if (sheetNisn === targetNISN) {
-                            // Asumsi struktur Sheet Pelanggaran: A(NISN), B(Nama), C(Tanggal), D(Kategori), E(Nama Pelanggaran), F(Poin)
+                            // Asumsi struktur Sheet Pelanggaran: A(NISN), B(Nama), C(Tanggal), D(Kategori), E(Nama Pelanggaran), F(Poin), G(Keterangan)
                             const tanggalStr = row[2] && row[2].f ? row[2].f : (row[2] && row[2].v ? String(row[2].v) : "-");
                             const kategoriStr = row[3] && row[3].v ? String(row[3].v) : "-";
                             const pelanggaranStr = row[4] && row[4].v ? String(row[4].v) : "-";
                             const poinStr = row[5] && row[5].v ? String(row[5].v) : "0";
+                            const catatanStr = (row[6] && row[6].v != null) ? String(row[6].v).trim() : "";
 
                             const poin = parseInt(poinStr) || 0;
 
@@ -895,7 +896,10 @@
                                         <td class="d-cell" style="text-align: center; font-weight: 500;">${violationCount}</td>
                                         <td class="d-cell" style="color: var(--text-muted); font-size: 13px;">${tanggalStr}</td>
                                         <td class="d-cell"><span class="category-pill ${badgeClass}">${kategoriStr}</span></td>
-                                        <td class="d-cell" style="font-weight: 500; color: #1e293b;">${pelanggaranStr}</td>
+                                        <td class="d-cell" style="font-weight: 500; color: #1e293b;">
+                                            ${pelanggaranStr}
+                                            ${catatanStr ? `<div style="font-size: 11.5px; color: var(--text-muted); font-weight: normal; margin-top: 2px;"><em>Ket: ${catatanStr}</em></div>` : ''}
+                                        </td>
                                         <td class="d-cell" style="text-align: center;"><span class="badge ${badgeClass}" style="font-weight: 700;">+${poin}</span></td>
 
                                         <!-- Mobile Card Cell -->
@@ -907,6 +911,7 @@
                                                 </div>
                                                 <div class="card-content-box pelanggaran-box">
                                                     <div class="card-desc-text">${pelanggaranStr}</div>
+                                                    ${catatanStr ? `<div style="font-size: 12px; color: #64748b; margin-top: 4px;"><em>Ket: ${catatanStr}</em></div>` : ''}
                                                 </div>
                                                 <div class="card-bottom-row">
                                                     <div class="card-date"><i class="fa-regular fa-calendar-days"></i> ${tanggalStr}</div>
@@ -935,6 +940,7 @@
                             const kategoriStr = row[3] && row[3].v ? String(row[3].v) : "-";
                             const prestasiStr = row[4] && row[4].v ? String(row[4].v) : "-";
                             const poinStr = row[5] && row[5].v ? String(row[5].v) : "0";
+                            const catatanStr = (row[6] && row[6].v != null) ? String(row[6].v).trim() : "";
 
                             const poin = parseInt(poinStr) || 0;
                             if (kategoriStr !== "-" || prestasiStr !== "-") {
@@ -948,7 +954,10 @@
                                         <td class="d-cell" style="text-align: center; font-weight: 500;">${prestasiCount}</td>
                                         <td class="d-cell" style="color: var(--text-muted); font-size: 13px;">${tanggalStr}</td>
                                         <td class="d-cell"><span class="category-pill blue">${kategoriStr}</span></td>
-                                        <td class="d-cell" style="font-weight: 500; color: #1e293b;">${prestasiStr}</td>
+                                        <td class="d-cell" style="font-weight: 500; color: #1e293b;">
+                                            ${prestasiStr}
+                                            ${catatanStr ? `<div style="font-size: 11.5px; color: var(--text-muted); font-weight: normal; margin-top: 2px;"><em>Ket: ${catatanStr}</em></div>` : ''}
+                                        </td>
                                         <td class="d-cell" style="text-align: center;"><span class="badge green" style="font-weight: 700;">+${poin}</span></td>
 
                                         <!-- Mobile Card Cell -->
@@ -960,6 +969,7 @@
                                                 </div>
                                                 <div class="card-content-box prestasi-box">
                                                     <div class="card-desc-text">${prestasiStr}</div>
+                                                    ${catatanStr ? `<div style="font-size: 12px; color: #64748b; margin-top: 4px;"><em>Ket: ${catatanStr}</em></div>` : ''}
                                                 </div>
                                                 <div class="card-bottom-row">
                                                     <div class="card-date"><i class="fa-regular fa-calendar-days"></i> ${tanggalStr}</div>
