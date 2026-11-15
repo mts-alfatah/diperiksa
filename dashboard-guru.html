@@ -281,6 +281,28 @@
             transform: translateY(-1px);
         }
 
+        .btn-clear-filter {
+            background: #f1f5f9;
+            color: #475569;
+            border: 1px solid #cbd5e1;
+            padding: 8px 13px;
+            font-size: 13px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 500;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            transition: var(--transition);
+            white-space: nowrap;
+        }
+
+        .btn-clear-filter:hover {
+            background: #e2e8f0;
+            color: #1e293b;
+            border-color: #94a3b8;
+        }
+
         table {
             width: 100%;
             border-collapse: collapse;
@@ -1576,6 +1598,10 @@
                                 <div id="suggest-search-pelanggaran" class="custom-suggest-box"
                                     style="min-width: 260px; max-width: calc(100vw - 48px);"></div>
                             </div>
+                            <button type="button" class="btn-clear-filter" id="btn-clear-search-pelanggaran" onclick="clearSearchPelanggaran()"
+                                title="Hapus / Reset Pencarian">
+                                <i class="fa-solid fa-xmark"></i> Clear
+                            </button>
                             <button type="button" id="btn-rekap-buat-surat" class="action-btn"
                                 style="display: none; background: #2563eb;"
                                 onclick="if(this.dataset.nisn) buatSuratUntukSiswa(this.dataset.nisn)">
@@ -1767,6 +1793,10 @@
                                     class="form-control" style="padding-left: 35px; width: 100%; max-width: 250px;"
                                     onkeyup="searchTablePrestasi()">
                             </div>
+                            <button type="button" class="btn-clear-filter" id="btn-clear-search-prestasi" onclick="clearSearchPrestasi()"
+                                title="Hapus / Reset Pencarian">
+                                <i class="fa-solid fa-xmark"></i> Clear
+                            </button>
                             <button type="button" class="action-btn"
                                 onclick="exportTableToExcel('Data_Prestasi_Siswa.xlsx', 'admin-achievements-table', 'LAPORAN PRESTASI SISWA')"
                                 style="background-color: #10b981;">
@@ -1986,6 +2016,10 @@
                                     class="form-control" style="padding-left: 35px; width: 100%; max-width: 220px;"
                                     onkeyup="searchTableSiswa()">
                             </div>
+                            <button type="button" class="btn-clear-filter" id="btn-clear-search-siswa" onclick="clearSearchSiswa()"
+                                title="Hapus / Reset Pencarian">
+                                <i class="fa-solid fa-xmark"></i> Clear
+                            </button>
                             <button type="button" class="action-btn" onclick="exportSiswaToExcel()"
                                 style="background-color: #10b981;">
                                 <i class="fa-solid fa-file-excel"></i> Export Excel
@@ -2548,6 +2582,7 @@
             window.studentWaMap = studentWaMap;
             window.studentPhotoMap = studentPhotoMap;
             window.allStudentsList = allStudentsList;
+            updateDynamicClassDropdowns(allStudentsList);
 
             // Kosongkan native datalist agar Android browser tidak memunculkan overlay transparan
             const nisnListEl = document.getElementById('nisn-list');
@@ -4332,6 +4367,71 @@
             }
         }
 
+        function updateDynamicClassDropdowns(studentsList) {
+            if (!Array.isArray(studentsList) || studentsList.length === 0) return;
+
+            // Kumpulkan semua kelas unik dari data siswa di sheet
+            const classSet = new Set();
+            studentsList.forEach(s => {
+                const k = (s && s.kelas ? String(s.kelas) : '').trim();
+                if (k && k !== '-' && k.toLowerCase() !== 'kelas' && k.toLowerCase() !== 'kelas -') {
+                    classSet.add(k);
+                }
+            });
+
+            // Kelas default dasar (7A - 9D) agar selalu ada pilihan standar jika sheet baru/kosong
+            const defaultClasses = ['7A', '7B', '7C', '7D', '8A', '8B', '8C', '8D', '9A', '9B', '9C', '9D'];
+            defaultClasses.forEach(c => classSet.add(c));
+
+            // Urutkan kelas secara natural (7A, 7B, 7C, 7D, 8A, ..., 9A, ...)
+            const sortedClasses = Array.from(classSet).sort((a, b) => {
+                return a.localeCompare(b, undefined, { numeric: true, sensitivity: 'base' });
+            });
+
+            // 1. Update filter-siswa-kelas di Daftar Siswa & Foto
+            const filterEl = document.getElementById('filter-siswa-kelas');
+            if (filterEl) {
+                const currentVal = (filterEl.value || '').toUpperCase().trim();
+                let html = '<option value="">Semua Kelas</option>';
+                sortedClasses.forEach(cls => {
+                    const label = cls.toLowerCase().startsWith('kelas') ? cls : `Kelas ${cls}`;
+                    html += `<option value="${escapeHtml(cls)}">${escapeHtml(label)}</option>`;
+                });
+                filterEl.innerHTML = html;
+                if (currentVal && sortedClasses.some(c => c.toUpperCase() === currentVal)) {
+                    filterEl.value = currentVal;
+                }
+            }
+
+            // 2. Update input-siswa-kelas di Form Tambah Siswa
+            const inputEl = document.getElementById('input-siswa-kelas');
+            if (inputEl) {
+                const currentVal = (inputEl.value || '').toUpperCase().trim();
+                let html = '<option value="" disabled selected>Pilih Kelas</option>';
+                sortedClasses.forEach(cls => {
+                    html += `<option value="${escapeHtml(cls)}">${escapeHtml(cls)}</option>`;
+                });
+                inputEl.innerHTML = html;
+                if (currentVal && sortedClasses.some(c => c.toUpperCase() === currentVal)) {
+                    inputEl.value = currentVal;
+                }
+            }
+
+            // 3. Update edit-siswa-kelas di Modal Edit Siswa
+            const editEl = document.getElementById('edit-siswa-kelas');
+            if (editEl) {
+                const currentVal = (editEl.value || '').toUpperCase().trim();
+                let html = '<option value="" disabled>Pilih Kelas</option>';
+                sortedClasses.forEach(cls => {
+                    html += `<option value="${escapeHtml(cls)}">${escapeHtml(cls)}</option>`;
+                });
+                editEl.innerHTML = html;
+                if (currentVal && sortedClasses.some(c => c.toUpperCase() === currentVal)) {
+                    editEl.value = currentVal;
+                }
+            }
+        }
+
         function searchTableSiswa() {
             const searchInput = (document.getElementById("search-siswa").value || "").toLowerCase().trim();
             const filterKelas = (document.getElementById("filter-siswa-kelas").value || "").toUpperCase().trim();
@@ -4355,6 +4455,35 @@
 
             table.setAttribute('data-current-page', 1);
             setupPagination('admin-students-table', 'pagination-siswa', 10);
+        }
+
+        function clearSearchSiswa() {
+            const input = document.getElementById('search-siswa');
+            const filter = document.getElementById('filter-siswa-kelas');
+            if (input) input.value = '';
+            if (filter) filter.value = '';
+            searchTableSiswa();
+            if (input) input.focus();
+        }
+
+        function clearSearchPelanggaran() {
+            const input = document.getElementById('search-pelanggaran');
+            if (input) input.value = '';
+            if (typeof closeAllSuggestBoxes === 'function') closeAllSuggestBoxes();
+            const btnSurat = document.getElementById('btn-rekap-buat-surat');
+            if (btnSurat) {
+                btnSurat.style.display = 'none';
+                delete btnSurat.dataset.nisn;
+            }
+            searchTable();
+            if (input) input.focus();
+        }
+
+        function clearSearchPrestasi() {
+            const input = document.getElementById('search-prestasi');
+            if (input) input.value = '';
+            searchTablePrestasi();
+            if (input) input.focus();
         }
 
         async function exportSiswaToExcel() {
