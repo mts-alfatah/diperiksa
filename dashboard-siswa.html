@@ -399,6 +399,108 @@
             margin-bottom: 15px;
         }
 
+        /* Tombol & Modal Bukti Prestasi */
+        .btn-bukti-action {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            padding: 6px 12px;
+            font-size: 12px;
+            font-weight: 600;
+            border-radius: 8px;
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            white-space: nowrap;
+            text-decoration: none;
+            font-family: inherit;
+        }
+
+        .btn-bukti-action.active {
+            background: linear-gradient(135deg, #4f46e5, #0284c7);
+            color: #ffffff;
+            box-shadow: 0 2px 6px rgba(79, 70, 229, 0.25);
+        }
+
+        .btn-bukti-action.active:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 10px rgba(79, 70, 229, 0.35);
+            filter: brightness(1.05);
+        }
+
+        .btn-bukti-action.active:active {
+            transform: translateY(0);
+        }
+
+        .btn-bukti-action.disabled {
+            background: #f1f5f9;
+            color: #94a3b8;
+            border: 1px dashed #cbd5e1;
+            cursor: not-allowed;
+            opacity: 0.85;
+        }
+
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(15, 23, 42, 0.65);
+            backdrop-filter: blur(4px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            padding: 16px;
+            box-sizing: border-box;
+            animation: fadeIn 0.2s ease;
+        }
+
+        .modal-content {
+            background: #ffffff;
+            border-radius: 16px;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.2), 0 10px 10px -5px rgba(0, 0, 0, 0.08);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            animation: slideUp 0.25s ease;
+        }
+
+        .modal-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 14px 18px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .modal-close-btn {
+            background: none;
+            border: none;
+            font-size: 26px;
+            color: #64748b;
+            cursor: pointer;
+            line-height: 1;
+            padding: 0 4px;
+            transition: color 0.2s;
+        }
+
+        .modal-close-btn:hover {
+            color: #0f172a;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes slideUp {
+            from { transform: translateY(15px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
         .tabs {
             display: flex;
             gap: 10px;
@@ -697,11 +799,12 @@
                     <table id="prestasi-table" class="responsive-card-table">
                         <thead>
                             <tr>
-                                <th>No</th>
-                                <th>Tanggal</th>
-                                <th>Kategori</th>
+                                <th style="width: 50px; text-align: center;">No</th>
+                                <th style="width: 110px;">Tanggal</th>
+                                <th style="width: 120px;">Kategori</th>
                                 <th>Nama Prestasi</th>
-                                <th>Poin</th>
+                                <th style="width: 80px; text-align: center;">Poin</th>
+                                <th style="width: 130px; text-align: center;">Bukti</th>
                             </tr>
                         </thead>
                         <tbody id="prestasi-body">
@@ -713,6 +816,40 @@
                         <p>Belum ada catatan prestasi. Teruslah berkarya!</p>
                     </div>
                 </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL LIHAT BUKTI PRESTASI -->
+    <div id="modal-bukti" class="modal-overlay" style="display: none;">
+        <div class="modal-content" style="max-width: 600px; width: 92%;">
+            <div class="modal-header">
+                <div>
+                    <h4 id="modal-bukti-title" style="margin: 0; font-size: 16px; color: #0f172a; font-weight: 700;">Bukti Prestasi</h4>
+                    <p id="modal-bukti-subtitle" style="margin: 4px 0 0; font-size: 12px; color: #64748b;"></p>
+                </div>
+                <button type="button" class="modal-close-btn" onclick="tutupModalBukti()" aria-label="Tutup">&times;</button>
+            </div>
+            <div class="modal-body" style="padding: 16px; text-align: center; max-height: 70vh; overflow-y: auto;">
+                <div id="modal-bukti-loading" style="display: none; padding: 30px; color: #64748b;">
+                    <i class="fa-solid fa-spinner fa-spin" style="font-size: 28px; color: #0284c7;"></i>
+                    <p style="margin-top: 10px; font-size: 13px;">Memuat bukti...</p>
+                </div>
+                <div id="modal-bukti-preview-container" style="display: flex; justify-content: center; align-items: center; min-height: 180px;">
+                    <img id="modal-bukti-img" src="" alt="Bukti Prestasi" style="max-width: 100%; max-height: 55vh; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); object-fit: contain; display: none;" />
+                    <iframe id="modal-bukti-iframe" src="" style="width: 100%; height: 55vh; border: none; border-radius: 8px; display: none;"></iframe>
+                    <div id="modal-bukti-fallback" style="display: none; padding: 25px; color: #64748b;">
+                        <i class="fa-solid fa-file-circle-question" style="font-size: 40px; color: #94a3b8; margin-bottom: 12px;"></i>
+                        <p style="font-size: 13px; margin: 0;">Pratinjau tidak dapat dimuat langsung di browser.</p>
+                        <p style="font-size: 12px; color: #94a3b8; margin: 4px 0 0;">Silakan klik tombol "Buka File Asli" di bawah ini.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer" style="display: flex; justify-content: space-between; align-items: center; padding: 12px 16px; border-top: 1px solid #e2e8f0; background: #f8fafc; border-radius: 0 0 16px 16px;">
+                <a id="modal-bukti-link" href="#" target="_blank" rel="noopener noreferrer" class="btn-bukti-action active" style="text-decoration: none;">
+                    <i class="fa-solid fa-arrow-up-right-from-square"></i> Buka File Asli
+                </a>
+                <button type="button" class="tab-btn" onclick="tutupModalBukti()" style="padding: 6px 14px; font-size: 13px; background: #e2e8f0; color: #334155;">Tutup</button>
             </div>
         </div>
     </div>
@@ -759,7 +896,15 @@
                     dataPrestasi = await fetchJSONP(
                         `https://docs.google.com/spreadsheets/d/${spreadsheetId}/gviz/tq?sheet=${encodeURIComponent(sheetPrestasi)}&tq=SELECT%20A,B,C,D,E,F,G,H`
                     );
-                } catch (e) { console.warn("Sheet Prestasi mungkin belum dibuat."); }
+                } catch (e) {
+                    try {
+                        dataPrestasi = await fetchJSONP(
+                            `https://docs.google.com/spreadsheets/d/${spreadsheetId}/gviz/tq?sheet=${encodeURIComponent(sheetPrestasi)}&tq=SELECT%20A,B,C,D,E,F,G`
+                        );
+                    } catch (e2) {
+                        console.warn("Sheet Prestasi mungkin belum dibuat.");
+                    }
+                }
 
                 processData(dataSiswa, dataPelanggaran, dataPrestasi, nisnTarget);
 
@@ -808,6 +953,28 @@
                 .replace(/>/g, '&gt;')
                 .replace(/"/g, '&quot;')
                 .replace(/'/g, '&#039;');
+        }
+
+        function escapeJs(str) {
+            if (str == null) return '';
+            return String(str)
+                .replace(/\\/g, '\\\\')
+                .replace(/'/g, "\\'")
+                .replace(/"/g, '&quot;')
+                .replace(/\n/g, ' ')
+                .replace(/\r/g, '');
+        }
+
+        function extractDriveId(url) {
+            if (!url) return null;
+            const str = String(url).trim();
+            const m1 = str.match(/\/file\/d\/([a-zA-Z0-9_-]+)/);
+            if (m1 && m1[1]) return m1[1];
+            const m2 = str.match(/[?&]id=([a-zA-Z0-9_-]+)/);
+            if (m2 && m2[1]) return m2[1];
+            const m3 = str.match(/\/d\/([a-zA-Z0-9_-]+)/);
+            if (m3 && m3[1]) return m3[1];
+            return null;
         }
 
         function convertGoogleDriveUrl(url) {
@@ -951,7 +1118,11 @@
                             const prestasiStr = row[4] && row[4].v ? String(row[4].v) : "-";
                             const poinStr = row[5] && row[5].v ? String(row[5].v) : "0";
                             const catatanStr = (row[6] && row[6].v != null) ? String(row[6].v).trim() : "";
-                            const buktiStr = (row[7] && row[7].v != null) ? String(row[7].v).trim() : "";
+                            let buktiStr = (row[7] && row[7].v != null) ? String(row[7].v).trim() : "";
+                            // Fallback jika URL ada di kolom keterangan
+                            if (!buktiStr && (catatanStr.startsWith('http://') || catatanStr.startsWith('https://') || catatanStr.startsWith('drive.google.com'))) {
+                                buktiStr = catatanStr;
+                            }
 
                             const poin = parseInt(poinStr) || 0;
                             if (kategoriStr !== "-" || prestasiStr !== "-") {
@@ -967,10 +1138,20 @@
                                         <td class="d-cell"><span class="category-pill blue">${kategoriStr}</span></td>
                                         <td class="d-cell" style="font-weight: 500; color: #1e293b;">
                                             ${prestasiStr}
-                                            ${catatanStr ? `<div style="font-size: 11.5px; color: var(--text-muted); font-weight: normal; margin-top: 2px;"><em>Ket: ${escapeHtml(catatanStr)}</em></div>` : ''}
-                                            ${buktiStr ? `<div style="margin-top: 4px;"><a href="${escapeHtml(buktiStr)}" target="_blank" rel="noopener noreferrer" style="display: inline-flex; align-items: center; gap: 4px; font-size: 11.5px; color: #4338ca; background: #e0e7ff; padding: 2px 8px; border-radius: 4px; text-decoration: none; font-weight: 600;"><i class="fa-solid fa-file-image"></i> Bukti Sertifikat</a></div>` : ''}
+                                            ${(catatanStr && catatanStr !== buktiStr) ? `<div style="font-size: 11.5px; color: var(--text-muted); font-weight: normal; margin-top: 2px;"><em>Ket: ${escapeHtml(catatanStr)}</em></div>` : ''}
                                         </td>
                                         <td class="d-cell" style="text-align: center;"><span class="badge green" style="font-weight: 700;">+${poin}</span></td>
+                                        <td class="d-cell" style="text-align: center;">
+                                            ${buktiStr ? `
+                                                <button type="button" class="btn-bukti-action active" onclick="bukaModalBukti('${escapeJs(buktiStr)}', '${escapeJs(prestasiStr)}', '${escapeJs(kategoriStr)}', '${escapeJs(tanggalStr)}')">
+                                                    <i class="fa-solid fa-file-image"></i> Lihat Bukti
+                                                </button>
+                                            ` : `
+                                                <button type="button" class="btn-bukti-action disabled" disabled title="Belum ada bukti sertifikat yang diunggah">
+                                                    <i class="fa-solid fa-ban"></i> Belum Ada
+                                                </button>
+                                            `}
+                                        </td>
 
                                         <!-- Mobile Card Cell -->
                                         <td class="m-card-cell">
@@ -981,11 +1162,17 @@
                                                 </div>
                                                 <div class="card-content-box prestasi-box">
                                                     <div class="card-desc-text">${prestasiStr}</div>
-                                                    ${catatanStr ? `<div style="font-size: 12px; color: #64748b; margin-top: 4px;"><em>Ket: ${escapeHtml(catatanStr)}</em></div>` : ''}
-                                                    ${buktiStr ? `<div style="margin-top: 6px;"><a href="${escapeHtml(buktiStr)}" target="_blank" rel="noopener noreferrer" style="display: inline-flex; align-items: center; gap: 4px; font-size: 11.5px; color: #4338ca; background: #e0e7ff; padding: 3px 8px; border-radius: 4px; text-decoration: none; font-weight: 600;"><i class="fa-solid fa-file-image"></i> Bukti Sertifikat</a></div>` : ''}
+                                                    ${(catatanStr && catatanStr !== buktiStr) ? `<div style="font-size: 12px; color: #64748b; margin-top: 4px;"><em>Ket: ${escapeHtml(catatanStr)}</em></div>` : ''}
                                                 </div>
-                                                <div class="card-bottom-row">
+                                                <div class="card-bottom-row" style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px;">
                                                     <div class="card-date"><i class="fa-regular fa-calendar-days"></i> ${tanggalStr}</div>
+                                                    ${buktiStr ? `
+                                                        <button type="button" class="btn-bukti-action active" onclick="bukaModalBukti('${escapeJs(buktiStr)}', '${escapeJs(prestasiStr)}', '${escapeJs(kategoriStr)}', '${escapeJs(tanggalStr)}')">
+                                                            <i class="fa-solid fa-file-image"></i> Lihat Bukti
+                                                        </button>
+                                                    ` : `
+                                                        <span style="font-size: 11.5px; color: #94a3b8;"><i class="fa-solid fa-ban"></i> Belum ada bukti</span>
+                                                    `}
                                                 </div>
                                             </div>
                                         </td>
@@ -1070,6 +1257,96 @@
             }
         }
 
+        function bukaModalBukti(url, namaPrestasi, kategori, tanggal) {
+            if (!url) return;
+            const modal = document.getElementById('modal-bukti');
+            const titleEl = document.getElementById('modal-bukti-title');
+            const subtitleEl = document.getElementById('modal-bukti-subtitle');
+            const imgEl = document.getElementById('modal-bukti-img');
+            const iframeEl = document.getElementById('modal-bukti-iframe');
+            const fallbackEl = document.getElementById('modal-bukti-fallback');
+            const linkEl = document.getElementById('modal-bukti-link');
+            const loadingEl = document.getElementById('modal-bukti-loading');
+
+            if (titleEl) titleEl.textContent = namaPrestasi || 'Bukti Prestasi';
+            const sub = [];
+            if (kategori && kategori !== '-') sub.push('Kategori: ' + kategori);
+            if (tanggal && tanggal !== '-') sub.push('Tanggal: ' + tanggal);
+            if (subtitleEl) subtitleEl.textContent = sub.join(' • ');
+
+            const driveId = extractDriveId(url);
+            const viewUrl = driveId ? `https://drive.google.com/file/d/${driveId}/view?usp=sharing` : url;
+            if (linkEl) linkEl.href = viewUrl;
+
+            if (loadingEl) loadingEl.style.display = 'block';
+            if (imgEl) { imgEl.style.display = 'none'; imgEl.src = ''; }
+            if (iframeEl) { iframeEl.style.display = 'none'; iframeEl.src = ''; }
+            if (fallbackEl) fallbackEl.style.display = 'none';
+
+            if (driveId) {
+                if (imgEl) {
+                    imgEl.onload = function () {
+                        if (loadingEl) loadingEl.style.display = 'none';
+                        imgEl.style.display = 'block';
+                    };
+                    imgEl.onerror = function () {
+                        imgEl.style.display = 'none';
+                        if (iframeEl) {
+                            iframeEl.src = `https://drive.google.com/file/d/${driveId}/preview`;
+                            iframeEl.onload = function () {
+                                if (loadingEl) loadingEl.style.display = 'none';
+                                iframeEl.style.display = 'block';
+                            };
+                            iframeEl.onerror = function () {
+                                if (loadingEl) loadingEl.style.display = 'none';
+                                if (fallbackEl) fallbackEl.style.display = 'block';
+                            };
+                        } else {
+                            if (loadingEl) loadingEl.style.display = 'none';
+                            if (fallbackEl) fallbackEl.style.display = 'block';
+                        }
+                    };
+                    imgEl.src = `https://lh3.googleusercontent.com/d/${driveId}=w1600`;
+                }
+            } else {
+                if (imgEl) {
+                    imgEl.onload = function () {
+                        if (loadingEl) loadingEl.style.display = 'none';
+                        imgEl.style.display = 'block';
+                    };
+                    imgEl.onerror = function () {
+                        if (loadingEl) loadingEl.style.display = 'none';
+                        if (fallbackEl) fallbackEl.style.display = 'block';
+                    };
+                    imgEl.src = url;
+                }
+            }
+
+            if (modal) modal.style.display = 'flex';
+        }
+
+        function tutupModalBukti() {
+            const modal = document.getElementById('modal-bukti');
+            if (modal) modal.style.display = 'none';
+            const imgEl = document.getElementById('modal-bukti-img');
+            const iframeEl = document.getElementById('modal-bukti-iframe');
+            if (imgEl) { imgEl.src = ''; imgEl.style.display = 'none'; }
+            if (iframeEl) { iframeEl.src = ''; iframeEl.style.display = 'none'; }
+        }
+
+        // Tutup modal jika klik backdrop atau tombol Escape
+        document.addEventListener('click', (e) => {
+            const modal = document.getElementById('modal-bukti');
+            if (modal && e.target === modal) {
+                tutupModalBukti();
+            }
+        });
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                tutupModalBukti();
+            }
+        });
+
         let siswaTabDepth = 0;
         let pendingSiswaLogout = false;
 
@@ -1098,6 +1375,10 @@
         }
 
         window.addEventListener('popstate', (e) => {
+            const modal = document.getElementById('modal-bukti');
+            if (modal && modal.style.display === 'flex') {
+                tutupModalBukti();
+            }
             if (pendingSiswaLogout) {
                 pendingSiswaLogout = false;
                 window.location.replace('index.html');
