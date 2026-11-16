@@ -1127,6 +1127,41 @@
             color: #0f172a;
         }
 
+        #modal-bukti {
+            z-index: 1100;
+        }
+
+        #modal-bukti .modal-content {
+            max-width: 620px;
+            padding: 0;
+            overflow: hidden;
+            border-radius: 16px;
+        }
+
+        #modal-bukti .modal-header {
+            padding: 16px 20px 14px;
+            margin-bottom: 0;
+            border-bottom: 1px solid #e2e8f0;
+            background: #ffffff;
+        }
+
+        #modal-bukti .modal-body {
+            padding: 16px;
+            text-align: center;
+            max-height: 70vh;
+            overflow-y: auto;
+            background: #f8fafc;
+        }
+
+        #modal-bukti .modal-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 18px;
+            border-top: 1px solid #e2e8f0;
+            background: #ffffff;
+        }
+
         .modal-content form {
             display: flex;
             flex-direction: column;
@@ -2293,6 +2328,40 @@
         </div>
     </div>
 
+    <!-- Modal Lihat Bukti Prestasi -->
+    <div class="modal-overlay" id="modal-bukti">
+        <div class="modal-content" style="max-width: 620px; width: 92%; padding: 0; overflow: hidden; display: flex; flex-direction: column;">
+            <div class="modal-header" style="padding: 16px 20px 14px; margin-bottom: 0; border-bottom: 1px solid #e2e8f0; background: #ffffff;">
+                <div>
+                    <h3 id="modal-bukti-title" style="margin: 0; font-size: 16px; color: #0f172a; font-weight: 700;">Bukti Prestasi</h3>
+                    <p id="modal-bukti-subtitle" style="margin: 4px 0 0; font-size: 12px; color: #64748b; font-weight: normal;"></p>
+                </div>
+                <button type="button" class="modal-close" onclick="tutupModalBukti()" aria-label="Tutup"><i class="fa-solid fa-times"></i></button>
+            </div>
+            <div class="modal-body" style="padding: 16px; text-align: center; max-height: 70vh; overflow-y: auto; background: #f8fafc;">
+                <div id="modal-bukti-loading" style="display: none; padding: 35px 20px; color: #64748b;">
+                    <i class="fa-solid fa-circle-notch fa-spin" style="font-size: 32px; color: #4f46e5;"></i>
+                    <p style="margin-top: 12px; font-size: 13px; font-weight: 500;">Memuat bukti...</p>
+                </div>
+                <div id="modal-bukti-preview-container" style="display: flex; justify-content: center; align-items: center; min-height: 200px;">
+                    <img id="modal-bukti-img" src="" alt="Bukti Prestasi" style="max-width: 100%; max-height: 55vh; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); object-fit: contain; display: none;" />
+                    <iframe id="modal-bukti-iframe" src="" style="width: 100%; height: 55vh; border: none; border-radius: 8px; display: none;"></iframe>
+                    <div id="modal-bukti-fallback" style="display: none; padding: 30px 20px; color: #64748b;">
+                        <i class="fa-solid fa-file-circle-question" style="font-size: 44px; color: #94a3b8; margin-bottom: 12px;"></i>
+                        <p style="font-size: 13.5px; margin: 0; font-weight: 500;">Pratinjau tidak dapat dimuat langsung di browser.</p>
+                        <p style="font-size: 12px; color: #94a3b8; margin: 4px 0 0;">Silakan klik tombol "Buka File Asli" di bawah ini.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer" style="display: flex; justify-content: space-between; align-items: center; padding: 12px 18px; border-top: 1px solid #e2e8f0; background: #ffffff;">
+                <a id="modal-bukti-link" href="#" target="_blank" rel="noopener noreferrer" class="action-btn" style="text-decoration: none; display: inline-flex; align-items: center; gap: 6px; padding: 7px 14px; font-size: 13px; background: linear-gradient(135deg, #4f46e5, #0284c7); color: #ffffff; border-radius: 8px; font-weight: 600;">
+                    <i class="fa-solid fa-arrow-up-right-from-square"></i> Buka File Asli
+                </a>
+                <button type="button" class="action-btn" onclick="tutupModalBukti()" style="padding: 7px 16px; font-size: 13px; background: #f1f5f9; color: #334155; border: 1px solid #cbd5e1; border-radius: 8px; font-weight: 600;">Tutup</button>
+            </div>
+        </div>
+    </div>
+
     <!-- Datalists for Autocomplete -->
     <datalist id="nisn-list"></datalist>
     <datalist id="nama-list"></datalist>
@@ -2357,7 +2426,9 @@
 
             while (uiLayerStack.length > targetDepth) {
                 const layer = uiLayerStack.pop();
-                if (layer === 'edit-modal') {
+                if (layer === 'modal-bukti') {
+                    tutupModalBukti(true);
+                } else if (layer === 'edit-modal') {
                     closeEditModal(true);
                 } else if (layer === 'edit-siswa-modal') {
                     closeEditSiswaModal(true);
@@ -3928,6 +3999,11 @@
 
         document.addEventListener('keydown', (e) => {
             if (e.key === 'Escape') {
+                const modalBukti = document.getElementById('modal-bukti');
+                if (modalBukti && modalBukti.classList.contains('show')) {
+                    tutupModalBukti();
+                    return;
+                }
                 closeAllSuggestBoxes();
                 toggleSidebar(true);
             }
@@ -3958,6 +4034,118 @@
                 }
             }
         }
+
+        function extractDriveId(url) {
+            if (!url) return null;
+            const str = String(url).trim();
+            const m1 = str.match(/\/file\/d\/([a-zA-Z0-9_-]+)/);
+            if (m1 && m1[1]) return m1[1];
+            const m2 = str.match(/[?&]id=([a-zA-Z0-9_-]+)/);
+            if (m2 && m2[1]) return m2[1];
+            const m3 = str.match(/\/d\/([a-zA-Z0-9_-]+)/);
+            if (m3 && m3[1]) return m3[1];
+            return null;
+        }
+
+        function bukaModalBukti(url, namaPrestasi, kategori, tanggal) {
+            if (!url) return;
+            const modal = document.getElementById('modal-bukti');
+            const titleEl = document.getElementById('modal-bukti-title');
+            const subtitleEl = document.getElementById('modal-bukti-subtitle');
+            const imgEl = document.getElementById('modal-bukti-img');
+            const iframeEl = document.getElementById('modal-bukti-iframe');
+            const fallbackEl = document.getElementById('modal-bukti-fallback');
+            const linkEl = document.getElementById('modal-bukti-link');
+            const loadingEl = document.getElementById('modal-bukti-loading');
+
+            if (titleEl) titleEl.textContent = namaPrestasi || 'Bukti Prestasi';
+            const sub = [];
+            if (kategori && kategori !== '-') sub.push('Kategori: ' + kategori);
+            if (tanggal && tanggal !== '-') sub.push('Tanggal: ' + tanggal);
+            if (subtitleEl) subtitleEl.textContent = sub.join(' • ');
+
+            const driveId = extractDriveId(url);
+            const viewUrl = driveId ? `https://drive.google.com/file/d/${driveId}/view?usp=sharing` : url;
+            if (linkEl) linkEl.href = viewUrl;
+
+            if (loadingEl) loadingEl.style.display = 'block';
+            if (imgEl) { imgEl.style.display = 'none'; imgEl.src = ''; }
+            if (iframeEl) { iframeEl.style.display = 'none'; iframeEl.src = ''; }
+            if (fallbackEl) fallbackEl.style.display = 'none';
+
+            if (driveId) {
+                if (imgEl) {
+                    imgEl.onload = function () {
+                        if (loadingEl) loadingEl.style.display = 'none';
+                        imgEl.style.display = 'block';
+                    };
+                    imgEl.onerror = function () {
+                        imgEl.style.display = 'none';
+                        if (iframeEl) {
+                            iframeEl.src = `https://drive.google.com/file/d/${driveId}/preview`;
+                            iframeEl.onload = function () {
+                                if (loadingEl) loadingEl.style.display = 'none';
+                                iframeEl.style.display = 'block';
+                            };
+                            iframeEl.onerror = function () {
+                                if (loadingEl) loadingEl.style.display = 'none';
+                                if (fallbackEl) fallbackEl.style.display = 'block';
+                            };
+                        } else {
+                            if (loadingEl) loadingEl.style.display = 'none';
+                            if (fallbackEl) fallbackEl.style.display = 'block';
+                        }
+                    };
+                    imgEl.src = `https://lh3.googleusercontent.com/d/${driveId}=w1600`;
+                }
+            } else {
+                if (imgEl) {
+                    imgEl.onload = function () {
+                        if (loadingEl) loadingEl.style.display = 'none';
+                        imgEl.style.display = 'block';
+                    };
+                    imgEl.onerror = function () {
+                        if (loadingEl) loadingEl.style.display = 'none';
+                        if (fallbackEl) fallbackEl.style.display = 'block';
+                    };
+                    imgEl.src = url;
+                }
+            }
+
+            if (modal) modal.classList.add('show');
+            if (document.body && document.body.classList) document.body.classList.add('modal-open');
+            pushUiLayer('modal-bukti');
+        }
+
+        function tutupModalBukti(skipHistorySync = false) {
+            const modal = document.getElementById('modal-bukti');
+            if (modal) modal.classList.remove('show');
+            const imgEl = document.getElementById('modal-bukti-img');
+            const iframeEl = document.getElementById('modal-bukti-iframe');
+            if (imgEl) { imgEl.src = ''; imgEl.style.display = 'none'; }
+            if (iframeEl) { iframeEl.src = ''; iframeEl.style.display = 'none'; }
+
+            // Jangan hilangkan modal-open jika modal edit masih terbuka
+            const editModal = document.getElementById('edit-modal');
+            const editSiswaModal = document.getElementById('edit-siswa-modal');
+            const isOtherModalOpen = (editModal && editModal.classList.contains('show')) ||
+                                     (editSiswaModal && editSiswaModal.classList.contains('show'));
+            if (!isOtherModalOpen && document.body && document.body.classList) {
+                document.body.classList.remove('modal-open');
+            }
+
+            if (!skipHistorySync) {
+                removeUiLayer('modal-bukti', !isPageReloading);
+            }
+        }
+
+        // Tutup modal bukti saat klik backdrop atau Escape
+        document.addEventListener('click', (e) => {
+            const modalBukti = document.getElementById('modal-bukti');
+            if (modalBukti && e.target === modalBukti) {
+                tutupModalBukti();
+            }
+        });
 
         function closeEditModal(skipHistorySync = false) {
             const modal = document.getElementById('edit-modal');
@@ -3996,7 +4184,7 @@
                     if (oldBuktiEl) oldBuktiEl.value = bukti || '';
                     if (previewBuktiEl) {
                         previewBuktiEl.innerHTML = bukti
-                            ? `<a href="${escapeHtml(bukti)}" target="_blank" rel="noopener noreferrer" style="color: #2563eb; font-weight: 500; text-decoration: underline;"><i class="fa-solid fa-file-image"></i> Lihat Bukti Saat Ini</a>`
+                            ? `<button type="button" style="color: #2563eb; font-weight: 600; text-decoration: underline; background: none; border: none; padding: 0; cursor: pointer; font-size: 12px; display: inline-flex; align-items: center; gap: 5px;" onclick="bukaModalBukti('${escapeJsArg(bukti)}', '${escapeJsArg(namaData)}', '${escapeJsArg(kategori)}', '${escapeJsArg(tanggal)}')"><i class="fa-solid fa-file-image"></i> Lihat Bukti Saat Ini</button>`
                             : '<span style="color: var(--text-muted);">Belum ada bukti sertifikat terunggah.</span>';
                     }
                 } else {
@@ -4786,7 +4974,7 @@
                                 <span class="category-pill ${pillClass}">${escapeHtml(item.kategori)}</span>
                                 <span style="font-weight: 500; color: #1e293b;">${escapeHtml(item.keterangan)}</span>
                                 ${item.catatan ? `<span style="font-size: 11.5px; color: #475569; background: #e2e8f0; padding: 1px 7px; border-radius: 4px;"><i class="fa-solid fa-note-sticky" style="color: #64748b; font-size: 10px;"></i> ${escapeHtml(item.catatan)}</span>` : ''}
-                                ${item.bukti ? `<a href="${escapeHtml(item.bukti)}" target="_blank" rel="noopener noreferrer" class="badge" style="background: #e0e7ff; color: #4338ca; text-decoration: none; padding: 2px 7px; font-size: 11px; display: inline-flex; align-items: center; gap: 4px;" title="Lihat Foto Bukti/Sertifikat"><i class="fa-solid fa-file-image"></i> Sertifikat</a>` : ''}
+                                ${item.bukti ? `<button type="button" class="badge" style="background: #e0e7ff; color: #4338ca; border: none; cursor: pointer; padding: 2px 7px; font-size: 11px; font-weight: 600; border-radius: 4px; display: inline-flex; align-items: center; gap: 4px; transition: transform 0.15s ease;" title="Lihat Bukti Sertifikat" onclick="bukaModalBukti('${safeBukti}', '${safeKet}', '${safeKat}', '${safeTgl}')"><i class="fa-solid fa-file-image"></i> Sertifikat</button>` : ''}
                                 <span style="font-size: 11px; color: #64748b; margin-left: 4px;"><i class="fa-regular fa-calendar"></i> ${escapeHtml(tglFormatted)}</span>
                             </div>
                             <div style="display: flex; align-items: center; gap: 6px; white-space: nowrap;">
@@ -4806,7 +4994,7 @@
                         </div>
                         <div class="sg-item-desc">${escapeHtml(item.keterangan)}</div>
                         ${item.catatan ? `<div style="font-size: 12px; color: #475569; background: rgba(0,0,0,0.04); padding: 4px 8px; border-radius: 6px; margin-top: 3px; word-break: break-word;"><i class="fa-solid fa-note-sticky" style="color: #64748b; margin-right: 4px; font-size: 11px;"></i>${escapeHtml(item.catatan)}</div>` : ''}
-                        ${item.bukti ? `<div style="margin-top: 4px;"><a href="${escapeHtml(item.bukti)}" target="_blank" rel="noopener noreferrer" style="font-size: 12px; color: #2563eb; font-weight: 500; text-decoration: none; display: inline-flex; align-items: center; gap: 4px;"><i class="fa-solid fa-file-image"></i> Lihat Bukti Sertifikat</a></div>` : ''}
+                        ${item.bukti ? `<div style="margin-top: 4px;"><button type="button" style="font-size: 12px; color: #2563eb; font-weight: 600; background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 6px; padding: 3px 8px; cursor: pointer; display: inline-flex; align-items: center; gap: 5px;" onclick="bukaModalBukti('${safeBukti}', '${safeKet}', '${safeKat}', '${safeTgl}')"><i class="fa-solid fa-file-image"></i> Lihat Bukti Sertifikat</button></div>` : ''}
                         <div class="sg-item-footer">
                             <span class="sg-item-date"><i class="fa-regular fa-calendar-days"></i> ${escapeHtml(tglFormatted)}</span>
                             <div class="sg-item-actions">
