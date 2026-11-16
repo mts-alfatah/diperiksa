@@ -3097,7 +3097,7 @@
             });
         }
 
-        function compressImageToBase64(file, maxWidth = 1600, quality = 0.8) {
+        function compressImageToBase64(file, maxWidth = 1200, quality = 0.7) {
             return new Promise((resolve) => {
                 const reader = new FileReader();
                 reader.onload = (e) => {
@@ -3105,9 +3105,14 @@
                     img.onload = () => {
                         let w = img.width;
                         let h = img.height;
-                        if (w > maxWidth) {
-                            h = Math.round((h * maxWidth) / w);
-                            w = maxWidth;
+                        if (w > maxWidth || h > maxWidth) {
+                            if (w > h) {
+                                h = Math.round((h * maxWidth) / w);
+                                w = maxWidth;
+                            } else {
+                                w = Math.round((w * maxWidth) / h);
+                                h = maxWidth;
+                            }
                         }
                         const canvas = document.createElement('canvas');
                         canvas.width = w;
@@ -3551,33 +3556,38 @@
                     submitBtn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> Menyimpan...';
                 }
 
-                const formData = new URLSearchParams();
-                formData.append('action', 'add_prestasi');
-                formData.append('nisn', "'" + nisn);
-                formData.append('nama_siswa', namaSiswa);
-                formData.append('tanggal', tgl);
-                formData.append('kategori', kat);
-                formData.append('prestasi', namaP);
-                formData.append('poin', poin);
-                formData.append('keterangan', keterangan);
+                const payload = {
+                    action: 'add_prestasi',
+                    nisn: "'" + nisn,
+                    nama_siswa: namaSiswa,
+                    tanggal: tgl,
+                    kategori: kat,
+                    prestasi: namaP,
+                    poin: poin,
+                    keterangan: keterangan
+                };
                 if (buktiBase64) {
-                    formData.append('bukti_base64', buktiBase64);
-                    formData.append('bukti_filename', buktiFilename);
-                    formData.append('bukti_mimetype', buktiMimetype);
+                    payload.bukti_base64 = buktiBase64;
+                    payload.bukti_filename = buktiFilename;
+                    payload.bukti_mimetype = buktiMimetype;
                 }
 
-                await fetch(scriptUrl, {
+                const response = await fetch(scriptUrl, {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                    body: formData.toString(),
-                    mode: 'no-cors'
+                    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                    body: JSON.stringify(payload)
                 });
 
-                alert('Berhasil! Data prestasi telah dikirim ke Google Sheet.\nData di tabel akan diperbarui.');
-                e.target.reset();
-                location.reload();
+                const result = await response.json();
+                if (result.result === 'success') {
+                    alert('Berhasil! Data prestasi telah dikirim ke Google Sheet.\nData di tabel akan diperbarui.');
+                    e.target.reset();
+                    location.reload();
+                } else {
+                    alert('Gagal menyimpan prestasi: ' + (result.error || 'Terjadi kesalahan di server'));
+                }
             } catch (error) {
-                alert('Gagal mengirim data! Pastikan URL Apps Script benar dan koneksi internet stabil.');
+                alert('Gagal mengirim data! Pastikan URL Apps Script benar dan koneksi internet stabil: ' + error.message);
             } finally {
                 submitBtn.innerHTML = originalText;
                 submitBtn.disabled = false;
@@ -4126,31 +4136,11 @@
             submitBtn.disabled = true;
 
             try {
-                const formData = new URLSearchParams();
-                formData.append('action', jenis === 'pelanggaran' ? 'edit_pelanggaran' : 'edit_prestasi');
-                formData.append('nisn', "'" + nisn);
-                formData.append('nama_siswa', namaSiswa);
-                formData.append('old_tanggal', oldTanggal);
-
-                if (jenis === 'pelanggaran') {
-                    formData.append('old_pelanggaran', oldData);
-                    formData.append('new_pelanggaran', newData);
-                } else {
-                    formData.append('old_prestasi', oldData);
-                    formData.append('new_prestasi', newData);
-                }
-
-                formData.append('new_tanggal', newTanggal);
-                formData.append('new_kategori', newKategori);
-                formData.append('new_poin', newPoin);
-                const newKeterangan = (document.getElementById('edit-keterangan')?.value || '').trim();
-                formData.append('new_keterangan', newKeterangan);
-
+                let editBuktiBase64 = '';
+                let editBuktiFilename = '';
+                let editBuktiMimetype = '';
                 if (jenis === 'prestasi') {
                     const editBuktiEl = document.getElementById('edit-bukti-prestasi');
-                    let editBuktiBase64 = '';
-                    let editBuktiFilename = '';
-                    let editBuktiMimetype = '';
                     if (editBuktiEl && editBuktiEl.files && editBuktiEl.files[0]) {
                         const f = editBuktiEl.files[0];
                         editBuktiFilename = f.name;
@@ -4163,20 +4153,41 @@
                         }
                         submitBtn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> Menyimpan...';
                     }
+                }
+
+                const newKeterangan = (document.getElementById('edit-keterangan')?.value || '').trim();
+                const oldBukti = (document.getElementById('edit-old-bukti')?.value || '').trim();
+
+                const payload = {
+                    action: jenis === 'pelanggaran' ? 'edit_pelanggaran' : 'edit_prestasi',
+                    nisn: "'" + nisn,
+                    nama_siswa: namaSiswa,
+                    old_tanggal: oldTanggal,
+                    new_tanggal: newTanggal,
+                    new_kategori: newKategori,
+                    new_poin: newPoin,
+                    new_keterangan: newKeterangan
+                };
+
+                if (jenis === 'pelanggaran') {
+                    payload.old_pelanggaran = oldData;
+                    payload.new_pelanggaran = newData;
+                } else {
+                    payload.old_prestasi = oldData;
+                    payload.new_prestasi = newData;
                     if (editBuktiBase64) {
-                        formData.append('bukti_base64', editBuktiBase64);
-                        formData.append('bukti_filename', editBuktiFilename);
-                        formData.append('bukti_mimetype', editBuktiMimetype);
-                    } else {
-                        const oldBukti = (document.getElementById('edit-old-bukti')?.value || '').trim();
-                        if (oldBukti) formData.append('new_bukti', oldBukti);
+                        payload.bukti_base64 = editBuktiBase64;
+                        payload.bukti_filename = editBuktiFilename;
+                        payload.bukti_mimetype = editBuktiMimetype;
+                    } else if (oldBukti) {
+                        payload.new_bukti = oldBukti;
                     }
                 }
 
                 const response = await fetch(scriptUrl, {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                    body: formData.toString()
+                    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                    body: JSON.stringify(payload)
                 });
 
                 const result = await response.json();
@@ -4188,7 +4199,7 @@
                     alert('Gagal: ' + (result.error || 'Terjadi kesalahan di server'));
                 }
             } catch (error) {
-                alert('Gagal menghubungi server! Pastikan koneksi internet stabil atau URL Apps Script benar.');
+                alert('Gagal menghubungi server! Pastikan koneksi internet stabil atau URL Apps Script benar: ' + error.message);
                 console.error(error);
             } finally {
                 submitBtn.innerHTML = originalText;
