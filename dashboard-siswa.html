@@ -753,11 +753,11 @@
                     `https://docs.google.com/spreadsheets/d/${spreadsheetId}/gviz/tq?sheet=${encodeURIComponent(sheetPelanggaran)}&tq=SELECT%20A,B,C,D,E,F,G`
                 );
 
-                // 3. Ambil Data Riwayat Prestasi (A: NISN, B: Nama, C: Tanggal, D: Kategori, E: Nama Prestasi, F: Poin, G: Keterangan)
+                // 3. Ambil Data Riwayat Prestasi (A: NISN, B: Nama, C: Tanggal, D: Kategori, E: Nama Prestasi, F: Poin, G: Keterangan, H: Bukti)
                 let dataPrestasi = null;
                 try {
                     dataPrestasi = await fetchJSONP(
-                        `https://docs.google.com/spreadsheets/d/${spreadsheetId}/gviz/tq?sheet=${encodeURIComponent(sheetPrestasi)}&tq=SELECT%20A,B,C,D,E,F,G`
+                        `https://docs.google.com/spreadsheets/d/${spreadsheetId}/gviz/tq?sheet=${encodeURIComponent(sheetPrestasi)}&tq=SELECT%20A,B,C,D,E,F,G,H`
                     );
                 } catch (e) { console.warn("Sheet Prestasi mungkin belum dibuat."); }
 
@@ -798,6 +798,16 @@
             str = str.replace(/[,.]/g, '').trim();
             if (str.length === 9) return "0" + str;
             return str;
+        }
+
+        function escapeHtml(str) {
+            if (str == null) return '';
+            return String(str)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#039;');
         }
 
         function convertGoogleDriveUrl(url) {
@@ -941,6 +951,7 @@
                             const prestasiStr = row[4] && row[4].v ? String(row[4].v) : "-";
                             const poinStr = row[5] && row[5].v ? String(row[5].v) : "0";
                             const catatanStr = (row[6] && row[6].v != null) ? String(row[6].v).trim() : "";
+                            const buktiStr = (row[7] && row[7].v != null) ? String(row[7].v).trim() : "";
 
                             const poin = parseInt(poinStr) || 0;
                             if (kategoriStr !== "-" || prestasiStr !== "-") {
@@ -956,7 +967,8 @@
                                         <td class="d-cell"><span class="category-pill blue">${kategoriStr}</span></td>
                                         <td class="d-cell" style="font-weight: 500; color: #1e293b;">
                                             ${prestasiStr}
-                                            ${catatanStr ? `<div style="font-size: 11.5px; color: var(--text-muted); font-weight: normal; margin-top: 2px;"><em>Ket: ${catatanStr}</em></div>` : ''}
+                                            ${catatanStr ? `<div style="font-size: 11.5px; color: var(--text-muted); font-weight: normal; margin-top: 2px;"><em>Ket: ${escapeHtml(catatanStr)}</em></div>` : ''}
+                                            ${buktiStr ? `<div style="margin-top: 4px;"><a href="${escapeHtml(buktiStr)}" target="_blank" rel="noopener noreferrer" style="display: inline-flex; align-items: center; gap: 4px; font-size: 11.5px; color: #4338ca; background: #e0e7ff; padding: 2px 8px; border-radius: 4px; text-decoration: none; font-weight: 600;"><i class="fa-solid fa-file-image"></i> Bukti Sertifikat</a></div>` : ''}
                                         </td>
                                         <td class="d-cell" style="text-align: center;"><span class="badge green" style="font-weight: 700;">+${poin}</span></td>
 
@@ -969,7 +981,8 @@
                                                 </div>
                                                 <div class="card-content-box prestasi-box">
                                                     <div class="card-desc-text">${prestasiStr}</div>
-                                                    ${catatanStr ? `<div style="font-size: 12px; color: #64748b; margin-top: 4px;"><em>Ket: ${catatanStr}</em></div>` : ''}
+                                                    ${catatanStr ? `<div style="font-size: 12px; color: #64748b; margin-top: 4px;"><em>Ket: ${escapeHtml(catatanStr)}</em></div>` : ''}
+                                                    ${buktiStr ? `<div style="margin-top: 6px;"><a href="${escapeHtml(buktiStr)}" target="_blank" rel="noopener noreferrer" style="display: inline-flex; align-items: center; gap: 4px; font-size: 11.5px; color: #4338ca; background: #e0e7ff; padding: 3px 8px; border-radius: 4px; text-decoration: none; font-weight: 600;"><i class="fa-solid fa-file-image"></i> Bukti Sertifikat</a></div>` : ''}
                                                 </div>
                                                 <div class="card-bottom-row">
                                                     <div class="card-date"><i class="fa-regular fa-calendar-days"></i> ${tanggalStr}</div>

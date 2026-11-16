@@ -10,6 +10,7 @@
 
 // KONFIGURASI FOTO SISWA
 const FOLDER_ID = '16gs_h8dOKYhDzkuScIaruF1djltSKz5e';
+const FOLDER_BUKTI_PRESTASI_ID = '1QVLAkQ00KoO8hRI7c9tUFeGc1aR81fLq'; // Folder Bukti Prestasi / Sertifikat
 const SHEET_NAME = 'Siswa';
 
 // ============================================
@@ -77,10 +78,31 @@ function doPost(e) {
       const prestasi = e.parameter.prestasi || ""; 
       const poin = e.parameter.poin || "0";
       const keterangan = e.parameter.keterangan || "";
+      let buktiUrl = e.parameter.bukti_url || "";
+      const buktiBase64 = e.parameter.bukti_base64 || "";
+      const buktiFilename = e.parameter.bukti_filename || "";
+      const buktiMimeType = e.parameter.bukti_mimetype || "image/jpeg";
+
+      // Upload file bukti / sertifikat ke folder Google Drive jika disertakan
+      if (buktiBase64) {
+        try {
+          const folderBukti = DriveApp.getFolderById(FOLDER_BUKTI_PRESTASI_ID);
+          const rawBase64 = buktiBase64.replace(/^data:[^;]+;base64,/, '');
+          const decoded = Utilities.base64Decode(rawBase64);
+          const cleanNisn = String(nisn).replace(/^'+/, '').trim();
+          const cleanFileName = buktiFilename || (`Sertifikat_${cleanNisn}_${Date.now()}.jpg`);
+          const blob = Utilities.newBlob(decoded, buktiMimeType, cleanFileName);
+          const file = folderBukti.createFile(blob);
+          file.setSharing(DriveApp.Access.ANYONE_WITH_LINK, DriveApp.Permission.VIEW);
+          buktiUrl = "https://drive.google.com/uc?export=view&id=" + file.getId();
+        } catch (errUpload) {
+          Logger.log("Gagal simpan bukti prestasi: " + errUpload.message);
+        }
+      }
       
       if (nisn !== "" && prestasi !== "") {
-        sheetPrestasi.appendRow([nisn, namaSiswa, tanggal, kategori, prestasi, poin, keterangan]);
-        return ContentService.createTextOutput(JSON.stringify({"result":"success"}))
+        sheetPrestasi.appendRow([nisn, namaSiswa, tanggal, kategori, prestasi, poin, keterangan, buktiUrl]);
+        return ContentService.createTextOutput(JSON.stringify({"result":"success", "buktiUrl": buktiUrl}))
           .setMimeType(ContentService.MimeType.JSON);
       } else {
         throw new Error("Data prestasi tidak lengkap");
@@ -222,6 +244,26 @@ function doPost(e) {
       const newPoin = e.parameter.new_poin || "0";
       const newKeterangan = e.parameter.new_keterangan || "";
       const namaSiswa = e.parameter.nama_siswa || "";
+      let newBukti = e.parameter.new_bukti || "";
+      const buktiBase64 = e.parameter.bukti_base64 || "";
+      const buktiFilename = e.parameter.bukti_filename || "";
+      const buktiMimeType = e.parameter.bukti_mimetype || "image/jpeg";
+
+      if (buktiBase64) {
+        try {
+          const folderBukti = DriveApp.getFolderById(FOLDER_BUKTI_PRESTASI_ID);
+          const rawBase64 = buktiBase64.replace(/^data:[^;]+;base64,/, '');
+          const decoded = Utilities.base64Decode(rawBase64);
+          const cleanNisn = String(nisn).replace(/^'+/, '').trim();
+          const cleanFileName = buktiFilename || (`Sertifikat_${cleanNisn}_${Date.now()}.jpg`);
+          const blob = Utilities.newBlob(decoded, buktiMimeType, cleanFileName);
+          const file = folderBukti.createFile(blob);
+          file.setSharing(DriveApp.Access.ANYONE_WITH_LINK, DriveApp.Permission.VIEW);
+          newBukti = "https://drive.google.com/uc?export=view&id=" + file.getId();
+        } catch (errUpload) {
+          Logger.log("Gagal simpan bukti prestasi edit: " + errUpload.message);
+        }
+      }
       
       const data = sheet.getDataRange().getValues();
       let updated = false;
@@ -233,14 +275,18 @@ function doPost(e) {
         
         if (Number(rowNisn) === Number(inputNisn) && String(row[4]).trim() === oldPrestasi.trim()) {
             const cleanNisn = String(nisn).replace(/^'+/, "").trim();
-            sheet.getRange(i + 1, 1, 1, 7).setValues([["'"+cleanNisn, namaSiswa, newTanggal, newKategori, newPrestasi, newPoin, newKeterangan]]);
+            // Pertahankan bukti lama jika tidak mengunggah bukti baru
+            if (!newBukti && row[7]) {
+              newBukti = String(row[7]).trim();
+            }
+            sheet.getRange(i + 1, 1, 1, 8).setValues([["'"+cleanNisn, namaSiswa, newTanggal, newKategori, newPrestasi, newPoin, newKeterangan, newBukti]]);
             updated = true;
             break;
         }
       }
       
       if (updated) {
-        return ContentService.createTextOutput(JSON.stringify({"result":"success"})).setMimeType(ContentService.MimeType.JSON);
+        return ContentService.createTextOutput(JSON.stringify({"result":"success", "buktiUrl": newBukti})).setMimeType(ContentService.MimeType.JSON);
       } else {
         throw new Error("Data prestasi tidak ditemukan");
       }

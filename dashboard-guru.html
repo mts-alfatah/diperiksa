@@ -1766,6 +1766,11 @@
                                 <input type="text" class="form-control" id="input-keterangan-prestasi"
                                     placeholder="Cth: Penyelenggara, tingkat kejuaraan, dll">
                             </div>
+                            <div class="form-group" style="margin-bottom: 0;">
+                                <label>Bukti Sertifikat / Foto <small style="color: var(--text-muted);">(Opsional)</small></label>
+                                <input type="file" class="form-control" id="input-bukti-prestasi" accept="image/*,application/pdf"
+                                    style="padding: 5px 8px; font-size: 12px;">
+                            </div>
                         </div>
                         <div
                             style="margin-top: 20px; display: flex; flex-wrap: wrap; gap: 15px; justify-content: space-between; align-items: center;">
@@ -2144,6 +2149,13 @@
                     <input type="text" class="form-control" id="edit-keterangan"
                         placeholder="Keterangan tambahan (opsional)">
                 </div>
+                <div class="form-group" id="edit-group-bukti" style="display: none;">
+                    <label>Bukti Sertifikat / Foto <small style="color: var(--text-muted);">(Opsional / Ganti Foto)</small></label>
+                    <input type="file" class="form-control" id="edit-bukti-prestasi" accept="image/*,application/pdf"
+                        style="padding: 5px 8px; font-size: 12px;">
+                    <input type="hidden" id="edit-old-bukti">
+                    <div id="edit-bukti-preview" style="margin-top: 6px; font-size: 12px;"></div>
+                </div>
                 <div style="display: flex; gap: 10px; justify-content: flex-end; margin-top: 20px;">
                     <button type="button" class="action-btn"
                         style="background: #f1f5f9; color: #475569; border: 1px solid #cbd5e1;"
@@ -2438,11 +2450,11 @@
                     `https://docs.google.com/spreadsheets/d/${spreadsheetId}/gviz/tq?sheet=${encodeURIComponent(sheetTataTertib)}&tq=SELECT%20A,B,C,D`
                 );
 
-                // Fetch Prestasi (A: NISN, B: Nama Siswa, C: Tanggal, D: Kategori, E: Nama Prestasi, F: Poin, G: Keterangan)
+                // Fetch Prestasi (A: NISN, B: Nama Siswa, C: Tanggal, D: Kategori, E: Nama Prestasi, F: Poin, G: Keterangan, H: Bukti Foto/Sertifikat)
                 let dataPrestasi = null;
                 try {
                     dataPrestasi = await fetchJSONP(
-                        `https://docs.google.com/spreadsheets/d/${spreadsheetId}/gviz/tq?sheet=${encodeURIComponent(sheetPrestasi)}&tq=SELECT%20A,B,C,D,E,F,G`
+                        `https://docs.google.com/spreadsheets/d/${spreadsheetId}/gviz/tq?sheet=${encodeURIComponent(sheetPrestasi)}&tq=SELECT%20A,B,C,D,E,F,G,H`
                     );
                 } catch (e) { console.warn("Sheet Prestasi mungkin belum dibuat."); }
 
@@ -2754,7 +2766,7 @@
                         const nisn = formatNISN(row.c[0].v, row.c[0].f);
                         if (nisn.toLowerCase() === 'nisn') return; // Skip header
 
-                        // Kolom Google Sheet: A(0): NISN, B(1): Nama, C(2): Tanggal, D(3): Kategori, E(4): Prestasi, F(5): Poin, G(6): Keterangan
+                        // Kolom Google Sheet: A(0): NISN, B(1): Nama, C(2): Tanggal, D(3): Kategori, E(4): Prestasi, F(5): Poin, G(6): Keterangan, H(7): Bukti
                         const namaDariSheet = row.c[1] && row.c[1].v ? String(row.c[1].v) : "";
                         const nama = namaDariSheet || studentMap[nisn] || "Nama Tidak Terdaftar";
                         const tanggal = row.c[2] && row.c[2].f ? row.c[2].f : (row.c[2] && row.c[2].v ? String(row.c[2].v) : "-");
@@ -2762,6 +2774,7 @@
                         const prestasi = row.c[4] && row.c[4].v ? String(row.c[4].v) : "-";
                         const poin = parseInt(row.c[5] && row.c[5].v ? String(row.c[5].v) : "0") || 0;
                         const catatan = (row.c[6] && row.c[6].v != null) ? String(row.c[6].v).trim() : "";
+                        const bukti = (row.c[7] && row.c[7].v != null) ? String(row.c[7].v).trim() : "";
 
                         if (kategori !== "-" || prestasi !== "-") {
                             const kelas = studentClassMap[nisn] || "-";
@@ -2774,7 +2787,8 @@
                                 kategori,
                                 keterangan: prestasi,
                                 poin: "+" + poin,
-                                catatan
+                                catatan,
+                                bukti
                             });
 
                             if (!groupedAchievements[nisn]) {
@@ -2793,7 +2807,8 @@
                                 kategori,
                                 keterangan: prestasi,
                                 poin,
-                                catatan
+                                catatan,
+                                bukti
                             });
                         }
                     }
@@ -3008,6 +3023,42 @@
                 setupPagination('admin-achievements-rules-table', 'pagination-aturan-prestasi');
                 setupPagination('admin-students-table', 'pagination-siswa', 10);
             }, 100);
+        }
+
+        function readFileAsBase64(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = () => resolve(reader.result);
+                reader.onerror = err => reject(err);
+                reader.readAsDataURL(file);
+            });
+        }
+
+        function compressImageToBase64(file, maxWidth = 1600, quality = 0.8) {
+            return new Promise((resolve) => {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    const img = new Image();
+                    img.onload = () => {
+                        let w = img.width;
+                        let h = img.height;
+                        if (w > maxWidth) {
+                            h = Math.round((h * maxWidth) / w);
+                            w = maxWidth;
+                        }
+                        const canvas = document.createElement('canvas');
+                        canvas.width = w;
+                        canvas.height = h;
+                        const ctx = canvas.getContext('2d');
+                        ctx.drawImage(img, 0, 0, w, h);
+                        resolve(canvas.toDataURL('image/jpeg', quality));
+                    };
+                    img.onerror = () => resolve(e.target.result);
+                    img.src = e.target.result;
+                };
+                reader.onerror = () => resolve('');
+                reader.readAsDataURL(file);
+            });
         }
 
         async function submitPelanggaran(e) {
@@ -3310,18 +3361,21 @@
             worksheet.views = [{ showGridLines: false }];
 
             // Title Row
+            const isPelanggaran = (tableId === 'admin-violations-table');
             const titleRow = worksheet.addRow([title.toUpperCase()]);
             titleRow.font = { name: 'Arial', size: 16, bold: true, color: { argb: 'FFFFFFFF' } };
             titleRow.getCell(1).fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF1F2937' } };
             titleRow.getCell(1).alignment = { vertical: 'middle', horizontal: 'center' };
-            worksheet.mergeCells('A1:H1');
+            worksheet.mergeCells(isPelanggaran ? 'A1:H1' : 'A1:I1');
 
             // Empty row
             worksheet.addRow([]);
 
             // Headers
-            const isPelanggaran = (tableId === 'admin-violations-table');
-            const headerRow = worksheet.addRow(['NISN', 'NAMA SISWA', 'KELAS', 'TANGGAL', 'KATEGORI', isPelanggaran ? 'PELANGGARAN' : 'PRESTASI', 'POIN', 'KETERANGAN']);
+            const headers = isPelanggaran
+                ? ['NISN', 'NAMA SISWA', 'KELAS', 'TANGGAL', 'KATEGORI', 'PELANGGARAN', 'POIN', 'KETERANGAN']
+                : ['NISN', 'NAMA SISWA', 'KELAS', 'TANGGAL', 'KATEGORI', 'PRESTASI', 'POIN', 'KETERANGAN', 'BUKTI / SERTIFIKAT'];
+            const headerRow = worksheet.addRow(headers);
             headerRow.font = { bold: true, color: { argb: 'FFFFFFFF' } };
             headerRow.alignment = { vertical: 'middle', horizontal: 'center' };
             headerRow.eachCell(cell => {
@@ -3344,7 +3398,11 @@
             dataList.forEach(item => {
                 if (hiddenNisns.has(item.nisn)) return;
 
-                const dataRow = worksheet.addRow([item.nisn, item.nama, item.kelas, item.tanggal, item.kategori, item.keterangan, item.poin, item.catatan || '-']);
+                const rowValues = [item.nisn, item.nama, item.kelas, item.tanggal, item.kategori, item.keterangan, item.poin, item.catatan || '-'];
+                if (!isPelanggaran) {
+                    rowValues.push(item.bukti || '-');
+                }
+                const dataRow = worksheet.addRow(rowValues);
 
                 dataRow.eachCell((cell, colNumber) => {
                     cell.border = { top: { style: 'thin', color: { argb: 'FFCCCCCC' } }, left: { style: 'thin', color: { argb: 'FFCCCCCC' } }, bottom: { style: 'thin', color: { argb: 'FFCCCCCC' } }, right: { style: 'thin', color: { argb: 'FFCCCCCC' } } };
@@ -3362,15 +3420,25 @@
             });
 
             // Adjust Column Widths
-            worksheet.columns = [
+            worksheet.columns = isPelanggaran ? [
                 { width: 15 }, // NISN
                 { width: 35 }, // Nama Siswa
                 { width: 12 }, // Kelas
                 { width: 15 }, // Tanggal
                 { width: 20 }, // Kategori
-                { width: 35 }, // Pelanggaran / Prestasi
+                { width: 35 }, // Pelanggaran
                 { width: 10 }, // Poin
                 { width: 30 }  // Keterangan
+            ] : [
+                { width: 15 }, // NISN
+                { width: 35 }, // Nama Siswa
+                { width: 12 }, // Kelas
+                { width: 15 }, // Tanggal
+                { width: 20 }, // Kategori
+                { width: 35 }, // Prestasi
+                { width: 10 }, // Poin
+                { width: 30 }, // Keterangan
+                { width: 40 }  // Bukti Sertifikat
             ];
 
             // Generate and save
@@ -3402,6 +3470,24 @@
             submitBtn.disabled = true;
 
             try {
+                const buktiFileEl = document.getElementById('input-bukti-prestasi');
+                let buktiBase64 = '';
+                let buktiFilename = '';
+                let buktiMimetype = '';
+
+                if (buktiFileEl && buktiFileEl.files && buktiFileEl.files[0]) {
+                    const file = buktiFileEl.files[0];
+                    buktiFilename = file.name;
+                    buktiMimetype = file.type || 'image/jpeg';
+                    submitBtn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> Mengunggah bukti...';
+                    if (file.type.startsWith('image/')) {
+                        buktiBase64 = await compressImageToBase64(file);
+                    } else {
+                        buktiBase64 = await readFileAsBase64(file);
+                    }
+                    submitBtn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> Menyimpan...';
+                }
+
                 const formData = new URLSearchParams();
                 formData.append('action', 'add_prestasi');
                 formData.append('nisn', "'" + nisn);
@@ -3411,6 +3497,11 @@
                 formData.append('prestasi', namaP);
                 formData.append('poin', poin);
                 formData.append('keterangan', keterangan);
+                if (buktiBase64) {
+                    formData.append('bukti_base64', buktiBase64);
+                    formData.append('bukti_filename', buktiFilename);
+                    formData.append('bukti_mimetype', buktiMimetype);
+                }
 
                 await fetch(scriptUrl, {
                     method: 'POST',
@@ -3803,7 +3894,7 @@
             }
         }
 
-        function editData(jenis, nisn, namaSiswa, tanggal, kategori, namaData, poin, catatan = '') {
+        function editData(jenis, nisn, namaSiswa, tanggal, kategori, namaData, poin, catatan = '', bukti = '') {
             document.getElementById('edit-modal-title').textContent = jenis === 'pelanggaran' ? 'Edit Pelanggaran' : 'Edit Prestasi';
             document.getElementById('edit-label-data').textContent = jenis === 'pelanggaran' ? 'Nama Pelanggaran' : 'Nama Prestasi';
 
@@ -3816,6 +3907,29 @@
                 editKetEl.placeholder = jenis === 'pelanggaran'
                     ? 'Cth: Tempat, catatan kejadian, dll (opsional)'
                     : 'Cth: Penyelenggara, tingkat kejuaraan, dll (opsional)';
+            }
+
+            // Atur bagian bukti sertifikat untuk prestasi
+            const groupBukti = document.getElementById('edit-group-bukti');
+            const oldBuktiEl = document.getElementById('edit-old-bukti');
+            const previewBuktiEl = document.getElementById('edit-bukti-preview');
+            const fileInputEl = document.getElementById('edit-bukti-prestasi');
+            if (fileInputEl) fileInputEl.value = '';
+
+            if (groupBukti) {
+                if (jenis === 'prestasi') {
+                    groupBukti.style.display = 'block';
+                    if (oldBuktiEl) oldBuktiEl.value = bukti || '';
+                    if (previewBuktiEl) {
+                        previewBuktiEl.innerHTML = bukti
+                            ? `<a href="${escapeHtml(bukti)}" target="_blank" rel="noopener noreferrer" style="color: #2563eb; font-weight: 500; text-decoration: underline;"><i class="fa-solid fa-file-image"></i> Lihat Bukti Saat Ini</a>`
+                            : '<span style="color: var(--text-muted);">Belum ada bukti sertifikat terunggah.</span>';
+                    }
+                } else {
+                    groupBukti.style.display = 'none';
+                    if (oldBuktiEl) oldBuktiEl.value = '';
+                    if (previewBuktiEl) previewBuktiEl.innerHTML = '';
+                }
             }
 
             document.getElementById('edit-nisn').value = nisn;
@@ -3966,6 +4080,33 @@
                 formData.append('new_poin', newPoin);
                 const newKeterangan = (document.getElementById('edit-keterangan')?.value || '').trim();
                 formData.append('new_keterangan', newKeterangan);
+
+                if (jenis === 'prestasi') {
+                    const editBuktiEl = document.getElementById('edit-bukti-prestasi');
+                    let editBuktiBase64 = '';
+                    let editBuktiFilename = '';
+                    let editBuktiMimetype = '';
+                    if (editBuktiEl && editBuktiEl.files && editBuktiEl.files[0]) {
+                        const f = editBuktiEl.files[0];
+                        editBuktiFilename = f.name;
+                        editBuktiMimetype = f.type || 'image/jpeg';
+                        submitBtn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> Mengunggah bukti...';
+                        if (f.type.startsWith('image/')) {
+                            editBuktiBase64 = await compressImageToBase64(f);
+                        } else {
+                            editBuktiBase64 = await readFileAsBase64(f);
+                        }
+                        submitBtn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> Menyimpan...';
+                    }
+                    if (editBuktiBase64) {
+                        formData.append('bukti_base64', editBuktiBase64);
+                        formData.append('bukti_filename', editBuktiFilename);
+                        formData.append('bukti_mimetype', editBuktiMimetype);
+                    } else {
+                        const oldBukti = (document.getElementById('edit-old-bukti')?.value || '').trim();
+                        if (oldBukti) formData.append('new_bukti', oldBukti);
+                    }
+                }
 
                 const response = await fetch(scriptUrl, {
                     method: 'POST',
@@ -4557,6 +4698,7 @@
                 const safeKet = escapeJsArg(item.keterangan);
                 const safePoin = escapeJsArg(item.poin);
                 const safeCatatan = escapeJsArg(item.catatan || '');
+                const safeBukti = escapeJsArg(item.bukti || '');
                 const tglFormatted = formatTanggalPendekIndonesia(item.tanggal);
 
                 desktopHtml += `
@@ -4566,11 +4708,12 @@
                                 <span class="category-pill ${pillClass}">${escapeHtml(item.kategori)}</span>
                                 <span style="font-weight: 500; color: #1e293b;">${escapeHtml(item.keterangan)}</span>
                                 ${item.catatan ? `<span style="font-size: 11.5px; color: #475569; background: #e2e8f0; padding: 1px 7px; border-radius: 4px;"><i class="fa-solid fa-note-sticky" style="color: #64748b; font-size: 10px;"></i> ${escapeHtml(item.catatan)}</span>` : ''}
+                                ${item.bukti ? `<a href="${escapeHtml(item.bukti)}" target="_blank" rel="noopener noreferrer" class="badge" style="background: #e0e7ff; color: #4338ca; text-decoration: none; padding: 2px 7px; font-size: 11px; display: inline-flex; align-items: center; gap: 4px;" title="Lihat Foto Bukti/Sertifikat"><i class="fa-solid fa-file-image"></i> Sertifikat</a>` : ''}
                                 <span style="font-size: 11px; color: #64748b; margin-left: 4px;"><i class="fa-regular fa-calendar"></i> ${escapeHtml(tglFormatted)}</span>
                             </div>
                             <div style="display: flex; align-items: center; gap: 6px; white-space: nowrap;">
                                 <span class="badge ${desktopBadgeClass}" style="font-weight: 700; padding: 2px 7px; font-size: 11px;">+${escapeHtml(String(item.poin))}</span>
-                                <button class="action-btn" style="padding: 3px 7px; font-size: 11px; background: var(--primary-gradient);" title="Edit" onclick="editData('${jenis}', '${safeNisn}', '${safeNama}', '${safeTgl}', '${safeKat}', '${safeKet}', '${safePoin}', '${safeCatatan}')"><i class="fa-solid fa-edit"></i></button>
+                                <button class="action-btn" style="padding: 3px 7px; font-size: 11px; background: var(--primary-gradient);" title="Edit" onclick="editData('${jenis}', '${safeNisn}', '${safeNama}', '${safeTgl}', '${safeKat}', '${safeKet}', '${safePoin}', '${safeCatatan}', '${safeBukti}')"><i class="fa-solid fa-edit"></i></button>
                                 <button class="action-btn" style="padding: 3px 7px; font-size: 11px; background: var(--danger-color);" title="Hapus" onclick="hapusData('${jenis}', '${safeNisn}', '${safeTgl}', '${safeKet}')"><i class="fa-solid fa-trash"></i></button>
                             </div>
                         </div>
@@ -4585,10 +4728,11 @@
                         </div>
                         <div class="sg-item-desc">${escapeHtml(item.keterangan)}</div>
                         ${item.catatan ? `<div style="font-size: 12px; color: #475569; background: rgba(0,0,0,0.04); padding: 4px 8px; border-radius: 6px; margin-top: 3px; word-break: break-word;"><i class="fa-solid fa-note-sticky" style="color: #64748b; margin-right: 4px; font-size: 11px;"></i>${escapeHtml(item.catatan)}</div>` : ''}
+                        ${item.bukti ? `<div style="margin-top: 4px;"><a href="${escapeHtml(item.bukti)}" target="_blank" rel="noopener noreferrer" style="font-size: 12px; color: #2563eb; font-weight: 500; text-decoration: none; display: inline-flex; align-items: center; gap: 4px;"><i class="fa-solid fa-file-image"></i> Lihat Bukti Sertifikat</a></div>` : ''}
                         <div class="sg-item-footer">
                             <span class="sg-item-date"><i class="fa-regular fa-calendar-days"></i> ${escapeHtml(tglFormatted)}</span>
                             <div class="sg-item-actions">
-                                <button type="button" class="card-btn-action card-btn-edit" onclick="editData('${jenis}', '${safeNisn}', '${safeNama}', '${safeTgl}', '${safeKat}', '${safeKet}', '${safePoin}', '${safeCatatan}')">
+                                <button type="button" class="card-btn-action card-btn-edit" onclick="editData('${jenis}', '${safeNisn}', '${safeNama}', '${safeTgl}', '${safeKat}', '${safeKet}', '${safePoin}', '${safeCatatan}', '${safeBukti}')">
                                     <i class="fa-solid fa-edit"></i> Edit
                                 </button>
                                 <button type="button" class="card-btn-action card-btn-delete" onclick="hapusData('${jenis}', '${safeNisn}', '${safeTgl}', '${safeKet}')">
